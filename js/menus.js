@@ -1,5 +1,8 @@
+var currentcanvas;
+
 function initMainMenu() {
 	var canvas = document.getElementById('mainmenu');
+	var currentcanvas = canvas;
 	var ctx = canvas.getContext('2d');
 	winwitdh = document.documentElement.clientWidth;
 	winheight = document.documentElement.clientHeight;
@@ -43,6 +46,7 @@ function initMainMenu() {
 
 function initLevelSelect() {
 	var canvas = document.getElementById('levelselect');
+	var currentcanvas = canvas;
 	var ctx = canvas.getContext('2d');
 	winwitdh = document.documentElement.clientWidth;
 	winheight = document.documentElement.clientHeight;
@@ -53,4 +57,9 @@ function initLevelSelect() {
 	ctx.fillStyle = "white";
 	ctx.textAlign = "center";
 	ctx.fillText("Level Select", winwitdh / 2, winheight / 2);
+}
+
+function resize() {
+	currentcanvas.width = document.documentElement.clientWidth;
+	currentcanvas.height = document.documentElement.clientHeight;
 }
