@@ -2,25 +2,11 @@
 <html lang="en">
 <head>
 	<title>JS13K Game</title>
-	<style>
-		body {
-			margin: 0;
-			padding: 0;
-			background-color: rgb(7,7,7);
-			overflow: hidden;
-		}
-		canvas {
-			width: 800px;
-			height: 600px;
-			margin: 150px auto;
-			display: block;
-		}
-	</style>
+	<script src="js/menus.js"></script>
 </head>
-<body id="body">
-	<canvas id="mainmenu"></canvas>
-	<canvas id="levelselect"></canvas>
-	<canvas id="game"></canvas>
-	<script src="js/mmenu.js"></script>
+<body onload="initMainMenu()" onresize="resize()" onorientationchange="resize()" style="margin: 0; padding: 0; background-color: black; overflow: hidden;">
+	<canvas id="mainmenu" style="position: absolute"></canvas>
+	<canvas id="levelselect" style="position: absolute"></canvas>
+	<canvas id="game" style="position: absolute"></canvas>
 </body>
 </html>
