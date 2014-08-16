@@ -59,7 +59,18 @@ function initLevelSelect() {
 	ctx.fillText("Level Select", winwitdh / 2, winheight / 2);
 }
 
+function initGame() {
+	var canvas = document.getElementById('game');
+	var currentcanvas = canvas;
+	var ctx = canvas.getContext('2d');
+	winwitdh = document.documentElement.clientWidth;
+	winheight = document.documentElement.clientHeight;
+	canvas.width = winwitdh;
+	canvas.height = winheight;
+}
+
 function resize() {
+	console.log(currentcanvas);
 	currentcanvas.width = document.documentElement.clientWidth;
 	currentcanvas.height = document.documentElement.clientHeight;
 }
