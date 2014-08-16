@@ -3,6 +3,9 @@ var canvas = document.getElementById('mainmenu');
 if (canvas.getContext) {
 	var ctx = canvas.getContext('2d');
 
+	canvas.width = document.documentElement.clientWidth;
+	canvas.height = document.documentElement.clientHeight;
+
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
