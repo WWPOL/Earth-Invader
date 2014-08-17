@@ -1,5 +1,6 @@
 var mouseX = 0; //global mouse coords
 var mouseY = 0;
+var keysDown = {};
 
 gc.addEventListener("mousemove", function (evt) {
 	var rect = gc.getBoundingClientRect(); //get bounding rectangle
