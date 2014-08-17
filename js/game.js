@@ -168,39 +168,44 @@ function initGame() {
 		this.x = x;
 		this.y = y;
 		this.speed = 500;
+
+		this.rotation = 0;
 	};
 
 	//Update the target based on keydown. Currently uses arrow keys for movement. ***Note: If space allows, use WASD for movement, space for fire, and make the player rotate to where the mouse is for finer aiming
 	Target.prototype.update = function(delta) {
-		if (37 in keysDown) { //left
+		if (65 in keysDown) { //left
 			if (this.x > 0) {
 				this.x -= this.speed * delta;
 			}
 		}
-		if (38 in keysDown) { //up
+		if (87 in keysDown) { //up
 			if (this.y > 0) {
 				this.y -= this.speed * delta;
 			}
 		}
-		if (39 in keysDown) { //right
+		if (68 in keysDown) { //right
 			if (this.x < gamecanvas.width - 20) {
 				this.x += this.speed * delta;
 			}
 		}
-		if (40 in keysDown) { //down
+		if (83 in keysDown) { //down
 			if (this.y < gamecanvas.height - 20) {
 				this.y += this.speed * delta;
 			}
 		}
-
 	};
 
 	//Render the target object
 	Target.prototype.render = function() {
+		gamectx.save();
+		//gamectx.translate(this.x + this.width / 2, this.y + this.height / 2);
+		gamectx.rotate(this.rotation);
 		gamectx.beginPath();
 		gamectx.fillStyle = "green";
 		gamectx.fillRect(this.x, this.y, 20, 20);
 		gamectx.stroke();
+		gamectx.restore();
 	};
 
 	//Initialize the game canvas, get its context, and set its width and height to that of the screen
@@ -222,6 +227,18 @@ function initGame() {
 	window.addEventListener('keyup', function(e) {
 		delete keysDown[e.keyCode];
 	});
+
+	gamecanvas.addEventListener('mousemove', function(evt) {
+		var mousePos = getMousePos( gamecanvas, evt);
+
+		var toMouseX = mousePos.x- target.x;
+		var toMouseY = mousePos.y - target.y;
+
+		var toMouseLength = Math.sqrt(toMouseX * toMouseX + toMouseY * toMouseY);
+		toMouseX = toMouseX / toMouseLength;
+		toMouseY = toMouseY / toMouseLength;
+		target.rotation = Math.atan2(toMouseY, toMouseX);
+	}, false);
 
 	//main game loop, updates and renders the game
 	var main = function(){
@@ -268,4 +285,12 @@ function resize() {
 	console.log(currentcanvas);
 	currentcanvas.width = document.documentElement.clientWidth;
 	currentcanvas.height = document.documentElement.clientHeight;
+}
+
+function getMousePos(canvas, evt) {
+	var rect = canvas.getBoundingClientRect();
+	return {
+		x: evt.clientX - rect.left,
+		y: evt.clientY - rect.top
+	};
 }
