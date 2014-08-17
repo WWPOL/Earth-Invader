@@ -1,5 +1,112 @@
 //Variable to Save active canvas, for purpose of resizing with screen resize
 var currentcanvas;
+var keysDown = {};
+
+//Init the enemy class
+Enemy = function(x, y, width, height){
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+	this.cx = x + (this.width / 2);
+	this.cy = y + (this.height / 2);
+	this.speed = 3;
+
+	//This allows for the enemy to rotate to face the player
+	this.rotation = 0;
+};
+
+//Tells the enemy object which object to follow, in the actual game, it will be the player
+Enemy.prototype.assignTarget = function(target) {
+	this.target = target;
+};
+
+//Update the enemey's position
+Enemy.prototype.update = function(delta) {
+	if(this.target !== undefined){
+		this.targetX = this.target.x;
+		this.targetY = this.target.y;
+
+		// Calculate direction towards player
+		toPlayerX = this.targetX - this.x;
+		toPlayerY = this.targetY - this.y;
+
+		// Normalize
+		toPlayerLength = Math.sqrt(toPlayerX * toPlayerX + toPlayerY * toPlayerY);
+		toPlayerX = toPlayerX / toPlayerLength;
+		toPlayerY = toPlayerY / toPlayerLength;
+
+
+		//Move towards the player
+		if (toPlayerLength > 55) {
+			this.x += toPlayerX * this.speed;
+			this.y += toPlayerY * this.speed;
+
+			this.rotation = Math.atan2(toPlayerY, toPlayerX);
+		} else if (toPlayerLength < 50) {
+			this.x -= toPlayerX * this.speed;
+			this.y -= toPlayerY * this.speed;
+
+			this.rotation = Math.atan2(toPlayerY, toPlayerX);
+		}
+	}
+};
+
+//As it sounds, render the enemy object
+Enemy.prototype.render = function(ctx) {
+	ctx.save();
+	ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+	ctx.rotate(this.rotation);
+	ctx.beginPath();
+	ctx.fillStyle = "red";
+	ctx.fillRect(this.x - (this.x + this.width/2), this.y - (this.y + this.height/2), this.width, this.height);
+	ctx.restore();
+};
+
+//Initialize the target class, a class used for testing the enemy class's pathfinding. This class will later evolve into the Player class
+Target = function(x, y){
+	this.x = x;
+	this.y = y;
+	this.speed = 500;
+
+	this.rotation = 0;
+};
+
+//Update the target based on keydown. Currently uses arrow keys for movement. ***Note: If space allows, use WASD for movement, space for fire, and make the player rotate to where the mouse is for finer aiming
+Target.prototype.update = function(delta, canvas) {
+	if (65 in keysDown) { //left
+		if (this.x > 0) {
+			this.x -= this.speed * delta;
+		}
+	}
+	if (87 in keysDown) { //up
+		if (this.y > 0) {
+			this.y -= this.speed * delta;
+		}
+	}
+	if (68 in keysDown) { //right
+		if (this.x < canvas.width - 20) {
+			this.x += this.speed * delta;
+		}
+	}
+	if (83 in keysDown) { //down
+		if (this.y < canvas.height - 20) {
+			this.y += this.speed * delta;
+		}
+	}
+};
+
+//Render the target object
+Target.prototype.render = function(ctx) {
+	ctx.save();
+	ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+	ctx.rotate(this.rotation);
+	ctx.beginPath();
+	ctx.fillStyle = "green";
+	ctx.fillRect(this.x, this.y, 20, 20);
+	//ctx.stroke();
+	ctx.restore();
+};
 
 //Inits the main menu, shows title and play button
 function initMainMenu() {
@@ -100,114 +207,16 @@ function initLevelSelect() {
 	}, false);
 }
 
+function getMousePos(canvas, evt) {
+	var rect = canvas.getBoundingClientRect();
+	return {
+		x: evt.clientX - rect.left,
+		y: evt.clientY - rect.top
+	};
+}
+
 //Because of issues with the files loading asynchronously and sometimes before the document was ready, I was forced to merge the three other files and encase them in an init function
 function initGame() {
-	//Init the enemy class
-	Enemy = function(x, y, width, height){
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.cx = x + (this.width / 2);
-		this.cy = y + (this.height / 2);
-		this.speed = 3;
-
-		//This allows for the enemy to rotate to face the player
-		this.rotation = 0;
-	};
-
-	//Tells the enemy object which object to follow, in the actual game, it will be the player
-	Enemy.prototype.assignTarget = function(target) {
-		this.target = target;
-	};
-
-	//Update the enemey's position
-	Enemy.prototype.update = function(delta) {
-		if(this.target !== undefined){
-			this.targetX = this.target.x;
-			this.targetY = this.target.y;
-
-			// Calculate direction towards player
-			toPlayerX = this.targetX - this.x;
-			toPlayerY = this.targetY - this.y;
-
-			// Normalize
-			toPlayerLength = Math.sqrt(toPlayerX * toPlayerX + toPlayerY * toPlayerY);
-			toPlayerX = toPlayerX / toPlayerLength;
-			toPlayerY = toPlayerY / toPlayerLength;
-
-
-			//Move towards the player
-			if (toPlayerLength > 55) {
-				this.x += toPlayerX * this.speed;
-				this.y += toPlayerY * this.speed;
-
-				this.rotation = Math.atan2(toPlayerY, toPlayerX);
-			} else if (toPlayerLength < 50) {
-				this.x -= toPlayerX * this.speed;
-				this.y -= toPlayerY * this.speed;
-
-				this.rotation = Math.atan2(toPlayerY, toPlayerX);
-			}
-		}
-	};
-
-	//As it sounds, render the enemy object
-	Enemy.prototype.render = function() {
-		gamectx.save();
-		gamectx.translate(this.x + this.width / 2, this.y + this.height / 2);
-		gamectx.rotate(this.rotation);
-		gamectx.beginPath();
-		gamectx.fillStyle = "red";
-		gamectx.fillRect(this.x - (this.x + this.width/2), this.y - (this.y + this.height/2), this.width, this.height);
-		gamectx.restore();
-	};
-
-	//Initialize the target class, a class used for testing the enemy class's pathfinding. This class will later evolve into the Player class
-	Target = function(x, y){
-		this.x = x;
-		this.y = y;
-		this.speed = 500;
-
-		this.rotation = 0;
-	};
-
-	//Update the target based on keydown. Currently uses arrow keys for movement. ***Note: If space allows, use WASD for movement, space for fire, and make the player rotate to where the mouse is for finer aiming
-	Target.prototype.update = function(delta) {
-		if (65 in keysDown) { //left
-			if (this.x > 0) {
-				this.x -= this.speed * delta;
-			}
-		}
-		if (87 in keysDown) { //up
-			if (this.y > 0) {
-				this.y -= this.speed * delta;
-			}
-		}
-		if (68 in keysDown) { //right
-			if (this.x < gamecanvas.width - 20) {
-				this.x += this.speed * delta;
-			}
-		}
-		if (83 in keysDown) { //down
-			if (this.y < gamecanvas.height - 20) {
-				this.y += this.speed * delta;
-			}
-		}
-	};
-
-	//Render the target object
-	Target.prototype.render = function() {
-		gamectx.save();
-		//gamectx.translate(this.x + this.width / 2, this.y + this.height / 2);
-		gamectx.rotate(this.rotation);
-		gamectx.beginPath();
-		gamectx.fillStyle = "green";
-		gamectx.fillRect(this.x, this.y, 20, 20);
-		gamectx.stroke();
-		gamectx.restore();
-	};
-
 	//Initialize the game canvas, get its context, and set its width and height to that of the screen
 	var gamecanvas = document.getElementById("game");
 	var gamectx = gamecanvas.getContext("2d");
@@ -220,7 +229,6 @@ function initGame() {
 	test.assignTarget(target);
 
 	//Add the eventlisteners for keydown/up so keys can be used
-	var keysDown = {};
 	window.addEventListener('keydown', function(e) {
 		keysDown[e.keyCode] = true;
 	});
@@ -231,7 +239,7 @@ function initGame() {
 	gamecanvas.addEventListener('mousemove', function(evt) {
 		var mousePos = getMousePos( gamecanvas, evt);
 
-		var toMouseX = mousePos.x- target.x;
+		var toMouseX = mousePos.x - target.x;
 		var toMouseY = mousePos.y - target.y;
 
 		var toMouseLength = Math.sqrt(toMouseX * toMouseX + toMouseY * toMouseY);
@@ -256,7 +264,7 @@ function initGame() {
 	//updates the positions of the target and enemy
 	var update = function(delta){
 		test.update(delta);
-		target.update(delta);
+		target.update(delta, gamecanvas);
 	};
 
 	//clears the screen
@@ -271,8 +279,8 @@ function initGame() {
 	var render = function(){
 		clearScreen();
 
-		test.render();
-		target.render();
+		test.render(gamectx);
+		target.render(gamectx);
 	};
 
 	//updates the time, runs the main loop
@@ -285,12 +293,4 @@ function resize() {
 	console.log(currentcanvas);
 	currentcanvas.width = document.documentElement.clientWidth;
 	currentcanvas.height = document.documentElement.clientHeight;
-}
-
-function getMousePos(canvas, evt) {
-	var rect = canvas.getBoundingClientRect();
-	return {
-		x: evt.clientX - rect.left,
-		y: evt.clientY - rect.top
-	};
 }
