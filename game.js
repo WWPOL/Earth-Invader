@@ -99,12 +99,12 @@ Target.prototype.update = function(delta, canvas) {
 //Render the target object
 Target.prototype.render = function(ctx) {
 	ctx.save();
-	//ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+	ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
 	ctx.rotate(this.rotation);
 	ctx.beginPath();
 	ctx.fillStyle = "green";
 	ctx.fillRect(this.x, this.y, 20, 20);
-	ctx.stroke();
+	//ctx.stroke();
 	ctx.restore();
 };
 
