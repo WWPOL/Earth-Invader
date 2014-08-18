@@ -387,21 +387,30 @@ function initGame() {
 	var playerhealth = new Healthbar(10, 10, target);
 	var planethealth = new Healthbar(clientWidth - 310, 10, planet);
 	var i = 0
-	var makeEnemies = function() {
-		var enemy = new Enemy(600, 400, 20, 20);
-		var enemy2 = new Enemy(600, 400, 20, 20);
-		enemy.assignTarget(planet);
-		enemy2.assignTarget(target);
-		defenders.push(enemy);
-		enemies.push(enemy2);
+	var makeEnemies = function(x,y) {
+		var enemy = new Enemy(x, y, 20, 20);
+		enemy.assignTarget(target);
+		enemies.push(enemy);
 		if (i < 7) {
 			setTimeout(function(){
-				makeEnemies();
+				makeEnemies(x, y);
 			}, 1000);
 			i += 1;
 		}
 	};
-	makeEnemies();
+	var makeDefenders = function(x,y) {
+		var enemy = new Enemy(x, y, 20, 20);
+		enemy.assignTarget(planet);
+		defenders.push(enemy);
+		if (i < 7) {
+			setTimeout(function(){
+				makeDefenders(x, y);
+			}, 1000);
+			i += 1;
+		}
+	};
+	makeEnemies(600, 400);
+	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40);
 
 	window.addEventListener("mousemove", function (evt) {
 		var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
