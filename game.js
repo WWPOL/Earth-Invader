@@ -300,22 +300,13 @@ function getMousePos(canvas, evt) {
 	};
 }
 
-//Because of issues with the files loading asynchronously and sometimes before the document was ready, I was forced to merge the three other files and encase them in an init function
-function initGame() {
-	//Initialize the game canvas, get its context, and set its width and height to that of the screen
-	var gamecanvas = document.getElementById("game");
-	var gamectx = gamecanvas.getContext("2d");
-	currentcanvas = 'gc';
+function initStars() {
+	var starcanvas = document.getElementById("stars");
+	var starctx = starcanvas.getContext("2d");
 	var clientWidth = document.documentElement.clientWidth;
 	var clientHeight = document.documentElement.clientHeight;
-	gamecanvas.width = clientWidth;
-	gamecanvas.height = clientHeight;
-	var halfwidth = gamecanvas.width / 2;
-	var halfheight = gamecanvas.height / 2;
-
-	var planet = new Planet(halfwidth, halfheight);
-	var enemies = [];
-	var defenders = [];
+	starcanvas.width = clientWidth;
+	starcanvas.height = clientHeight;
 	var stars = [];
 	var colors = ["blue", "white", "red", "yellow"]
 	for (var y = 0; y < clientHeight; y += Math.round(Math.random() * 100) + 1) {
@@ -332,6 +323,56 @@ function initGame() {
 			stars.push(star);
 		};
 	}
+	//main game loop, updates and renders the game
+	var main = function(){
+		var now = Date.now();
+		var delta = now - then;
+		render();
+
+		then = now;
+
+		requestAnimationFrame(main);
+	};
+
+	//clears the screen
+	var clearScreen = function(){
+		starctx.beginPath();
+		starctx.fillStyle = "black";
+		starctx.fillRect(0,0,starcanvas.width, starcanvas.height);
+		starctx.stroke();
+	};
+
+	//clears the screen, and redraws the objects
+	var render = function(){
+		clearScreen();
+		stars.forEach(function(star){
+			star.draw(starctx)
+		});
+	};
+
+	//updates the time, runs the main loop
+	var then = Date.now();
+	main();
+}
+
+//Because of issues with the files loading asynchronously and sometimes before the document was ready, I was forced to merge the three other files and encase them in an init function
+function initGame() {
+	initStars();
+	//Initialize the game canvas, get its context, and set its width and height to that of the screen
+	var gamecanvas = document.getElementById("game");
+	var gamectx = gamecanvas.getContext("2d");
+	currentcanvas = 'gc';
+	var clientWidth = document.documentElement.clientWidth;
+	var clientHeight = document.documentElement.clientHeight;
+	gamecanvas.width = clientWidth;
+	gamecanvas.height = clientHeight;
+	var halfwidth = gamecanvas.width / 2;
+	var halfheight = gamecanvas.height / 2;
+
+	var planet = new Planet(halfwidth, halfheight);
+	var enemies = [];
+	var defenders = [];
+
 	//Create a target, an enemy, and assign the target to enemy so that it will follow it
 	var target = new Turret(20, 20);
 	var i = 0
@@ -393,19 +434,12 @@ function initGame() {
 
 	//clears the screen
 	var clearScreen = function(){
-		gamectx.beginPath();
-		gamectx.fillStyle = "black";
-		gamectx.fillRect(0,0,gamecanvas.width, gamecanvas.height);
-		gamectx.stroke();
+		gamectx.clearRect(0,0,gamecanvas.width, gamecanvas.height);
 	};
 
 	//clears the screen, and redraws the objects
 	var render = function(){
 		clearScreen();
-
-		stars.forEach(function(star){
-			star.draw(gamectx)
-		});
 
 		planet.draw(gamectx);
 		enemies.forEach(function(enemy){
