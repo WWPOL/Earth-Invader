@@ -386,27 +386,28 @@ function initGame() {
 	var target = new Turret(20, 20, "Player");
 	var playerhealth = new Healthbar(10, 10, target);
 	var planethealth = new Healthbar(clientWidth - 310, 10, planet);
-	var i = 0
+	var enemycount = 1;
+	var defendercount = 1;
 	var makeEnemies = function(x,y) {
 		var enemy = new Enemy(x, y, 20, 20);
 		enemy.assignTarget(target);
 		enemies.push(enemy);
-		if (i < 7) {
+		if (enemycount < 7) {
 			setTimeout(function(){
 				makeEnemies(x, y);
 			}, 1000);
-			i += 1;
+			enemycount += 1;
 		}
 	};
 	var makeDefenders = function(x,y) {
 		var enemy = new Enemy(x, y, 20, 20);
 		enemy.assignTarget(planet);
 		defenders.push(enemy);
-		if (i < 7) {
+		if (defendercount < 7) {
 			setTimeout(function(){
 				makeDefenders(x, y);
 			}, 1000);
-			i += 1;
+			defendercount += 1;
 		}
 	};
 	makeEnemies(600, 400);
@@ -452,6 +453,11 @@ function initGame() {
 		defenders.forEach(function(enemy){
 			enemy.update(delta, gamecanvas)
 		});
+		if (((Date.now() - wave) / 1000) > 30) {
+			wave = Date.now();
+			enemycount = 1;
+			makeEnemies(clientWidth - 40, clientHeight - 40);
+		};
 	};
 
 	//clears the screen
@@ -482,6 +488,7 @@ function initGame() {
 	//updates the time, runs the main loop
 	var then = Date.now();
 	var start = Date.now();
+	var wave = Date.now();
 	main();
 }
 /////////////////----------------\\\\\\\\\\\\\\\\\\\
