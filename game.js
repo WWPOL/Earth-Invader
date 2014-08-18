@@ -1,6 +1,8 @@
 //Variable to Save active canvas, for purpose of resizing with screen resize
 var currentcanvas;
 var keysDown = {};
+var mouseX = 0; //global mouse coords
+var mouseY = 0;
 
 //Init the enemy class
 Enemy = function(x, y, width, height){
@@ -23,32 +25,47 @@ Enemy.prototype.assignTarget = function(target) {
 
 //Update the enemey's position
 Enemy.prototype.update = function(delta) {
-	if(this.target !== undefined){
+	if(! (this.target === undefined)){
 		this.targetX = this.target.x;
 		this.targetY = this.target.y;
 
 		// Calculate direction towards player
-		toPlayerX = this.targetX - this.x;
-		toPlayerY = this.targetY - this.y;
+		var toPlayerX = this.targetX - this.x;
+		var toPlayerY = this.targetY - this.y;
 
 		// Normalize
-		toPlayerLength = Math.sqrt(toPlayerX * toPlayerX + toPlayerY * toPlayerY);
+		var toPlayerLength = Math.sqrt(toPlayerX * toPlayerX + toPlayerY * toPlayerY);
 		toPlayerX = toPlayerX / toPlayerLength;
 		toPlayerY = toPlayerY / toPlayerLength;
 
+		this.rotation = Math.atan2(toPlayerY, toPlayerX);
 
+		var approach = true; // tracks if enemy is currently approaching player
 		//Move towards the player
-		if (toPlayerLength > 55) {
+		if (toPlayerLength > 55){
+			this.angle = Math.atan2(toPlayerY,toPlayerX)+Math.PI;
 			this.x += toPlayerX * this.speed;
 			this.y += toPlayerY * this.speed;
+			//approach = true;
 
-			this.rotation = Math.atan2(toPlayerY, toPlayerX);
-		} else if (toPlayerLength < 50) {
-			this.x -= toPlayerX * this.speed;
-			this.y -= toPlayerY * this.speed;
+		}//Move away from player
+		else if (toPlayerLength < 45){
+			this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
+			this.x -= toPlayerX * this.speed * 2;
+			this.y -= toPlayerY * this.speed * 2;
+			//approach = true;
 
-			this.rotation = Math.atan2(toPlayerY, toPlayerX);
+		}//orbit
+		else{
+			this.angle -= 0.02;//Math.acos(1-Math.pow(3/toPlayerLength,2)/2);
+
+			this.x = ((toPlayerLength * Math.cos(this.angle)) + (this.target.x));
+
+			this.y = ((toPlayerLength * Math.sin(this.angle)) + (this.target.y));
+			
 		}
+
+		//console.log(this.angle);
 	}
 };
 
@@ -63,17 +80,21 @@ Enemy.prototype.render = function(ctx) {
 	ctx.restore();
 };
 
-//Initialize the target class, a class used for testing the enemy class's pathfinding. This class will later evolve into the Player class
-Target = function(x, y){
-	this.x = x;
+//Init the player/turret
+Turret = function (x,y) {
+	this.x = x; 
 	this.y = y;
-	this.speed = 500;
+	this.speed = 200;
+	this.health = 1000; //balance parameter
+	this.direction = 0; //radians
 
-	this.rotation = 0;
-};
+	this.updateArray = [0,0,0]; //x, y, health - all need to be done externally, event-based. Will only be set to non-0 if collision or appropriate keypress occurs
 
-//Update the target based on keydown. Currently uses arrow keys for movement. ***Note: If space allows, use WASD for movement, space for fire, and make the player rotate to where the mouse is for finer aiming
-Target.prototype.update = function(delta, canvas) {
+}
+
+Turret.prototype.update = function (delta) { //call this to update properties and draw
+	//console.log(this.updateArray);
+
 	if (65 in keysDown) { //left
 		if (this.x > 0) {
 			this.x -= this.speed * delta;
@@ -85,28 +106,50 @@ Target.prototype.update = function(delta, canvas) {
 		}
 	}
 	if (68 in keysDown) { //right
-		if (this.x < canvas.width - 20) {
+		if (this.x < gc.width - 20) {
 			this.x += this.speed * delta;
 		}
 	}
 	if (83 in keysDown) { //down
-		if (this.y < canvas.height - 20) {
+		if (this.y < gc.height - 20) {
 			this.y += this.speed * delta;
 		}
 	}
-};
 
-//Render the target object
-Target.prototype.render = function(ctx) {
-	ctx.save();
-	ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
-	ctx.rotate(this.rotation);
-	ctx.beginPath();
-	ctx.fillStyle = "green";
-	ctx.fillRect(this.x, this.y, 20, 20);
-	//ctx.stroke();
-	ctx.restore();
-};
+	var dHealth = this.updateArray[2]; //change in health
+	var dDir = this.findDirection(mouseX,mouseY); //delta in direction
+
+
+	this.direction += dDir;
+	this.health += dHealth;
+
+	//turret.draw(this.x,this.y,this.direction); //draw first (keep old variables to clear out)
+
+	//at end, clear updateArray
+	this.updateArray = [0,0,0];
+}
+
+Turret.prototype.draw = function (x, y, dir) { 
+	gctx.save(); //save the state to stack before rotating
+	gctx.fillStyle = "#000000";		
+	gctx.translate(x,y);
+	gctx.rotate(dir);
+	gctx.beginPath();
+	gctx.fillRect(-10,-5,20,10);
+	gctx.fillStyle = "#FF0000";
+	gctx.fillRect(-15,-1,10,2);
+	gctx.closePath();
+	gctx.restore(); //restore back to original
+}
+
+Turret.prototype.findDirection = function (mX,mY) {
+	var distanceX = this.x - mX;
+	var distanceY = this.y - mY;
+	var newDir = Math.atan2(distanceY,distanceX); //find angle from arctangent
+	//console.log(newDir*180/Math.PI - this.direction);
+	var dDir = newDir - this.direction; //delta in direction
+	return dDir;
+}
 
 //Inits the main menu, shows title and play button
 function initMainMenu() {
@@ -224,29 +267,23 @@ function initGame() {
 	gamecanvas.height = document.documentElement.clientHeight;
 
 	//Create a target, an enemy, and assign the target to enemy so that it will follow it
-	var target = new Target(20, 20);
+	var target = new Turret(20, 20);
 	var test = new Enemy(600, 400, 20, 20);
 	test.assignTarget(target);
 
-	//Add the eventlisteners for keydown/up so keys can be used
+	gamectx.addEventListener("mousemove", function (evt) {
+		var rect = gamectx.getBoundingClientRect(); //get bounding rectangle
+		mouseX = evt.clientX - rect.left;
+		mouseY = evt.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
+	});
+
 	window.addEventListener('keydown', function(e) {
 		keysDown[e.keyCode] = true;
 	});
+
 	window.addEventListener('keyup', function(e) {
 		delete keysDown[e.keyCode];
 	});
-
-	gamecanvas.addEventListener('mousemove', function(evt) {
-		var mousePos = getMousePos( gamecanvas, evt);
-
-		var toMouseX = mousePos.x - target.x;
-		var toMouseY = mousePos.y - target.y;
-
-		var toMouseLength = Math.sqrt(toMouseX * toMouseX + toMouseY * toMouseY);
-		toMouseX = toMouseX / toMouseLength;
-		toMouseY = toMouseY / toMouseLength;
-		target.rotation = Math.atan2(toMouseY, toMouseX);
-	}, false);
 
 	//main game loop, updates and renders the game
 	var main = function(){
