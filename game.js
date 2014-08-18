@@ -69,8 +69,8 @@ Enemy.prototype.update = function(delta) {
 	}
 };
 
-//As it sounds, render the enemy object
-Enemy.prototype.render = function(ctx) {
+//As it sounds, draw the enemy object
+Enemy.prototype.draw = function(ctx) {
 	ctx.save();
 	ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
 	ctx.rotate(this.rotation);
@@ -92,7 +92,7 @@ Turret = function (x,y) {
 
 }
 
-Turret.prototype.update = function (delta) { //call this to update properties and draw
+Turret.prototype.update = function (delta, gc) { //call this to update properties and draw
 	//console.log(this.updateArray);
 
 	if (65 in keysDown) { //left
@@ -129,17 +129,17 @@ Turret.prototype.update = function (delta) { //call this to update properties an
 	this.updateArray = [0,0,0];
 }
 
-Turret.prototype.draw = function (x, y, dir) { 
-	gctx.save(); //save the state to stack before rotating
-	gctx.fillStyle = "#000000";		
-	gctx.translate(x,y);
-	gctx.rotate(dir);
-	gctx.beginPath();
-	gctx.fillRect(-10,-5,20,10);
-	gctx.fillStyle = "#FF0000";
-	gctx.fillRect(-15,-1,10,2);
-	gctx.closePath();
-	gctx.restore(); //restore back to original
+Turret.prototype.draw = function (ctx) { 
+	ctx.save(); //save the state to stack before rotating
+	ctx.fillStyle = "#000000";		
+	ctx.translate(this.x,this.y);
+	ctx.rotate(this.direction);
+	ctx.beginPath();
+	ctx.fillRect(-10,-5,20,10);
+	ctx.fillStyle = "#FF0000";
+	ctx.fillRect(-15,-1,10,2);
+	ctx.closePath();
+	ctx.restore(); //restore back to original
 }
 
 Turret.prototype.findDirection = function (mX,mY) {
@@ -244,6 +244,7 @@ function initLevelSelect() {
 		elements.forEach(function(element) {
 			if (y > element.top && y < element.top + element.height && x > element.left && x < element.left + element.width) {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 				initGame();
 			}
 		});
@@ -271,8 +272,8 @@ function initGame() {
 	var test = new Enemy(600, 400, 20, 20);
 	test.assignTarget(target);
 
-	gamectx.addEventListener("mousemove", function (evt) {
-		var rect = gamectx.getBoundingClientRect(); //get bounding rectangle
+	window.addEventListener("mousemove", function (evt) {
+		var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
 		mouseX = evt.clientX - rect.left;
 		mouseY = evt.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
 	});
@@ -300,7 +301,7 @@ function initGame() {
 
 	//updates the positions of the target and enemy
 	var update = function(delta){
-		test.update(delta);
+		test.update(delta, gamecanvas);
 		target.update(delta, gamecanvas);
 	};
 
@@ -316,8 +317,8 @@ function initGame() {
 	var render = function(){
 		clearScreen();
 
-		test.render(gamectx);
-		target.render(gamectx);
+		test.draw(gamectx);
+		target.draw(gamectx);
 	};
 
 	//updates the time, runs the main loop
