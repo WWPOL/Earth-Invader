@@ -8,7 +8,7 @@ var mouseY = 0;
 
 ///////////////// CLASSES \\\\\\\\\\\\\\\\\\\\\\\\\\
 //Init the enemy class
-Enemy = function(x, y, width, height){
+Enemy = function(x, y, width, height, orbit){
 	this.x = x;
 	this.y = y;
 	this.width = width;
@@ -16,6 +16,7 @@ Enemy = function(x, y, width, height){
 	this.cx = x + (this.width / 2);
 	this.cy = y + (this.height / 2);
 	this.speed = 3;
+	this.orbit = orbit; //property determining distance of orbit
 
 	//This allows for the enemy to rotate to face the player
 	this.rotation = 0;
@@ -45,14 +46,14 @@ Enemy.prototype.update = function(delta) {
 
 		var approach = true; // tracks if enemy is currently approaching player
 		//Move towards the player
-		if (toPlayerLength > 55){
+		if (toPlayerLength > this.orbit+5){
 			this.angle = Math.atan2(toPlayerY,toPlayerX)+Math.PI;
 			this.x += toPlayerX * this.speed;
 			this.y += toPlayerY * this.speed;
 			//approach = true;
 
 		}//Move away from player
-		else if (toPlayerLength < 45){
+		else if (toPlayerLength < this.orbit-5){
 			this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
 			this.x -= toPlayerX * this.speed * 2;
 			this.y -= toPlayerY * this.speed * 2;
@@ -389,7 +390,8 @@ function initGame() {
 	var enemycount = 1;
 	var defendercount = 1;
 	var makeEnemies = function(x,y) {
-		var enemy = new Enemy(x, y, 20, 20);
+		var randOrbit = Math.round(Math.random()*50) + 40; //40 to 90
+		var enemy = new Enemy(x, y, 20, 20, randOrbit);
 		enemy.assignTarget(target);
 		enemies.push(enemy);
 		if (enemycount < 7) {
@@ -400,7 +402,8 @@ function initGame() {
 		}
 	};
 	var makeDefenders = function(x,y) {
-		var enemy = new Enemy(x, y, 20, 20);
+		var randOrbit = Math.round(Math.random()*50) + 40; //40 to 90
+		var enemy = new Enemy(x, y, 20, 20, randOrbit);
 		enemy.assignTarget(planet);
 		defenders.push(enemy);
 		if (defendercount < 7) {
