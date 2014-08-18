@@ -320,14 +320,14 @@ function initGame() {
 	var colors = ["blue", "white", "red", "yellow"]
 	for (var y = 0; y < clientHeight; y += Math.round(Math.random() * 100) + 1) {
 		for (var x = 0; x < clientWidth; x += Math.round(Math.random() * 100) + 1) {
-			var color = colors[Math.round(Math.random() * 4) + 1];
+			var color = colors[Math.round(Math.random() * 4)];
 			var star = new Star(x, y, color);
 			stars.push(star);
 		};
 	}
 	for (var x = 0; x < clientWidth; x += Math.round(Math.random() * 100) + 1) {
 		for (var y = 0; y < clientHeight; y += Math.round(Math.random() * 100) + 1) {
-			var color = colors[Math.round(Math.random() * 4) + 1];
+			var color = colors[Math.round(Math.random() * 4)];
 			var star = new Star(x, y, color);
 			stars.push(star);
 		};
