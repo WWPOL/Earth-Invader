@@ -382,9 +382,10 @@ function initGame() {
 	var planet = new Planet(halfwidth, halfheight, "Planet");
 	var enemies = [];
 	var defenders = [];
+	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
 
 	//Create a target, an enemy, and assign the target to enemy so that it will follow it
-	var target = new Turret(20, 20, "Player");
+	var target = new Turret(halfwidth, 45, "Player");
 	var playerhealth = new Healthbar(10, 10, target);
 	var planethealth = new Healthbar(clientWidth - 310, 10, planet);
 	var enemycount = 1;
@@ -413,7 +414,7 @@ function initGame() {
 			defendercount += 1;
 		}
 	};
-	makeEnemies(600, 400);
+	makeEnemies(halfwidth, halfheight + 100);
 	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40);
 
 	window.addEventListener("mousemove", function (evt) {
@@ -459,7 +460,8 @@ function initGame() {
 		if (((Date.now() - wave) / 1000) > 30) {
 			wave = Date.now();
 			enemycount = 1;
-			makeEnemies(clientWidth - 40, clientHeight - 40);
+			var randomint = Math.floor(Math.random() * 8);
+			makeEnemies(spawns[randomint][0], spawns[randomint][1]);
 		};
 	};
 
