@@ -155,7 +155,7 @@ Turret.prototype.findDirection = function (mX,mY) {
 function initMainMenu() {
 	//This block initiliazes the mainmenu canvas, sets the context, and sets its width and height to that of the user's screen
 	var canvas = document.getElementById('mainmenu');
-	var currentcanvas = canvas;
+	currentcanvas = 'mm';
 	var ctx = canvas.getContext('2d');
 	winwitdh = document.documentElement.clientWidth;
 	winheight = document.documentElement.clientHeight;
@@ -208,7 +208,7 @@ function initMainMenu() {
 //Initialize the level select menu. So far, it is basically just a main menu again, nothing new.
 function initLevelSelect() {
 	var canvas = document.getElementById('levelselect');
-	var currentcanvas = canvas;
+	currentcanvas = 'ls';
 	var ctx = canvas.getContext('2d');
 	winwitdh = document.documentElement.clientWidth;
 	winheight = document.documentElement.clientHeight;
@@ -263,6 +263,7 @@ function initGame() {
 	//Initialize the game canvas, get its context, and set its width and height to that of the screen
 	var gamecanvas = document.getElementById("game");
 	var gamectx = gamecanvas.getContext("2d");
+	currentcanvas = 'gc';
 	gamecanvas.width = document.documentElement.clientWidth;
 	gamecanvas.height = document.documentElement.clientHeight;
 
@@ -327,7 +328,11 @@ function initGame() {
 
 //currently broken
 function resize() {
-	console.log(currentcanvas);
-	currentcanvas.width = document.documentElement.clientWidth;
-	currentcanvas.height = document.documentElement.clientHeight;
+	if (currentcanvas === 'mm') {
+		initMainMenu();
+	} else if (currentcanvas === 'ls') {
+		initLevelSelect();
+	} else if (currentcanvas === 'gc') {
+		initGame();
+	}
 }
