@@ -484,7 +484,7 @@ function initGame() {
 		gamectx.font = "20pt Arial";
 		gamectx.fillStyle = "white";
 		gamectx.textAlign = "center";
-		gamectx.fillText((Date.now() - start) / 1000, winwitdh / 2, 30);
+		gamectx.fillText(Math.floor((Date.now() - start) / 1000), winwitdh / 2, 30);
 		target.draw(gamectx);
 	};
 
