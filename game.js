@@ -326,9 +326,13 @@ function initGame() {
 	main();
 }
 
-//currently broken
+
 function resize() {
-	console.log(currentcanvas);
-	currentcanvas.width = document.documentElement.clientWidth;
-	currentcanvas.height = document.documentElement.clientHeight;
+	if (currentcanvas === 'mm') {
+		initMainMenu();
+	} else if (currentcanvas === 'ls') {
+		initLevelSelect();
+	} else if (currentcanvas === 'gc') {
+		initGame();
+	}
 }
