@@ -139,7 +139,7 @@ Turret.prototype.draw = function (ctx) {
 	ctx.rotate(this.direction);
 
 	ctx.beginPath();
-	ctx.arc(this.x, this.y, 10, 0, 2 * Math.PI, false);
+	ctx.arc(0, 0, 10, 0, 2 * Math.PI, false);
 	ctx.fillStyle = 'white';
 	ctx.fill();
 	ctx.lineWidth = 2;
