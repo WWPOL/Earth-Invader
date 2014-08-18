@@ -135,11 +135,17 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 
 Turret.prototype.draw = function (ctx) { 
 	ctx.save(); //save the state to stack before rotating
-	ctx.fillStyle = "white";		
 	ctx.translate(this.x,this.y);
 	ctx.rotate(this.direction);
+
 	ctx.beginPath();
-	ctx.fillRect(-10,-5,20,10);
+	ctx.arc(this.x, this.y, 10, 0, 2 * Math.PI, false);
+	ctx.fillStyle = 'white';
+	ctx.fill();
+	ctx.lineWidth = 2;
+	ctx.strokeStyle = '#003300';
+	ctx.stroke();
+
 	ctx.fillStyle = "#FF0000";
 	ctx.fillRect(-15,-1,10,2);
 	ctx.closePath();
