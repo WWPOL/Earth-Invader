@@ -84,6 +84,8 @@ Enemy.prototype.render = function(ctx) {
 Turret = function (x,y) {
 	this.x = x; 
 	this.y = y;
+	this.width = 20;
+	this.height = 10;
 	this.speed = 200;
 	this.health = 1000; //balance parameter
 	this.direction = 0; //radians
@@ -92,7 +94,7 @@ Turret = function (x,y) {
 
 }
 
-Turret.prototype.update = function (delta) { //call this to update properties and draw
+Turret.prototype.update = function (delta, canvas) { //call this to update properties and draw
 	//console.log(this.updateArray);
 
 	if (65 in keysDown) { //left
@@ -106,12 +108,12 @@ Turret.prototype.update = function (delta) { //call this to update properties an
 		}
 	}
 	if (68 in keysDown) { //right
-		if (this.x < gc.width - 20) {
+		if (this.x < canvas.width - 20) {
 			this.x += this.speed * delta;
 		}
 	}
 	if (83 in keysDown) { //down
-		if (this.y < gc.height - 20) {
+		if (this.y < canvas.height - 20) {
 			this.y += this.speed * delta;
 		}
 	}
@@ -129,17 +131,17 @@ Turret.prototype.update = function (delta) { //call this to update properties an
 	this.updateArray = [0,0,0];
 }
 
-Turret.prototype.draw = function (x, y, dir) { 
-	gctx.save(); //save the state to stack before rotating
-	gctx.fillStyle = "#000000";		
-	gctx.translate(x,y);
-	gctx.rotate(dir);
-	gctx.beginPath();
-	gctx.fillRect(-10,-5,20,10);
-	gctx.fillStyle = "#FF0000";
-	gctx.fillRect(-15,-1,10,2);
-	gctx.closePath();
-	gctx.restore(); //restore back to original
+Turret.prototype.render = function (ctx) { 
+	ctx.save(); //save the state to stack before rotating
+	ctx.fillStyle = "#000000";		
+	ctx.translate(this.x,this.y);
+	ctx.rotate(this.dir);
+	ctx.beginPath();
+	ctx.fillRect(-10,-5,20,10);
+	ctx.fillStyle = "#FF0000";
+	ctx.fillRect(-15,-1,10,2);
+	ctx.closePath();
+	ctx.restore(); //restore back to original
 }
 
 Turret.prototype.findDirection = function (mX,mY) {
@@ -268,12 +270,12 @@ function initGame() {
 	gamecanvas.height = document.documentElement.clientHeight;
 
 	//Create a target, an enemy, and assign the target to enemy so that it will follow it
-	var target = new Turret(20, 20);
+	var turret = new Turret(20, 20);
 	var test = new Enemy(600, 400, 20, 20);
-	test.assignTarget(target);
+	test.assignTarget(turret);
 
-	gamectx.addEventListener("mousemove", function (evt) {
-		var rect = gamectx.getBoundingClientRect(); //get bounding rectangle
+	gamecanvas.addEventListener("mousemove", function (evt) {
+		var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
 		mouseX = evt.clientX - rect.left;
 		mouseY = evt.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
 	});
@@ -299,10 +301,10 @@ function initGame() {
 		requestAnimationFrame(main);
 	};
 
-	//updates the positions of the target and enemy
+	//updates the positions of the turret and enemy
 	var update = function(delta){
 		test.update(delta);
-		target.update(delta, gamecanvas);
+		turret.update(delta, gamecanvas);
 	};
 
 	//clears the screen
@@ -318,7 +320,7 @@ function initGame() {
 		clearScreen();
 
 		test.render(gamectx);
-		target.render(gamectx);
+		turret.render(gamectx);
 	};
 
 	//updates the time, runs the main loop
