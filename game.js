@@ -238,10 +238,10 @@ function initMainMenu() {
 	canvas.height = winheight;
 
 	//Render the Title
-	ctx.font = "20pt Arial";
+	ctx.font = "30pt Arial";
 	ctx.fillStyle = "white";
 	ctx.textAlign = "center";
-	ctx.fillText("Earth Invader", winwitdh / 2, winheight / 2);
+	ctx.fillText("Earth Invader", winwitdh / 2, 50);
 
 	//Initialize Array of clickable elements, and then push in the parameters that would make a rectangle ***Note, this may be innefficient for just one element, consider revision
 	var elements = [];
@@ -290,25 +290,68 @@ function initLevelSelect() {
 	canvas.width = winwitdh;
 	canvas.height = winheight;
 
+	ctx.font = "30pt Arial";
+	ctx.fillStyle = "white";
+	ctx.textAlign = "center";
+	ctx.fillText("Level Select", winwitdh / 2, 50);
+	ctx.fillStyle = "green";
+	ctx.fillRect(canvas.width / 2 - 100, canvas.height - 150, 200, 75);
+	ctx.fillStyle = "black";
+	ctx.fillText("Play", winwitdh / 2, winheight - 100);
+
+//////////////////////////////////////////////////////////
+
 	ctx.font = "20pt Arial";
 	ctx.fillStyle = "white";
 	ctx.textAlign = "center";
-	ctx.fillText("Level Select", winwitdh / 2, winheight / 2);
+	ctx.fillText("Select a Planet Type", winwitdh / 2, 150);
 
-	var elements = [];
-	elements.push({
-		color: "red",
-		width: 200,
-		height: 75,
-		top: winheight / 2 + 50,
-		left: winwitdh / 2 - 100
-	});
-	elements.forEach(function(element) {
-		ctx.fillStyle = element.color;
-		ctx.fillRect(element.left, element.top, element.width, element.height);
-	});
+	ctx.fillStyle = "red";
+	ctx.fillRect((canvas.width / 4) / 2 + 100, 200, 200, 75);
 	ctx.fillStyle = "black";
-	ctx.fillText("Play", winwitdh / 2, winheight / 2 + 100);
+	ctx.fillText("Fire", (canvas.width / 4) / 2 + 200, 250);
+
+	ctx.fillStyle = "white";
+	ctx.fillRect((canvas.width / 2) - 250, 200, 200, 75);
+	ctx.fillStyle = "black";
+	ctx.fillText("Air", (canvas.width / 2) - 150, 250);
+
+	ctx.fillStyle = "blue";
+	ctx.fillRect((canvas.width / 2) + 50, 200, 200, 75);
+	ctx.fillStyle = "black";
+	ctx.fillText("Water", (canvas.width / 2) + 150, 250);
+
+	ctx.fillStyle = "brown";
+	ctx.fillRect(((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100), 200, 200, 75);
+	ctx.fillStyle = "black";
+	ctx.fillText("Rock", ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 250);
+
+/////////////////////////////////////////////////////////////
+
+	ctx.font = "20pt Arial";
+	ctx.fillStyle = "white";
+	ctx.textAlign = "center";
+	ctx.fillText("Select a Weapon Type", winwitdh / 2, 350);
+
+	ctx.fillStyle = "red";
+	ctx.fillRect((canvas.width / 4) / 2 + 100, 400, 200, 75);
+	ctx.fillStyle = "black";
+	ctx.fillText("Fire", (canvas.width / 4) / 2 + 200, 450);
+
+	ctx.fillStyle = "white";
+	ctx.fillRect((canvas.width / 2) - 250, 400, 200, 75);
+	ctx.fillStyle = "black";
+	ctx.fillText("Air", (canvas.width / 2) - 150, 450);
+
+	ctx.fillStyle = "blue";
+	ctx.fillRect((canvas.width / 2) + 50, 400, 200, 75);
+	ctx.fillStyle = "black";
+	ctx.fillText("Water", (canvas.width / 2) + 150, 450);
+
+	ctx.fillStyle = "brown";
+	ctx.fillRect(((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100), 400, 200, 75);
+	ctx.fillStyle = "black";
+	ctx.fillText("Rock", ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 450);
 
 	canvas.addEventListener('click', function(event) {
 		var cLeft = canvas.offsetLeft;
@@ -316,13 +359,11 @@ function initLevelSelect() {
 		var x = event.pageX - cLeft;
 		var y = event.pageY - cTop;
 
-		elements.forEach(function(element) {
-			if (y > element.top && y < element.top + element.height && x > element.left && x < element.left + element.width) {
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
+		if (y > canvas.height - 150 && y < canvas.height - 150 + 75 && x > canvas.width / 2 - 100 && x < canvas.width / 2 - 100 + 200) {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-				initGame();
-			}
-		});
+			initGame();
+		}
 	}, false);
 }
 
