@@ -90,6 +90,7 @@ Turret = function (x,y,name) {
 	this.y = y;
 	this.speed = 200;
 	this.health = 1000; //balance parameter
+	this.shield = 500;
 	this.direction = 0; //radians
 	this.damage = 100;
 	this.name = name;
@@ -221,11 +222,20 @@ Healthbar = function(x, y, owner) {
 	this.health = owner.health;
 	this.healthpercent = 1;
 	this.name = owner.name;
+	if (owner.shield) {
+		this.maxshield = owner.shield;
+		this.shield = owner.shield;
+		this.shieldpercent = 1;
+	}
 }
 
 Healthbar.prototype.update = function(delta, owner) {
 	this.health = owner.health;
 	this.healthpercent = this.health / this.maxhealth;
+	if (this.shield && owner.shield) {
+		this.shield = owner.shield;
+		this.shieldpercent = this.shield / this.maxshield;
+	}
 }
 
 Healthbar.prototype.draw = function(ctx) {
@@ -236,6 +246,16 @@ Healthbar.prototype.draw = function(ctx) {
 	ctx.fillStyle = "white";
 	ctx.textAlign = "center";
 	ctx.fillText(this.name, this.x + 150, this.y + 15);
+
+	if (this.shield) {
+		ctx.fillStyle = "blue";
+		ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
+		ctx.font = "12pt Arial";
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center";
+		ctx.fillText("Shields", this.x + 150, this.y + 45);
+	}
+
 	ctx.closePath();
 }
 /////////////////---------\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -442,6 +462,7 @@ function initGame() {
 
 	//Create a target, an enemy, and assign the target to enemy so that it will follow it
 	var target = new Turret(halfwidth, 45, "Player");
+
 	var playerhealth = new Healthbar(10, 10, target);
 	var planethealth = new Healthbar(clientWidth - 310, 10, planet);
 	var enemycount = 1;
