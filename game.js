@@ -1,9 +1,12 @@
-//Variable to Save active canvas, for purpose of resizing with screen resize
+///////////////// GLOBAL VARIABLES \\\\\\\\\\\\\\\\\
 var currentcanvas;
 var keysDown = {};
 var mouseX = 0; //global mouse coords
 var mouseY = 0;
+/////////////////------------------\\\\\\\\\\\\\\\\\
 
+
+///////////////// CLASSES \\\\\\\\\\\\\\\\\\\\\\\\\\
 //Init the enemy class
 Enemy = function(x, y, width, height){
 	this.x = x;
@@ -87,10 +90,11 @@ Turret = function (x,y) {
 	this.speed = 200;
 	this.health = 1000; //balance parameter
 	this.direction = 0; //radians
+	this.damage = 100;
 
 	this.updateArray = [0,0,0]; //x, y, health - all need to be done externally, event-based. Will only be set to non-0 if collision or appropriate keypress occurs
 
-}
+};
 
 Turret.prototype.update = function (delta, gc) { //call this to update properties and draw
 	//console.log(this.updateArray);
@@ -127,11 +131,11 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 
 	//at end, clear updateArray
 	this.updateArray = [0,0,0];
-}
+};
 
 Turret.prototype.draw = function (ctx) { 
 	ctx.save(); //save the state to stack before rotating
-	ctx.fillStyle = "#000000";		
+	ctx.fillStyle = "white";		
 	ctx.translate(this.x,this.y);
 	ctx.rotate(this.direction);
 	ctx.beginPath();
@@ -140,7 +144,7 @@ Turret.prototype.draw = function (ctx) {
 	ctx.fillRect(-15,-1,10,2);
 	ctx.closePath();
 	ctx.restore(); //restore back to original
-}
+};
 
 Turret.prototype.findDirection = function (mX,mY) {
 	var distanceX = this.x - mX;
@@ -149,13 +153,49 @@ Turret.prototype.findDirection = function (mX,mY) {
 	//console.log(newDir*180/Math.PI - this.direction);
 	var dDir = newDir - this.direction; //delta in direction
 	return dDir;
+};
+
+Planet = function(x, y) {
+	this.x = x;
+	this.y = y;
+	this.health = 10000;
+	this.damageTaken = 0;
 }
 
+Planet.prototype.update = function(delta) {
+	this.health += this.damageTaken;
+	this.damageTaken = 0;
+}
+
+Planet.prototype.draw = function(ctx) {
+	ctx.beginPath();
+	ctx.arc(this.x, this.y, 70, 0, 2 * Math.PI, false);
+	ctx.fillStyle = 'blue';
+	ctx.fill();
+	ctx.lineWidth = 5;
+	ctx.strokeStyle = '#003300';
+	ctx.stroke();
+}
+
+Star = function(x, y) {
+	this.x = x;
+	this.y = y;
+}
+
+Star.prototype.draw = function(ctx) {
+	ctx.beginPath();
+	ctx.arc(this.x, this.y, 1, 0, 2 * Math.PI, false);
+	ctx.fillStyle = 'yellow';
+	ctx.fill();
+}
+/////////////////---------\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+///////////////// INIT FUNCTIONS \\\\\\\\\\\\\\\\\\\
 //Inits the main menu, shows title and play button
 function initMainMenu() {
 	//This block initiliazes the mainmenu canvas, sets the context, and sets its width and height to that of the user's screen
 	var canvas = document.getElementById('mainmenu');
-	var currentcanvas = canvas;
+	currentcanvas = 'mm';
 	var ctx = canvas.getContext('2d');
 	winwitdh = document.documentElement.clientWidth;
 	winheight = document.documentElement.clientHeight;
@@ -208,7 +248,7 @@ function initMainMenu() {
 //Initialize the level select menu. So far, it is basically just a main menu again, nothing new.
 function initLevelSelect() {
 	var canvas = document.getElementById('levelselect');
-	var currentcanvas = canvas;
+	currentcanvas = 'ls';
 	var ctx = canvas.getContext('2d');
 	winwitdh = document.documentElement.clientWidth;
 	winheight = document.documentElement.clientHeight;
@@ -264,13 +304,48 @@ function initGame() {
 	//Initialize the game canvas, get its context, and set its width and height to that of the screen
 	var gamecanvas = document.getElementById("game");
 	var gamectx = gamecanvas.getContext("2d");
-	gamecanvas.width = document.documentElement.clientWidth;
-	gamecanvas.height = document.documentElement.clientHeight;
+	currentcanvas = 'gc';
+	var clientWidth = document.documentElement.clientWidth;
+	var clientHeight = document.documentElement.clientHeight;
+	gamecanvas.width = clientWidth;
+	gamecanvas.height = clientHeight;
+	var halfwidth = gamecanvas.width / 2;
+	var halfheight = gamecanvas.height / 2;
 
+	var planet = new Planet(halfwidth, halfheight);
+	var enemies = [];
+	var defenders = [];
+	var stars = [];
+	for (var y = 0; y < clientHeight; y += Math.round(Math.random() * 100) + 1) {
+		for (var x = 0; x < clientWidth; x += Math.round(Math.random() * 100) + 1) {
+			var star = new Star(x, y);
+			stars.push(star);
+		};
+	}
+	for (var x = 0; x < clientWidth; x += Math.round(Math.random() * 100) + 1) {
+		for (var y = 0; y < clientHeight; y += Math.round(Math.random() * 100) + 1) {
+			var star = new Star(x, y);
+			stars.push(star);
+		};
+	}
 	//Create a target, an enemy, and assign the target to enemy so that it will follow it
 	var target = new Turret(20, 20);
-	var test = new Enemy(600, 400, 20, 20);
-	test.assignTarget(target);
+	var i = 0
+	var makeEnemies = function() {
+		var enemy = new Enemy(600, 400, 20, 20);
+		var enemy2 = new Enemy(600, 400, 20, 20);
+		enemy.assignTarget(planet);
+		enemy2.assignTarget(target);
+		defenders.push(enemy);
+		enemies.push(enemy2);
+		if (i < 7) {
+			setTimeout(function(){
+				makeEnemies();
+			}, 1000);
+			i += 1;
+		}
+	};
+	makeEnemies();
 
 	window.addEventListener("mousemove", function (evt) {
 		var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
@@ -301,14 +376,21 @@ function initGame() {
 
 	//updates the positions of the target and enemy
 	var update = function(delta){
-		test.update(delta, gamecanvas);
 		target.update(delta, gamecanvas);
+		planet.update(delta);
+
+		enemies.forEach(function(enemy){
+			enemy.update(delta, gamecanvas)
+		});
+		defenders.forEach(function(enemy){
+			enemy.update(delta, gamecanvas)
+		});
 	};
 
 	//clears the screen
 	var clearScreen = function(){
 		gamectx.beginPath();
-		gamectx.fillStyle = "white";
+		gamectx.fillStyle = "black";
 		gamectx.fillRect(0,0,gamecanvas.width, gamecanvas.height);
 		gamectx.stroke();
 	};
@@ -317,7 +399,17 @@ function initGame() {
 	var render = function(){
 		clearScreen();
 
-		test.draw(gamectx);
+		stars.forEach(function(star){
+			star.draw(gamectx)
+		});
+
+		planet.draw(gamectx);
+		enemies.forEach(function(enemy){
+			enemy.draw(gamectx)
+		});
+		defenders.forEach(function(enemy){
+			enemy.draw(gamectx)
+		});
 		target.draw(gamectx);
 	};
 
@@ -325,8 +417,9 @@ function initGame() {
 	var then = Date.now();
 	main();
 }
+/////////////////----------------\\\\\\\\\\\\\\\\\\\
 
-
+///////////////// MISCELLANEOUS \\\\\\\\\\\\\\\\\\\\
 function resize() {
 	if (currentcanvas === 'mm') {
 		initMainMenu();
@@ -336,3 +429,4 @@ function resize() {
 		initGame();
 	}
 }
+/////////////////---------------\\\\\\\\\\\\\\\\\\\\
