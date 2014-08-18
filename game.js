@@ -322,37 +322,13 @@ function initStars() {
 			var star = new Star(x, y, color);
 			stars.push(star);
 		};
-	}
-	//main game loop, updates and renders the game
-	var main = function(){
-		var now = Date.now();
-		var delta = now - then;
-		render();
-
-		then = now;
-
-		requestAnimationFrame(main);
-	};
-
-	//clears the screen
-	var clearScreen = function(){
-		starctx.beginPath();
-		starctx.fillStyle = "black";
-		starctx.fillRect(0,0,starcanvas.width, starcanvas.height);
-		starctx.stroke();
-	};
-
-	//clears the screen, and redraws the objects
-	var render = function(){
-		clearScreen();
+	} 
+	render = function(){
 		stars.forEach(function(star){
 			star.draw(starctx)
 		});
 	};
-
-	//updates the time, runs the main loop
-	var then = Date.now();
-	main();
+	render();
 }
 
 //Because of issues with the files loading asynchronously and sometimes before the document was ready, I was forced to merge the three other files and encase them in an init function
