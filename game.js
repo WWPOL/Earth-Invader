@@ -140,6 +140,20 @@ Turret.prototype.draw = function (ctx) {
 	ctx.translate(this.x,this.y);
 	ctx.rotate(this.direction);
 
+	//draw shield
+	var shieldColor = "#"; 
+	for (var i = 0; i < 3; i++) {
+		shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+	}
+	//console.log(shieldColor);
+
+	ctx.beginPath();
+	ctx.arc(0, 0, 30, 0, 2 * Math.PI, false);
+	ctx.lineWidth = 4;
+	ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
+	ctx.stroke();
+	ctx.closePath();	
+
 	ctx.beginPath();
 	ctx.arc(0, 0, 10, 0, 2 * Math.PI, false);
 	ctx.fillStyle = 'white';
@@ -147,6 +161,7 @@ Turret.prototype.draw = function (ctx) {
 	ctx.lineWidth = 2;
 	ctx.strokeStyle = '#003300';
 	ctx.stroke();
+
 
 	ctx.fillStyle = "#FF0000";
 	ctx.fillRect(-15,-1,10,2);
