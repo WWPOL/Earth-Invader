@@ -84,13 +84,14 @@ Enemy.prototype.draw = function(ctx) {
 };
 
 //Init the player/turret
-Turret = function (x,y) {
+Turret = function (x,y,name) {
 	this.x = x; 
 	this.y = y;
 	this.speed = 200;
 	this.health = 1000; //balance parameter
 	this.direction = 0; //radians
 	this.damage = 100;
+	this.name = name;
 
 	this.updateArray = [0,0,0]; //x, y, health - all need to be done externally, event-based. Will only be set to non-0 if collision or appropriate keypress occurs
 
@@ -161,11 +162,12 @@ Turret.prototype.findDirection = function (mX,mY) {
 	return dDir;
 };
 
-Planet = function(x, y) {
+Planet = function(x, y, name) {
 	this.x = x;
 	this.y = y;
 	this.health = 10000;
 	this.damageTaken = 0;
+	this.name = name;
 }
 
 Planet.prototype.update = function(delta) {
@@ -194,6 +196,31 @@ Star.prototype.draw = function(ctx) {
 	ctx.arc(this.x, this.y, 1, 0, 2 * Math.PI, false);
 	ctx.fillStyle = this.color;
 	ctx.fill();
+}
+
+Healthbar = function(x, y, owner) {
+	this.x = x;
+	this.y = y;
+	this.maxhealth = owner.health;
+	this.health = owner.health;
+	this.healthpercent = 1;
+	this.name = owner.name;
+}
+
+Healthbar.prototype.update = function(delta, owner) {
+	this.health = owner.health;
+	this.healthpercent = this.health / this.maxhealth;
+}
+
+Healthbar.prototype.draw = function(ctx) {
+	ctx.beginPath()
+	ctx.fillStyle = "red";
+	ctx.fillRect(this.x, this.y, 300 * this.healthpercent, 20);
+	ctx.font = "12pt Arial";
+	ctx.fillStyle = "white";
+	ctx.textAlign = "center";
+	ctx.fillText(this.name, this.x + 150, this.y + 15);
+	ctx.closePath();
 }
 /////////////////---------\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -351,12 +378,14 @@ function initGame() {
 	var halfwidth = gamecanvas.width / 2;
 	var halfheight = gamecanvas.height / 2;
 
-	var planet = new Planet(halfwidth, halfheight);
+	var planet = new Planet(halfwidth, halfheight, "Planet");
 	var enemies = [];
 	var defenders = [];
 
 	//Create a target, an enemy, and assign the target to enemy so that it will follow it
-	var target = new Turret(20, 20);
+	var target = new Turret(20, 20, "Player");
+	var playerhealth = new Healthbar(10, 10, target);
+	var planethealth = new Healthbar(clientWidth - 310, 10, planet);
 	var i = 0
 	var makeEnemies = function() {
 		var enemy = new Enemy(600, 400, 20, 20);
@@ -394,7 +423,7 @@ function initGame() {
 		var delta = now - then;
 
 		update(delta / 1000);
-		render();
+		render(delta / 1000);
 
 		then = now;
 
@@ -404,6 +433,8 @@ function initGame() {
 	//updates the positions of the target and enemy
 	var update = function(delta){
 		target.update(delta, gamecanvas);
+		playerhealth.update(delta, target);
+		planethealth.update(delta, planet);
 		planet.update(delta);
 
 		enemies.forEach(function(enemy){
@@ -420,7 +451,7 @@ function initGame() {
 	};
 
 	//clears the screen, and redraws the objects
-	var render = function(){
+	var render = function(delta){
 		clearScreen();
 
 		planet.draw(gamectx);
@@ -430,11 +461,18 @@ function initGame() {
 		defenders.forEach(function(enemy){
 			enemy.draw(gamectx)
 		});
+		playerhealth.draw(gamectx);
+		planethealth.draw(gamectx);
+		gamectx.font = "20pt Arial";
+		gamectx.fillStyle = "white";
+		gamectx.textAlign = "center";
+		gamectx.fillText((Date.now() - start) / 1000, winwitdh / 2, 30);
 		target.draw(gamectx);
 	};
 
 	//updates the time, runs the main loop
 	var then = Date.now();
+	var start = Date.now();
 	main();
 }
 /////////////////----------------\\\\\\\\\\\\\\\\\\\
