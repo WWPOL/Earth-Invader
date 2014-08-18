@@ -534,7 +534,7 @@ function initGame() {
 		defenders.forEach(function(enemy){
 			enemy.update(delta, gamecanvas)
 		});
-		if (((Date.now() - wave) / 1000) > 30) {
+		if (((Date.now() - wave) / 1000) > 15) {
 			wave = Date.now();
 			enemycount = 1;
 			var randomint = Math.floor(Math.random() * 8);
