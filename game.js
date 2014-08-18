@@ -75,7 +75,7 @@ Enemy.prototype.update = function(delta) {
 //As it sounds, draw the enemy object
 Enemy.prototype.draw = function(ctx) {
 	ctx.save();
-	ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+	ctx.translate(this.x, this.y);
 	ctx.rotate(this.rotation);
 	ctx.beginPath();
 	ctx.fillStyle = "red";
