@@ -177,15 +177,16 @@ Planet.prototype.draw = function(ctx) {
 	ctx.stroke();
 }
 
-Star = function(x, y) {
+Star = function(x, y, color) {
 	this.x = x;
 	this.y = y;
+	this.color = color;
 }
 
 Star.prototype.draw = function(ctx) {
 	ctx.beginPath();
 	ctx.arc(this.x, this.y, 1, 0, 2 * Math.PI, false);
-	ctx.fillStyle = 'yellow';
+	ctx.fillStyle = this.color;
 	ctx.fill();
 }
 /////////////////---------\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -316,15 +317,18 @@ function initGame() {
 	var enemies = [];
 	var defenders = [];
 	var stars = [];
+	var colors = ["blue", "white", "red", "yellow"]
 	for (var y = 0; y < clientHeight; y += Math.round(Math.random() * 100) + 1) {
 		for (var x = 0; x < clientWidth; x += Math.round(Math.random() * 100) + 1) {
-			var star = new Star(x, y);
+			var color = colors[Math.round(Math.random() * 4) + 1];
+			var star = new Star(x, y, color);
 			stars.push(star);
 		};
 	}
 	for (var x = 0; x < clientWidth; x += Math.round(Math.random() * 100) + 1) {
 		for (var y = 0; y < clientHeight; y += Math.round(Math.random() * 100) + 1) {
-			var star = new Star(x, y);
+			var color = colors[Math.round(Math.random() * 4) + 1];
+			var star = new Star(x, y, color);
 			stars.push(star);
 		};
 	}
