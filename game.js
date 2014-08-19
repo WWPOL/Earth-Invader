@@ -583,21 +583,29 @@ function initGame() {
 	makeEnemies(halfwidth, halfheight + 100, "red");
 	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, "red");
 
+	var fireBullets = function(delta) {
+		if (delta > 14) {
+			gamecanvas.addEventListener('click', function(event) {
+				console.log("clicked");
+				var cLeft = gamecanvas.offsetLeft;
+				var cTop = gamecanvas.offsetTop;
+				var mx = event.pageX - cLeft;
+				var my = event.pageY - cTop;
+				console.log("vars made");
+
+				var bullet = new Bullet(player.x, player.y, 3, mx, my, 10, 10, "red");
+				console.log("made bullet");
+				pBullets.push(bullet);
+				console.log("pushed to array")
+			}, false);
+		};
+	}
+
 	window.addEventListener("mousemove", function (evt) {
 		var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
 		mouseX = evt.clientX - rect.left;
 		mouseY = evt.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
 	});
-	gamecanvas.addEventListener('click', function(event) {
-		var cLeft = gamecanvas.offsetLeft;
-		var cTop = gamecanvas.offsetTop;
-		var mx = event.pageX - cLeft;
-		var my = event.pageY - cTop;
-
-		var bullet = new Bullet(player.x, player.y, 3, mx, my, 10, 10, "red");
-		pBullets.push(bullet);
-	}, false);
-
 	window.addEventListener('keydown', function(e) {
 		keysDown[e.keyCode] = true;
 	});
@@ -610,9 +618,10 @@ function initGame() {
 	var main = function(){
 		var now = Date.now();
 		var delta = now - then;
+		fireBullets(delta);
 
 		update(delta / 1000);
-		render(delta / 1000);
+		render();
 
 		then = now;
 
@@ -652,7 +661,7 @@ function initGame() {
 	};
 
 	//clears the screen, and redraws the objects
-	var render = function(delta){
+	var render = function(){
 		clearScreen();
 
 		planet.draw(gamectx);
