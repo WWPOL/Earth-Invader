@@ -19,6 +19,7 @@ Enemy = function(x, y, width, height, orbit, color){
 	this.orbit = orbit; //property determining distance of orbit
 	this.color = color;
 
+	this.dmgtick = 0; //damage tick counter, used in Enemy.update() for determining damage to player
 	//This allows for the enemy to rotate to face the player
 	this.rotation = 0;
 };
@@ -44,6 +45,14 @@ Enemy.prototype.update = function(delta) {
 		toPlayerY = toPlayerY / toPlayerLength;
 
 		this.rotation = Math.atan2(toPlayerY, toPlayerX);
+
+		this.dmgtick = (this.dmgtick+1) % 4; //keep between 0 and 3
+
+		//check for collision with player shield
+		if (toPlayerLength < 40 && this.dmgtick == 0) { //damage once every 4 ticks
+			this.target.shield -= 5;
+			this.target.dmgcount = 60; // 30 ticks until shield regenerates
+		}
 
 		var approach = true; // tracks if enemy is currently approaching player
 		//Move towards the player
@@ -95,6 +104,7 @@ Turret = function (x,y,name) {
 	this.direction = 0; //radians
 	this.damage = 100;
 	this.name = name;
+	this.dmgcount = 0; //count for timing since last damaged, will be used for regenerating shield
 
 	this.updateArray = [0,0,0]; //x, y, health - all need to be done externally, event-based. Will only be set to non-0 if collision or appropriate keypress occurs
 
@@ -127,6 +137,13 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 	var dHealth = this.updateArray[2]; //change in health
 	var dDir = this.findDirection(mouseX,mouseY); //delta in direction
 
+	if (this.dmgcount > 0) {
+		this.dmgcount--;
+	}
+
+	if (this.shield < 500 && this.shield > 0 && this.dmgcount == 0) {
+		this.shield += 0.25; //shield will regenerate very slowly
+	}
 
 	this.direction += dDir;
 	this.health += dHealth;
@@ -153,7 +170,9 @@ Turret.prototype.draw = function (ctx) {
 	ctx.arc(0, 0, 30, 0, 2 * Math.PI, false);
 	ctx.lineWidth = 4;
 	ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
-	ctx.stroke();
+	if (this.shield > 0) { //only draw if greater than 0
+		ctx.stroke(); 
+	}
 	ctx.closePath();	
 
 	ctx.beginPath();
@@ -249,12 +268,20 @@ Healthbar.prototype.draw = function(ctx) {
 	ctx.fillText(this.name, this.x + 150, this.y + 15);
 
 	if (this.shield) {
-		ctx.fillStyle = "blue";
-		ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
-		ctx.font = "12pt Arial";
-		ctx.fillStyle = "white";
-		ctx.textAlign = "center";
-		ctx.fillText("Shields", this.x + 150, this.y + 45);
+		if (this.shield <= 0) {
+			ctx.fillStyle = "white";			
+			ctx.font = "12pt Arial";		
+			ctx.textAlign = "center";			
+			ctx.fillText("Shields down!", this.x + 150, this.y + 45);
+		}
+		else {
+			ctx.fillStyle = "blue";
+			ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
+			ctx.font = "12pt Arial";
+			ctx.fillStyle = "white";
+			ctx.textAlign = "center";
+			ctx.fillText("Shields", this.x + 150, this.y + 45);
+		}
 	}
 
 	ctx.closePath();
