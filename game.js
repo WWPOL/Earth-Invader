@@ -86,7 +86,6 @@ Enemy.prototype.update = function(delta) {
 			
 		}
 
-		//console.log(this.angle);
 	}
 };
 
@@ -149,9 +148,6 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 		this.shield += 0.25; //shield will regenerate very slowly
 	}
 
-	if (this.shield < 0) {
-		this.shield = 0;
-	}
 	if (this.health < 0) {
 		this.health = 0;
 	}
@@ -257,6 +253,7 @@ Healthbar.prototype.update = function(delta, owner) {
 	this.healthpercent = this.health / this.maxhealth;
 	if (this.shield && owner.shield) {
 		this.shield = owner.shield;
+		console.log("this.shield & owner.shield: " + this.shield + " - " + owner.shield);
 		this.shieldpercent = this.shield / this.maxshield;
 	}
 }
@@ -271,15 +268,18 @@ Healthbar.prototype.draw = function(ctx) {
 	ctx.fillText(this.name, this.x + 150, this.y + 15);
 
 	if (this.shield) {
-		ctx.fillStyle = "blue";
-		ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
-		ctx.font = "12pt Arial";
-		ctx.fillStyle = "white";
-		ctx.textAlign = "center";
 		if (this.shield <= 0) {
+			ctx.fillStyle = "white";
+			ctx.font = "12pt Arial";
+			ctx.textAlign = "center";
 			ctx.fillText("Shields down!", this.x + 150, this.y + 45);
 		}
 		else {
+			ctx.fillStyle = "blue";
+			ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
+			ctx.font = "12pt Arial";
+			ctx.fillStyle = "white";
+			ctx.textAlign = "center";
 			ctx.fillText("Shields", this.x + 150, this.y + 45);
 		}
 	}	
@@ -296,16 +296,16 @@ function initMainMenu() {
 	var canvas = document.getElementById('mainmenu');
 	currentcanvas = 'mm';
 	var ctx = canvas.getContext('2d');
-	winwitdh = document.documentElement.clientWidth;
+	winwidth = document.documentElement.clientWidth;
 	winheight = document.documentElement.clientHeight;
-	canvas.width = winwitdh;
+	canvas.width = winwidth;
 	canvas.height = winheight;
 
 	//Render the Title
 	ctx.font = "30pt Arial";
 	ctx.fillStyle = "white";
 	ctx.textAlign = "center";
-	ctx.fillText("Earth Invader", winwitdh / 2, 50);
+	ctx.fillText("Earth Invader", winwidth / 2, 50);
 
 	//Initialize Array of clickable elements, and then push in the parameters that would make a rectangle ***Note, this may be innefficient for just one element, consider revision
 	var elements = [];
@@ -314,7 +314,7 @@ function initMainMenu() {
 		width: 200,
 		height: 75,
 		top: winheight / 2 + 50,
-		left: winwitdh / 2 - 100
+		left: winwidth / 2 - 100
 	});
 
 	//render each object in elements as per parameters
@@ -325,7 +325,7 @@ function initMainMenu() {
 
 	//render text on the start button
 	ctx.fillStyle = "black";
-	ctx.fillText("Start", winwitdh / 2, winheight / 2 + 100);
+	ctx.fillText("Start", winwidth / 2, winheight / 2 + 100);
 
 
 	//Initialize click handler for start button. It checks every click on the canvas if it is in the bounds of any of the elements, in this case, the start button
@@ -349,26 +349,26 @@ function initLevelSelect() {
 	var canvas = document.getElementById('levelselect');
 	currentcanvas = 'ls';
 	var ctx = canvas.getContext('2d');
-	winwitdh = document.documentElement.clientWidth;
+	winwidth = document.documentElement.clientWidth;
 	winheight = document.documentElement.clientHeight;
-	canvas.width = winwitdh;
+	canvas.width = winwidth;
 	canvas.height = winheight;
 
 	ctx.font = "30pt Arial";
 	ctx.fillStyle = "white";
 	ctx.textAlign = "center";
-	ctx.fillText("Level Select", winwitdh / 2, 50);
+	ctx.fillText("Level Select", winwidth / 2, 50);
 	ctx.fillStyle = "green";
 	ctx.fillRect(canvas.width / 2 - 100, canvas.height - 150, 200, 75);
 	ctx.fillStyle = "black";
-	ctx.fillText("Play", winwitdh / 2, winheight - 100);
+	ctx.fillText("Play", winwidth / 2, winheight - 100);
 
 //////////////////////////////////////////////////////////
 
 	ctx.font = "20pt Arial";
 	ctx.fillStyle = "white";
 	ctx.textAlign = "center";
-	ctx.fillText("Select a Planet Type", winwitdh / 2, 150);
+	ctx.fillText("Select a Planet Type", winwidth / 2, 150);
 
 	ctx.fillStyle = "red";
 	ctx.fillRect((canvas.width / 4) / 2 + 100, 200, 200, 75);
@@ -395,7 +395,7 @@ function initLevelSelect() {
 	ctx.font = "20pt Arial";
 	ctx.fillStyle = "white";
 	ctx.textAlign = "center";
-	ctx.fillText("Select a Weapon Type", winwitdh / 2, 350);
+	ctx.fillText("Select a Weapon Type", winwidth / 2, 350);
 
 	ctx.fillStyle = "red";
 	ctx.fillRect((canvas.width / 4) / 2 + 100, 400, 200, 75);
@@ -553,17 +553,20 @@ function initGame() {
 
 	//updates the positions of the target and enemy
 	var update = function(delta){
-		target.update(delta, gamecanvas);
-		playerhealth.update(delta, target);
-		planethealth.update(delta, planet);
-		planet.update(delta);
-
 		enemies.forEach(function(enemy){
 			enemy.update(delta, gamecanvas)
 		});
 		defenders.forEach(function(enemy){
 			enemy.update(delta, gamecanvas)
-		});
+		});		
+
+
+		target.update(delta, gamecanvas);
+		playerhealth.update(delta, target);
+		planethealth.update(delta, planet);
+		planet.update(delta);
+
+
 		if (((Date.now() - wave) / 1000) > 15) {
 			wave = Date.now();
 			enemycount = 1;
@@ -593,7 +596,7 @@ function initGame() {
 		gamectx.font = "20pt Arial";
 		gamectx.fillStyle = "white";
 		gamectx.textAlign = "center";
-		gamectx.fillText(Math.floor((Date.now() - start) / 1000), winwitdh / 2, 30);
+		gamectx.fillText(Math.floor((Date.now() - start) / 1000), winwidth / 2, 30);
 		target.draw(gamectx);
 	};
 
