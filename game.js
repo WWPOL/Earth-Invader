@@ -19,6 +19,8 @@ Enemy = function(x, y, width, height, orbit, color){
 	this.orbit = orbit; //property determining distance of orbit
 	this.color = color;
 
+	this.alive = true; //used for determining damage and whether to draw
+
 	this.dmgtick = 0; //damage tick counter, used in Enemy.update() for determining damage to player
 	//This allows for the enemy to rotate to face the player
 	this.rotation = 0;
@@ -31,7 +33,7 @@ Enemy.prototype.assignTarget = function(target) {
 
 //Update the enemey's position
 Enemy.prototype.update = function(delta) {
-	if(! (this.target === undefined)){
+	if(! (this.target === undefined) && this.alive){ //only update if alive
 		this.targetX = this.target.x;
 		this.targetY = this.target.y;
 
@@ -48,15 +50,20 @@ Enemy.prototype.update = function(delta) {
 
 		this.dmgtick = (this.dmgtick+1) % 4; //keep between 0 and 3
 
-		//check for collision with player shield
+		//check for collision with player shield & player itself
 		if (toPlayerLength < 40 && this.dmgtick == 0) { //damage once every 4 ticks
 			this.target.shield -= 5;
-			this.target.dmgcount = 60; // 30 ticks until shield regenerates
+			this.target.dmgcount = 60; // 60 ticks until shield regenerates
+		}
+
+		if (toPlayerLength < 10) { //checking for collision with player- if so, die
+			this.target.health -= 5;
+			this.alive = false;
 		}
 
 		var approach = true; // tracks if enemy is currently approaching player
 		//Move towards the player
-		if (toPlayerLength > this.orbit+5){
+		if (toPlayerLength > this.orbit+5 || this.target.shield <= 0){ //if shield is down enemy will continue to approach 
 			this.angle = Math.atan2(toPlayerY,toPlayerX)+Math.PI;
 			this.x += toPlayerX * this.speed;
 			this.y += toPlayerY * this.speed;
@@ -85,13 +92,15 @@ Enemy.prototype.update = function(delta) {
 
 //As it sounds, draw the enemy object
 Enemy.prototype.draw = function(ctx) {
-	ctx.save();
-	ctx.translate(this.x, this.y);
-	ctx.rotate(this.rotation);
-	ctx.beginPath();
-	ctx.fillStyle = this.color;
-	ctx.fillRect(this.x - (this.x + this.width/2), this.y - (this.y + this.height/2), this.width, this.height);
-	ctx.restore();
+	if (this.alive) { //only draw if alive
+		ctx.save();
+		ctx.translate(this.x, this.y);
+		ctx.rotate(this.rotation);
+		ctx.beginPath();
+		ctx.fillStyle = this.color;
+		ctx.fillRect(this.x - (this.x + this.width/2), this.y - (this.y + this.height/2), this.width, this.height);
+		ctx.restore();
+	}
 };
 
 //Init the player/turret
@@ -99,19 +108,16 @@ Turret = function (x,y,name) {
 	this.x = x; 
 	this.y = y;
 	this.speed = 200;
-	this.health = 1000; //balance parameter
+	this.health = 50; //balance parameter
 	this.shield = 500;
 	this.direction = 0; //radians
 	this.damage = 100;
 	this.name = name;
 	this.dmgcount = 0; //count for timing since last damaged, will be used for regenerating shield
 
-	this.updateArray = [0,0,0]; //x, y, health - all need to be done externally, event-based. Will only be set to non-0 if collision or appropriate keypress occurs
-
 };
 
 Turret.prototype.update = function (delta, gc) { //call this to update properties and draw
-	//console.log(this.updateArray);
 
 	if (65 in keysDown) { //left
 		if (this.x > 0) {
@@ -133,8 +139,6 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 			this.y += this.speed * delta;
 		}
 	}
-
-	var dHealth = this.updateArray[2]; //change in health
 	var dDir = this.findDirection(mouseX,mouseY); //delta in direction
 
 	if (this.dmgcount > 0) {
@@ -145,13 +149,14 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 		this.shield += 0.25; //shield will regenerate very slowly
 	}
 
+	if (this.shield < 0) {
+		this.shield = 0;
+	}
+	if (this.health < 0) {
+		this.health = 0;
+	}
+
 	this.direction += dDir;
-	this.health += dHealth;
-
-	//turret.draw(this.x,this.y,this.direction); //draw first (keep old variables to clear out)
-
-	//at end, clear updateArray
-	this.updateArray = [0,0,0];
 };
 
 Turret.prototype.draw = function (ctx) { 
@@ -164,10 +169,9 @@ Turret.prototype.draw = function (ctx) {
 	for (var i = 0; i < 3; i++) {
 		shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
 	}
-	//console.log(shieldColor);
 
 	ctx.beginPath();
-	ctx.arc(0, 0, 30, 0, 2 * Math.PI, false);
+	ctx.arc(0, 0, 40, 0, 2 * Math.PI, false);
 	ctx.lineWidth = 4;
 	ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
 	if (this.shield > 0) { //only draw if greater than 0
@@ -194,7 +198,6 @@ Turret.prototype.findDirection = function (mX,mY) {
 	var distanceX = this.x - mX;
 	var distanceY = this.y - mY;
 	var newDir = Math.atan2(distanceY,distanceX); //find angle from arctangent
-	//console.log(newDir*180/Math.PI - this.direction);
 	var dDir = newDir - this.direction; //delta in direction
 	return dDir;
 };
@@ -268,21 +271,19 @@ Healthbar.prototype.draw = function(ctx) {
 	ctx.fillText(this.name, this.x + 150, this.y + 15);
 
 	if (this.shield) {
+		ctx.fillStyle = "blue";
+		ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
+		ctx.font = "12pt Arial";
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center";
 		if (this.shield <= 0) {
-			ctx.fillStyle = "white";			
-			ctx.font = "12pt Arial";		
-			ctx.textAlign = "center";			
 			ctx.fillText("Shields down!", this.x + 150, this.y + 45);
 		}
 		else {
-			ctx.fillStyle = "blue";
-			ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
-			ctx.font = "12pt Arial";
-			ctx.fillStyle = "white";
-			ctx.textAlign = "center";
 			ctx.fillText("Shields", this.x + 150, this.y + 45);
 		}
-	}
+	}	
+
 
 	ctx.closePath();
 }
@@ -497,8 +498,8 @@ function initGame() {
 	var enemycount = 1;
 	var defendercount = 1;
 	var makeEnemies = function(x,y, color) {
-		var randOrbit = Math.round(Math.random()*50) + 40; //40 to 90
-		var enemy = new Enemy(x, y, 20, 20, randOrbit, color);
+		var randOrbit = Math.round(Math.random()*50) + 30; //30 to 80
+		var enemy = new Enemy(x, y, 10, 10, randOrbit, color);
 		enemy.assignTarget(target);
 		enemies.push(enemy);
 		if (enemycount < 7) {
@@ -510,7 +511,7 @@ function initGame() {
 	};
 	var makeDefenders = function(x,y, color) {
 		var randOrbit = Math.round(Math.random()*50) + 40; //40 to 90
-		var enemy = new Enemy(x, y, 20, 20, randOrbit, color);
+		var enemy = new Enemy(x, y, 10, 10, randOrbit, color);
 		enemy.assignTarget(planet);
 		defenders.push(enemy);
 		if (defendercount < 7) {
