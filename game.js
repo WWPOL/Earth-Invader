@@ -583,23 +583,19 @@ function initGame() {
 	makeEnemies(halfwidth, halfheight + 100, "red");
 	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, "red");
 
-	var fireBullets = function(delta) {
-		if (delta > 14) {
-			gamecanvas.addEventListener('click', function(event) {
-				console.log("clicked");
-				var cLeft = gamecanvas.offsetLeft;
-				var cTop = gamecanvas.offsetTop;
-				var mx = event.pageX - cLeft;
-				var my = event.pageY - cTop;
-				console.log("vars made");
+	gamecanvas.addEventListener('mousedown', function(event) {
+		console.log("clicked");
+		var cLeft = gamecanvas.offsetLeft;
+		var cTop = gamecanvas.offsetTop;
+		var mx = event.pageX - cLeft;
+		var my = event.pageY - cTop;
+		console.log("vars made");
 
-				var bullet = new Bullet(player.x, player.y, 3, mx, my, 10, 10, "red");
-				console.log("made bullet");
-				pBullets.push(bullet);
-				console.log("pushed to array")
-			}, false);
-		};
-	}
+		var bullet = new Bullet(player.x, player.y, 3, mx, my, 10, 10, "red");
+		console.log("made bullet");
+		pBullets.push(bullet);
+		console.log("pushed to array")
+	}, false);
 
 	window.addEventListener("mousemove", function (evt) {
 		var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
@@ -618,7 +614,6 @@ function initGame() {
 	var main = function(){
 		var now = Date.now();
 		var delta = now - then;
-		fireBullets(delta);
 
 		update(delta / 1000);
 		render();
