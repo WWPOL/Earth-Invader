@@ -27,19 +27,19 @@ Enemy = function(x, y, width, height, orbit, color){
 };
 
 //Tells the enemy object which object to follow, in the actual game, it will be the player
-Enemy.prototype.assignTarget = function(target) {
-	this.target = target;
+Enemy.prototype.assignplayer = function(player) {
+	this.player = player;
 };
 
 //Update the enemey's position
 Enemy.prototype.update = function(delta) {
-	if(! (this.target === undefined) && this.alive){ //only update if alive
-		this.targetX = this.target.x;
-		this.targetY = this.target.y;
+	if(! (this.player === undefined) && this.alive){ //only update if alive
+		this.playerX = this.player.x;
+		this.playerY = this.player.y;
 
 		// Calculate direction towards player
-		var toPlayerX = this.targetX - this.x;
-		var toPlayerY = this.targetY - this.y;
+		var toPlayerX = this.playerX - this.x;
+		var toPlayerY = this.playerY - this.y;
 
 		// Normalize
 		var toPlayerLength = Math.sqrt(toPlayerX * toPlayerX + toPlayerY * toPlayerY);
@@ -52,18 +52,18 @@ Enemy.prototype.update = function(delta) {
 
 		//check for collision with player shield & player itself
 		if (toPlayerLength < 40 && this.dmgtick == 0) { //damage once every 4 ticks
-			this.target.shield -= 5;
-			this.target.dmgcount = 60; // 60 ticks until shield regenerates
+			this.player.shield -= 5;
+			this.player.dmgcount = 60; // 60 ticks until shield regenerates
 		}
 
 		if (toPlayerLength < 10) { //checking for collision with player- if so, die
-			this.target.health -= 5;
+			this.player.health -= 5;
 			this.alive = false;
 		}
 
 		var approach = true; // tracks if enemy is currently approaching player
 		//Move towards the player
-		if (toPlayerLength > this.orbit+5 || this.target.shield <= 0){ //if shield is down enemy will continue to approach 
+		if (toPlayerLength > this.orbit+5 || this.player.shield <= 0){ //if shield is down enemy will continue to approach 
 			this.angle = Math.atan2(toPlayerY,toPlayerX)+Math.PI;
 			this.x += toPlayerX * this.speed;
 			this.y += toPlayerY * this.speed;
@@ -80,9 +80,9 @@ Enemy.prototype.update = function(delta) {
 		else{
 			this.angle -= 0.02;//Math.acos(1-Math.pow(3/toPlayerLength,2)/2);
 
-			this.x = ((toPlayerLength * Math.cos(this.angle)) + (this.target.x));
+			this.x = ((toPlayerLength * Math.cos(this.angle)) + (this.player.x));
 
-			this.y = ((toPlayerLength * Math.sin(this.angle)) + (this.target.y));
+			this.y = ((toPlayerLength * Math.sin(this.angle)) + (this.player.y));
 			
 		}
 
@@ -253,7 +253,7 @@ Healthbar.prototype.update = function(delta, owner) {
 	this.healthpercent = this.health / this.maxhealth;
 	if (this.shield && owner.shield) {
 		this.shield = owner.shield;
-		console.log("this.shield & owner.shield: " + this.shield + " - " + owner.shield);
+		//console.log("this.shield & owner.shield: " + this.shield + " - " + owner.shield);
 		this.shieldpercent = this.shield / this.maxshield;
 	}
 }
@@ -287,6 +287,64 @@ Healthbar.prototype.draw = function(ctx) {
 
 	ctx.closePath();
 }
+
+Bullet = function(x, y, r, playerX, playerY, speed, damage, color) {
+	this.x = x;
+	this.y = y;
+	this.r = r;
+	this.cx = x + (this.width/2);
+	this.cy = y + (this.height/2);
+	this.playerX = playerX;
+	this.playerY = playerY;
+	this.speed = speed; //constant that determines the velocity the bullet travels at
+	this.damage = damage; //The damage the bullet does
+
+	this.color = color;
+
+	this.alive = true; //Used for determining damage and whether to draw
+
+	this.dmgtick = 0; //Damage tick counter, used in Bullet.update() for determining damage
+
+	this.rotation = 0;
+};
+
+//Update the bullet's position
+Bullet.prototype.update = function(delta){
+
+//Calculate direction to travel in order to reach point specified
+var toplayerX = this.playerX - this.x;
+var toplayerY = this.playerY = this.y;
+
+//Normalize
+var toplayerLength = Math.sqrt(toplayerX * toplayerX + toplayerY * toplayerY);
+toplayerX = toplayerX / toplayerLength;
+toplayerY = toplayerY / toplayerLength;
+
+this.rotation = Math.atan2(toplayerY, toplayerX);
+
+this.dmgtick = (this.dmgtick+1)%4; //apparently need to keep between 0 and 3
+
+//Move towards playered location
+while(this.alive == true) {
+	this.x += toplayerX * this.speed;
+	this.y += toplayerX * this.speed;
+}
+
+};
+
+//Draw the bullet object
+Bullet.prototype.draw = function(ctx) {
+	if (this.alive) { //only draw if alive
+		ctx.save();
+		ctx.translate(this.x, this.y);
+		ctx.rotate(this.rotation);
+		ctx.beginPath();
+		ctx.fillStyle = this.color;
+		ctx.arc(this.x, this.y, this.r, 0, 2*Math.PI);
+		ctx.fill();
+		ctx.restore();
+	}
+};
 /////////////////---------\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 ///////////////// INIT FUNCTIONS \\\\\\\\\\\\\\\\\\\
@@ -490,17 +548,18 @@ function initGame() {
 	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
 	var enemycolors = ["red", "blue", "white", "brown"];
 
-	//Create a target, an enemy, and assign the target to enemy so that it will follow it
-	var target = new Turret(halfwidth, 45, "Player");
+	//Create a player, an enemy, and assign the player to enemy so that it will follow it
+	var player = new Turret(halfwidth, 45, "Player");
+	var pBullets = [];
 
-	var playerhealth = new Healthbar(10, 10, target);
+	var playerhealth = new Healthbar(10, 10, player);
 	var planethealth = new Healthbar(clientWidth - 310, 10, planet);
 	var enemycount = 1;
 	var defendercount = 1;
 	var makeEnemies = function(x,y, color) {
 		var randOrbit = Math.round(Math.random()*50) + 30; //30 to 80
 		var enemy = new Enemy(x, y, 10, 10, randOrbit, color);
-		enemy.assignTarget(target);
+		enemy.assignplayer(player);
 		enemies.push(enemy);
 		if (enemycount < 7) {
 			setTimeout(function(){
@@ -512,7 +571,7 @@ function initGame() {
 	var makeDefenders = function(x,y, color) {
 		var randOrbit = Math.round(Math.random()*50) + 40; //40 to 90
 		var enemy = new Enemy(x, y, 10, 10, randOrbit, color);
-		enemy.assignTarget(planet);
+		enemy.assignplayer(planet);
 		defenders.push(enemy);
 		if (defendercount < 7) {
 			setTimeout(function(){
@@ -529,6 +588,15 @@ function initGame() {
 		mouseX = evt.clientX - rect.left;
 		mouseY = evt.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
 	});
+	gamecanvas.addEventListener('click', function(event) {
+		var cLeft = gamecanvas.offsetLeft;
+		var cTop = gamecanvas.offsetTop;
+		var mx = event.pageX - cLeft;
+		var my = event.pageY - cTop;
+
+		var bullet = new Bullet(player.x, player.y, 3, mx, my, 10, 10, "red");
+		pBullets.push(bullet);
+	}, false);
 
 	window.addEventListener('keydown', function(e) {
 		keysDown[e.keyCode] = true;
@@ -551,18 +619,21 @@ function initGame() {
 		requestAnimationFrame(main);
 	};
 
-	//updates the positions of the target and enemy
+	//updates the positions of the player and enemy
 	var update = function(delta){
 		enemies.forEach(function(enemy){
 			enemy.update(delta, gamecanvas)
 		});
 		defenders.forEach(function(enemy){
 			enemy.update(delta, gamecanvas)
-		});		
+		});	
+		pBullets.forEach(function(bullet){
+			bullet.update(delta)
+		});
 
 
-		target.update(delta, gamecanvas);
-		playerhealth.update(delta, target);
+		player.update(delta, gamecanvas);
+		playerhealth.update(delta, player);
 		planethealth.update(delta, planet);
 		planet.update(delta);
 
@@ -597,7 +668,10 @@ function initGame() {
 		gamectx.fillStyle = "white";
 		gamectx.textAlign = "center";
 		gamectx.fillText(Math.floor((Date.now() - start) / 1000), winwidth / 2, 30);
-		target.draw(gamectx);
+		player.draw(gamectx);
+		pBullets.forEach(function(bullet){
+			bullet.draw(gamectx);
+		});
 	};
 
 	//updates the time, runs the main loop
