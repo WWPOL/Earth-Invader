@@ -8,7 +8,7 @@ var mouseY = 0;
 
 ///////////////// CLASSES \\\\\\\\\\\\\\\\\\\\\\\\\\
 //Init the enemy class
-Enemy = function(x, y, width, height, orbit){
+Enemy = function(x, y, width, height, orbit, color){
 	this.x = x;
 	this.y = y;
 	this.width = width;
@@ -17,6 +17,7 @@ Enemy = function(x, y, width, height, orbit){
 	this.cy = y + (this.height / 2);
 	this.speed = 3;
 	this.orbit = orbit; //property determining distance of orbit
+	this.color = color;
 
 	//This allows for the enemy to rotate to face the player
 	this.rotation = 0;
@@ -79,7 +80,7 @@ Enemy.prototype.draw = function(ctx) {
 	ctx.translate(this.x, this.y);
 	ctx.rotate(this.rotation);
 	ctx.beginPath();
-	ctx.fillStyle = "red";
+	ctx.fillStyle = this.color;
 	ctx.fillRect(this.x - (this.x + this.width/2), this.y - (this.y + this.height/2), this.width, this.height);
 	ctx.restore();
 };
@@ -157,7 +158,7 @@ Turret.prototype.draw = function (ctx) {
 
 	ctx.beginPath();
 	ctx.arc(0, 0, 10, 0, 2 * Math.PI, false);
-	ctx.fillStyle = 'white';
+	ctx.fillStyle = 'green';
 	ctx.fill();
 	ctx.lineWidth = 2;
 	ctx.strokeStyle = '#003300';
@@ -459,6 +460,7 @@ function initGame() {
 	var enemies = [];
 	var defenders = [];
 	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
+	var enemycolors = ["red", "blue", "white", "brown"];
 
 	//Create a target, an enemy, and assign the target to enemy so that it will follow it
 	var target = new Turret(halfwidth, 45, "Player");
@@ -467,32 +469,32 @@ function initGame() {
 	var planethealth = new Healthbar(clientWidth - 310, 10, planet);
 	var enemycount = 1;
 	var defendercount = 1;
-	var makeEnemies = function(x,y) {
+	var makeEnemies = function(x,y, color) {
 		var randOrbit = Math.round(Math.random()*50) + 40; //40 to 90
-		var enemy = new Enemy(x, y, 20, 20, randOrbit);
+		var enemy = new Enemy(x, y, 20, 20, randOrbit, color);
 		enemy.assignTarget(target);
 		enemies.push(enemy);
 		if (enemycount < 7) {
 			setTimeout(function(){
-				makeEnemies(x, y);
+				makeEnemies(x, y, color);
 			}, 1000);
 			enemycount += 1;
 		}
 	};
-	var makeDefenders = function(x,y) {
+	var makeDefenders = function(x,y, color) {
 		var randOrbit = Math.round(Math.random()*50) + 40; //40 to 90
-		var enemy = new Enemy(x, y, 20, 20, randOrbit);
+		var enemy = new Enemy(x, y, 20, 20, randOrbit, color);
 		enemy.assignTarget(planet);
 		defenders.push(enemy);
 		if (defendercount < 7) {
 			setTimeout(function(){
-				makeDefenders(x, y);
+				makeDefenders(x, y, color);
 			}, 1000);
 			defendercount += 1;
 		}
 	};
-	makeEnemies(halfwidth, halfheight + 100);
-	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40);
+	makeEnemies(halfwidth, halfheight + 100, "red");
+	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, "red");
 
 	window.addEventListener("mousemove", function (evt) {
 		var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
@@ -538,7 +540,7 @@ function initGame() {
 			wave = Date.now();
 			enemycount = 1;
 			var randomint = Math.floor(Math.random() * 8);
-			makeEnemies(spawns[randomint][0], spawns[randomint][1]);
+			makeEnemies(spawns[randomint][0], spawns[randomint][1], enemycolors[Math.floor(Math.random() * 4)]);
 		};
 	};
 
