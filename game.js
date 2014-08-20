@@ -631,9 +631,9 @@ function initGame() {
 		defenders.forEach(function(enemy){
 			enemy.update(delta, gamecanvas)
 		});	
-		pBullets.forEach(function(bullet){
+		/*pBullets.forEach(function(bullet){
 			bullet.update(delta)
-		});
+		});*/
 
 
 		player.update(delta, gamecanvas);
