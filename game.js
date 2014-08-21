@@ -288,14 +288,12 @@ Healthbar.prototype.draw = function(ctx) {
 	ctx.closePath();
 }
 
-Bullet = function(x, y, r, playerX, playerY, speed, damage, color) {
+Bullet = function(x, y, r, dx, dy, speed, damage, color) {
 	this.x = x;
 	this.y = y;
 	this.r = r;
-	this.cx = x + (this.width/2);
-	this.cy = y + (this.height/2);
-	this.playerX = playerX;
-	this.playerY = playerY;
+	this.dx = dx;
+	this.dy = dy;
 	this.speed = speed; //constant that determines the velocity the bullet travels at
 	this.damage = damage; //The damage the bullet does
 
@@ -311,24 +309,8 @@ Bullet = function(x, y, r, playerX, playerY, speed, damage, color) {
 //Update the bullet's position
 Bullet.prototype.update = function(delta){
 
-	//Calculate direction to travel in order to reach point specified
-	var toplayerX = this.playerX - this.x;
-	var toplayerY = this.playerY - this.y;
-
-	//Normalize
-	var toplayerLength = Math.sqrt(toplayerX * toplayerX + toplayerY * toplayerY);
-	toplayerX = toplayerX / toplayerLength;
-	toplayerY = toplayerY / toplayerLength;
-
-	this.rotation = Math.atan2(toplayerY, toplayerX);
-
-	this.dmgtick = (this.dmgtick+1)%4; //apparently need to keep between 0 and 3
-
-	//Move towards playered location
-	if(this.alive === true) {
-		this.x += toplayerX * this.speed;
-		this.y += toplayerX * this.speed;
-	}
+	this.x += this.speed * this.dx;
+	this.y += this.speed * this.dy;
 
 };
 
@@ -337,10 +319,9 @@ Bullet.prototype.draw = function(ctx) {
 	if (this.alive) { //only draw if alive
 		ctx.save();
 		ctx.translate(this.x, this.y);
-		ctx.rotate(this.rotation);
 		ctx.beginPath();
 		ctx.fillStyle = this.color;
-		ctx.arc(this.x, this.y, this.r, 0, 2*Math.PI);
+		ctx.arc(0, 0, this.r, 0, 2*Math.PI);
 		ctx.fill();
 		ctx.restore();
 	}
@@ -584,17 +565,17 @@ function initGame() {
 	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, "red");
 
 	gamecanvas.addEventListener('mousedown', function(event) {
-		console.log("clicked");
-		var cLeft = gamecanvas.offsetLeft;
-		var cTop = gamecanvas.offsetTop;
-		var mx = event.pageX - cLeft;
-		var my = event.pageY - cTop;
-		console.log("vars made");
+		//console.log("clicked");
+		var dx = mouseX - player.x; //use the global variables!
+		var dy = mouseY - player.y ;
+		//console.log("vars made");
+		var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 
-		var bullet = new Bullet(player.x, player.y, 3, mx, my, 10, 10, "red");
+
+		var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, 10, 10, "lawngreen");
 		console.log("made bullet");
 		pBullets.push(bullet);
-		console.log("pushed to array")
+		//console.log("pushed to array")
 	}, false);
 
 	window.addEventListener("mousemove", function (evt) {
