@@ -311,24 +311,24 @@ Bullet = function(x, y, r, playerX, playerY, speed, damage, color) {
 //Update the bullet's position
 Bullet.prototype.update = function(delta){
 
-//Calculate direction to travel in order to reach point specified
-var toplayerX = this.playerX - this.x;
-var toplayerY = this.playerY = this.y;
+	//Calculate direction to travel in order to reach point specified
+	var toplayerX = this.playerX - this.x;
+	var toplayerY = this.playerY - this.y;
 
-//Normalize
-var toplayerLength = Math.sqrt(toplayerX * toplayerX + toplayerY * toplayerY);
-toplayerX = toplayerX / toplayerLength;
-toplayerY = toplayerY / toplayerLength;
+	//Normalize
+	var toplayerLength = Math.sqrt(toplayerX * toplayerX + toplayerY * toplayerY);
+	toplayerX = toplayerX / toplayerLength;
+	toplayerY = toplayerY / toplayerLength;
 
-this.rotation = Math.atan2(toplayerY, toplayerX);
+	this.rotation = Math.atan2(toplayerY, toplayerX);
 
-this.dmgtick = (this.dmgtick+1)%4; //apparently need to keep between 0 and 3
+	this.dmgtick = (this.dmgtick+1)%4; //apparently need to keep between 0 and 3
 
-//Move towards playered location
-while(this.alive == true) {
-	this.x += toplayerX * this.speed;
-	this.y += toplayerX * this.speed;
-}
+	//Move towards playered location
+	if(this.alive === true) {
+		this.x += toplayerX * this.speed;
+		this.y += toplayerX * this.speed;
+	}
 
 };
 
@@ -626,14 +626,14 @@ function initGame() {
 	//updates the positions of the player and enemy
 	var update = function(delta){
 		enemies.forEach(function(enemy){
-			enemy.update(delta, gamecanvas)
+			enemy.update(delta, gamecanvas);
 		});
 		defenders.forEach(function(enemy){
-			enemy.update(delta, gamecanvas)
+			enemy.update(delta, gamecanvas);
 		});	
-		/*pBullets.forEach(function(bullet){
-			bullet.update(delta)
-		});*/
+		pBullets.forEach(function(bullet){
+			bullet.update();
+		});
 
 
 		player.update(delta, gamecanvas);
@@ -661,10 +661,10 @@ function initGame() {
 
 		planet.draw(gamectx);
 		enemies.forEach(function(enemy){
-			enemy.draw(gamectx)
+			enemy.draw(gamectx);
 		});
 		defenders.forEach(function(enemy){
-			enemy.draw(gamectx)
+			enemy.draw(gamectx);
 		});
 		playerhealth.draw(gamectx);
 		planethealth.draw(gamectx);
