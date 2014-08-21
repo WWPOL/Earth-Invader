@@ -476,11 +476,11 @@ function initLevelSelect() {
 	}, false);
 }
 
-function getMousePos(canvas, evt) {
+function getMousePos(canvas, e) {
 	var rect = canvas.getBoundingClientRect();
 	return {
-		x: evt.clientX - rect.left,
-		y: evt.clientY - rect.top
+		x: e.clientX - rect.left,
+		y: e.clientY - rect.top
 	};
 }
 
@@ -535,6 +535,10 @@ function initGame() {
 	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
 	var enemycolors = ["red", "blue", "white", "brown"];
 
+	//Variable to track if mouse is held down
+	var mousedown = false;
+	var shootcount = 0; //and how frequently to shoot
+
 	//Create a player, an enemy, and assign the player to enemy so that it will follow it
 	var player = new Turret(halfwidth, 45, "Player");
 	var pBullets = [];
@@ -570,28 +574,21 @@ function initGame() {
 	makeEnemies(halfwidth, halfheight + 100, "red");
 	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, "red");
 
-	gamecanvas.addEventListener('mousedown', function(event) {
-		//console.log("clicked");
-		var dx = mouseX - player.x; //use the global variables!
-		var dy = mouseY - player.y ;
-		//console.log("vars made");
-		var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
-
-
-		var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, 10, 10, "lawngreen");
-		var lasersnd = new Audio("laser.wav");
-		lasersnd.play();
-		console.log("made bullet");
-		pBullets.push(bullet);
-		//console.log("pushed to array")
+	gamecanvas.addEventListener('mousedown', function (e) {
+		mousedown = true; //set to 0, thus starting count
+		shootcount = 0;
 	}, false);
 
-	window.addEventListener("mousemove", function (evt) {
-		var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
-		mouseX = evt.clientX - rect.left;
-		mouseY = evt.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
+	gamecanvas.addEventListener('mouseup', function (e) {
+		mousedown = false;
 	});
-	window.addEventListener('keydown', function(e) {
+
+	window.addEventListener("mousemove", function (e) {
+		var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
+		mouseX = e.clientX - rect.left;
+		mouseY = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
+	});
+	window.addEventListener('keydown', function (e) {
 		keysDown[e.keyCode] = true;
 	});
 
@@ -614,6 +611,25 @@ function initGame() {
 
 	//updates the positions of the player and enemy
 	var update = function(delta){
+		//first, decide if new bullet should be added
+		if (mousedown != false) {
+			shootcount = (shootcount + 1) % 8; //shoot every four times
+ 			
+ 			if (shootcount == 0) {
+ 				var dx = mouseX - player.x; //use the global variables!
+				var dy = mouseY - player.y ;
+				//console.log("vars made");
+				var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
+
+
+				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, 15, 10, "lawngreen");
+				var lasersnd = new Audio("laser.wav");
+				lasersnd.play();
+				pBullets.push(bullet);
+
+ 			} 
+		}
+
 		enemies.forEach(function(enemy){
 			enemy.update(delta, gamecanvas);
 		});
