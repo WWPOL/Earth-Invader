@@ -241,6 +241,7 @@ Healthbar = function(x, y, owner) {
 	this.health = owner.health;
 	this.healthpercent = 1;
 	this.name = owner.name;
+	this.playsound = true;
 	if (owner.shield) {
 		this.maxshield = owner.shield;
 		this.shield = owner.shield;
@@ -269,6 +270,11 @@ Healthbar.prototype.draw = function(ctx) {
 
 	if (this.shield) {
 		if (this.shield <= 0) {
+			if (this.playsound) {
+				var shielddown = new Audio("shielddown.wav");
+				shielddown.play();
+				this.playsound = false;
+			}
 			ctx.fillStyle = "white";
 			ctx.font = "12pt Arial";
 			ctx.textAlign = "center";
@@ -573,6 +579,8 @@ function initGame() {
 
 
 		var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, 10, 10, "lawngreen");
+		var lasersnd = new Audio("laser.wav");
+		lasersnd.play();
 		console.log("made bullet");
 		pBullets.push(bullet);
 		//console.log("pushed to array")
