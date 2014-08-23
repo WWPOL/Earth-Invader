@@ -476,14 +476,6 @@ function initLevelSelect() {
 	}, false);
 }
 
-function getMousePos(canvas, e) {
-	var rect = canvas.getBoundingClientRect();
-	return {
-		x: e.clientX - rect.left,
-		y: e.clientY - rect.top
-	};
-}
-
 function initStars() {
 	var starcanvas = document.getElementById("stars");
 	var starctx = starcanvas.getContext("2d");
