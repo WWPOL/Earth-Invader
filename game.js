@@ -19,6 +19,8 @@ Enemy = function(x, y, width, height, orbit, color){
 	this.orbit = orbit; //property determining distance of orbit
 	this.color = color;
 
+	this.radius = this.width * 1.2; //have collision circle cover corners better at expense of overcoverage on middle of sides
+
 	this.alive = true; //used for determining damage and whether to draw
 
 	this.dmgtick = 0; //damage tick counter, used in Enemy.update() for determining damage to player
@@ -50,16 +52,21 @@ Enemy.prototype.update = function(delta) {
 
 		this.dmgtick = (this.dmgtick+1) % 4; //keep between 0 and 3
 
+		///////COLLISION///////
+
 		//check for collision with player shield & player itself
-		if (toPlayerLength < 40 && this.dmgtick == 0) { //damage once every 4 ticks
-			this.player.shield -= 5;
-			this.player.dmgcount = 60; // 60 ticks until shield regenerates
+		if (collision(this,this.player) && this.dmgtick == 0) { //damage once every 4 ticks
+			if (this.player.shield > -5) {
+				this.player.shield -= 5;
+				this.player.dmgcount = 60; // 60 ticks until shield regenerates
+			}
+			else {
+				this.player.health -= 5;
+			}
 		}
 
-		if (toPlayerLength < 10) { //checking for collision with player- if so, die
-			this.player.health -= 5;
-			this.alive = false;
-		}
+
+		////////MOVEMENT////////
 
 		var approach = true; // tracks if enemy is currently approaching player
 		//Move towards the player
@@ -79,9 +86,7 @@ Enemy.prototype.update = function(delta) {
 		}//orbit
 		else{
 			this.angle -= 0.02;//Math.acos(1-Math.pow(3/toPlayerLength,2)/2);
-
 			this.x = ((toPlayerLength * Math.cos(this.angle)) + (this.player.x));
-
 			this.y = ((toPlayerLength * Math.sin(this.angle)) + (this.player.y));
 			
 		}
@@ -114,10 +119,11 @@ Turret = function (x,y,name) {
 	this.name = name;
 	this.dmgcount = 0; //count for timing since last damaged, will be used for regenerating shield
 
+	this.radius = 40;
+
 };
 
 Turret.prototype.update = function (delta, gc) { //call this to update properties and draw
-
 	if (65 in keysDown) { //left
 		if (this.x > 0) {
 			this.x -= this.speed * delta;
@@ -146,6 +152,10 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 
 	if (this.shield < 500 && this.shield > 0 && this.dmgcount == 0) {
 		this.shield += 0.25; //shield will regenerate very slowly
+	}
+
+	if (this.shield <= 0) {
+		this.radius = 10;
 	}
 
 	if (this.health < 0) {
@@ -204,6 +214,7 @@ Planet = function(x, y, name) {
 	this.health = 10000;
 	this.damageTaken = 0;
 	this.name = name;
+	this.radius = 70;
 }
 
 Planet.prototype.update = function(delta) {
@@ -213,7 +224,7 @@ Planet.prototype.update = function(delta) {
 
 Planet.prototype.draw = function(ctx) {
 	ctx.beginPath();
-	ctx.arc(this.x, this.y, 70, 0, 2 * Math.PI, false);
+	ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
 	ctx.fillStyle = 'blue';
 	ctx.fill();
 	ctx.lineWidth = 5;
@@ -254,7 +265,6 @@ Healthbar.prototype.update = function(delta, owner) {
 	this.healthpercent = this.health / this.maxhealth;
 	if (this.shield && owner.shield) {
 		this.shield = owner.shield;
-		//console.log("this.shield & owner.shield: " + this.shield + " - " + owner.shield);
 		this.shieldpercent = this.shield / this.maxshield;
 	}
 }
@@ -297,7 +307,7 @@ Healthbar.prototype.draw = function(ctx) {
 Bullet = function(x, y, r, dx, dy, speed, damage, color) {
 	this.x = x;
 	this.y = y;
-	this.r = r;
+	this.radius = r;
 	this.dx = dx;
 	this.dy = dy;
 	this.speed = speed; //constant that determines the velocity the bullet travels at
@@ -327,12 +337,35 @@ Bullet.prototype.draw = function(ctx) {
 		ctx.translate(this.x, this.y);
 		ctx.beginPath();
 		ctx.fillStyle = this.color;
-		ctx.arc(0, 0, this.r, 0, 2*Math.PI);
+		ctx.arc(0, 0, this.radius, 0, 2*Math.PI);
 		ctx.fill();
 		ctx.restore();
 	}
 };
 /////////////////---------\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+
+
+//////////////// UTILITY FUNCTIONS//////////////////
+//Commonly used stuff, such as finding distance
+function distance (x1,y1,x2,y2) {
+	dX2 = Math.pow((x2-x1),2);
+	dY2 = Math.pow((y2-y1),2);
+	return Math.sqrt(dX2 + dY2);
+} 
+
+function collision (a,b) {
+	space = a.radius + b.radius;
+	if (distance(a.x,a.y,b.x,b.y) < space) {
+		return true; //collision
+	}
+	else {
+		return false;
+	}
+}
+
+
+
 
 ///////////////// INIT FUNCTIONS \\\\\\\\\\\\\\\\\\\
 //Inits the main menu, shows title and play button
@@ -474,7 +507,7 @@ function initLevelSelect() {
 			initGame();
 		}
 	}, false);
-}
+} 
 
 function initStars() {
 	var starcanvas = document.getElementById("stars");
@@ -607,10 +640,9 @@ function initGame() {
 		if (mousedown != false) {
 			shootcount = (shootcount + 1) % 8; //shoot every four times
  			
- 			if (shootcount == 0) {
+ 			if (shootcount == 1) {
  				var dx = mouseX - player.x; //use the global variables!
 				var dy = mouseY - player.y ;
-				//console.log("vars made");
 				var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 
 
