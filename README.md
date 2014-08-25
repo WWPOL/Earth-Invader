@@ -1,12 +1,12 @@
 Earth Invader
 =====
 
-Years ago, a terrible invasion by unknown entities was staved off by a lone Earth ship. Now, in the year 2048, humankind has discovered the planets of the coalition that nearly wiped them out, and has elected to send their most skilled pilot to destroy them. You.
+Years ago, a terrible invasion by unknown entities was staved off by a lone Earth ship. Now, in the year 2048, humankind has discovered the planets of the coalition that nearly wiped them out, and has elected to send their most skilled pilot to destroy them: you.
 
 Choose your Enemy
 ======
 
-Decide what type of planet you will battle. An planet whose technology is dominated by Fire, Water, Rock, or Air. Each type will have it's own strengths and weaknesses, allowing you to choose which element would be most suitable to defeat it.
+Decide what type of planet you will battle: a planet whose technology is dominated by Fire, Water, Rock, or Air. Each type will have its own strengths and weaknesses, allowing you to choose which element would be most suitable to defeat it.
 
 Mechanics
 =====
