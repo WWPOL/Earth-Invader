@@ -38,7 +38,7 @@ Enemy.prototype.assignplayer = function(player) {
 	this.player = player;
 };
 
-//Update the enemey's position
+//Update the enemy's position
 Enemy.prototype.update = function(delta) {
 	if(! (this.player === undefined) && this.alive){ //only update if alive
 		this.playerX = this.player.x;
@@ -84,18 +84,6 @@ Enemy.prototype.update = function(delta) {
 			
 		}
 
-		///////COLLISION///////
-
-		//check for collision with player shield & player itself
-		if (collision(this,this.player) && this.dmgtick == 0) { //damage once every 4 ticks
-			if (this.player.shield > -5) {
-				this.player.shield -= 5;
-				this.player.dmgcount = 60; // 60 ticks until shield regenerates
-			}
-			else {
-				this.player.health -= 5;
-			}
-		}
 
 		//check for collision with bullet
 		for (var i = 0; i < this.bullets.length; i++) {
@@ -124,7 +112,7 @@ Enemy.prototype.draw = function(ctx) {
 };
 
 //Init the player/turret
-Turret = function (x,y,name) {
+Turret = function (x,y,name, eArrays) {
 	this.x = x; 
 	this.y = y;
 	this.speed = 200;
@@ -136,10 +124,27 @@ Turret = function (x,y,name) {
 	this.dmgcount = 0; //count for timing since last damaged, will be used for regenerating shield
 
 	this.radius = 40;
+	this.eArrays = eArrays; //array of enemy arrays 
 
 };
 
+Turret.prototype.checkCollision = function (enemyArray) {
+	for (var i = 0; i < enemyArray.length; i++) {
+		if (enemyArray[i].alive && collision(this,enemyArray[i])) {
+			console.log("player.shield " + this.shield);
+			if (this.shield != false) {
+				this.shield -= 5;
+				this.dmgcount = 60;
+			}
+			else {
+				this.playerhealth -= 5;
+			}
+		}
+	}
+}
+
 Turret.prototype.update = function (delta, gc) { //call this to update properties and draw
+	//keyboard handlers
 	if (65 in keysDown) { //left
 		if (this.x > 0) {
 			this.x -= this.speed * delta;
@@ -162,6 +167,13 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 	}
 	var dDir = this.findDirection(mouseX,mouseY); //delta in direction
 
+	//collision
+	for (var i = 0; i < this.eArrays.length; i++) {
+		this.checkCollision(this.eArrays[i]);
+	}
+
+	//damage-related stuff
+
 	if (this.dmgcount > 0) {
 		this.dmgcount--;
 	}
@@ -171,7 +183,8 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 	}
 
 	if (this.shield <= 0) {
-		this.radius = 10;
+		this.radius = 10; //collision detection radius set to 40 (shield), reduced when shield is 
+		this.shield = false;
 	}
 
 	if (this.health < 0) {
@@ -280,6 +293,7 @@ Healthbar.prototype.update = function(delta, owner) {
 	this.health = owner.health;
 	this.healthpercent = this.health / this.maxhealth;
 	if (this.shield && owner.shield) {
+		console.log("HEALTHBAR UPDATE: " + owner.shield);
 		this.shield = owner.shield;
 		this.shieldpercent = this.shield / this.maxshield;
 	}
@@ -294,8 +308,8 @@ Healthbar.prototype.draw = function(ctx) {
 	ctx.textAlign = "center";
 	ctx.fillText(this.name, this.x + 150, this.y + 15);
 
-	if (this.shield) {
-		if (this.shield <= 0) {
+	//if (this.shield) {
+		if (this.shield == false) {
 			if (this.playsound) {
 				var shielddown = new Audio("shielddown.wav");
 				shielddown.play();
@@ -314,7 +328,7 @@ Healthbar.prototype.draw = function(ctx) {
 			ctx.textAlign = "center";
 			ctx.fillText("Shields", this.x + 150, this.y + 45);
 		}
-	}	
+	//}	
 
 
 	ctx.closePath();
@@ -585,7 +599,7 @@ function initGame() {
 	var shootcount = 0; //and how frequently to shoot
 
 	//Create a player, an enemy, and assign the player to enemy so that it will follow it
-	var player = new Turret(halfwidth, 45, "Player");
+	var player = new Turret(halfwidth, 45, "Player", [enemies,defenders]);
 	var pBullets = [];
 
 	var playerhealth = new Healthbar(10, 10, player);
