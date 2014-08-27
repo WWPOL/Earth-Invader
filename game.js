@@ -11,6 +11,25 @@ var Options = {
 	planType: "fire",
 	wepType: "fire"
 };
+
+var wepTraits = {
+	fire: {
+		color: "orange",
+		rof: 20 //rate of fire
+	},
+	air: {
+		color: "ghostwhite",
+		rof: 12
+	},
+	water: {
+		color: "deepskyblue",
+		rof: 20
+	},
+	rock: {
+		color: "saddlebrown",
+		rof: 30
+	}
+}
 /////////////////------------------\\\\\\\\\\\\\\\\\
 
 
@@ -136,8 +155,7 @@ Turret = function (x,y,name, eArrays) {
 Turret.prototype.checkCollision = function (enemyArray) {
 	for (var i = 0; i < enemyArray.length; i++) {
 		if (enemyArray[i].alive && collision(this,enemyArray[i])) {
-			console.log("player.shield " + this.shield);
-			if (this.shield != false) {
+			if (this.shield > 0) {
 				this.shield -= 5;
 				this.dmgcount = 60;
 			}
@@ -189,7 +207,7 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 
 	if (this.shield <= 0) {
 		this.radius = 10; //collision detection radius set to 40 (shield), reduced when shield is 
-		this.shield = false;
+		this.shield = 0;
 	}
 
 	if (this.health < 0) {
@@ -297,11 +315,11 @@ Healthbar = function(x, y, owner) {
 Healthbar.prototype.update = function(delta, owner) {
 	this.health = owner.health;
 	this.healthpercent = this.health / this.maxhealth;
-	if (this.shield && owner.shield) {
-		console.log("HEALTHBAR UPDATE: " + owner.shield);
+	if (this.shield !== false && owner.shield !== false) {
 		this.shield = owner.shield;
 		this.shieldpercent = this.shield / this.maxshield;
 	}
+
 }
 
 Healthbar.prototype.draw = function(ctx) {
@@ -313,8 +331,8 @@ Healthbar.prototype.draw = function(ctx) {
 	ctx.textAlign = "center";
 	ctx.fillText(this.name, this.x + 150, this.y + 15);
 
-	//if (this.shield) {
-		if (this.shield == false) {
+	if (this.shield !== false) {
+		if (this.shield == 0) {
 			if (this.playsound) {
 				var shielddown = new Audio("shielddown.wav");
 				shielddown.play();
@@ -333,7 +351,7 @@ Healthbar.prototype.draw = function(ctx) {
 			ctx.textAlign = "center";
 			ctx.fillText("Shields", this.x + 150, this.y + 45);
 		}
-	//}	
+	}	
 
 
 	ctx.closePath();
@@ -669,7 +687,7 @@ function initGame() {
 
 	gamecanvas.addEventListener('mousedown', function (e) {
 		mousedown = true; //set to 0, thus starting count
-		shootcount = 0;
+		//shootcount = 0;
 	}, false);
 
 	gamecanvas.addEventListener('mouseup', function (e) {
@@ -706,7 +724,7 @@ function initGame() {
 	var update = function(delta){
 		//first, decide if new bullet should be added
 		if (mousedown != false) {
-			shootcount = (shootcount + 1) % 15; //rate of fire: once every 15 frames
+			shootcount = (shootcount + 1) % wepTraits[Options.wepType].rof; //rate of fire: once every 15 frames
  			
  			if (shootcount == 1) {
  				var dx = mouseX - player.x; //use the global variables!
@@ -714,7 +732,7 @@ function initGame() {
 				var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 
 
-				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, 15, 10, "lawngreen", Options.wepType);
+				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, 15, 10, wepTraits[Options.wepType].color, Options.wepType);
 				var lasersnd = new Audio("laser.wav");
 				lasersnd.play();
 				pBullets.push(bullet);
@@ -731,7 +749,6 @@ function initGame() {
 		pBullets.forEach(function(bullet){
 			bullet.update();
 		});
-
 
 		player.update(delta, gamecanvas);
 		playerhealth.update(delta, player);
