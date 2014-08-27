@@ -6,6 +6,11 @@ var mouseY = 0;
 
 var winheight = 0; //window width & height
 var winwidth = 0;
+
+var Options = {
+	planType: "fire",
+	wepType: "fire"
+};
 /////////////////------------------\\\\\\\\\\\\\\\\\
 
 
@@ -334,7 +339,7 @@ Healthbar.prototype.draw = function(ctx) {
 	ctx.closePath();
 }
 
-Bullet = function(x, y, r, dx, dy, speed, damage, color) {
+Bullet = function(x, y, r, dx, dy, speed, damage, color, type) {
 	this.x = x;
 	this.y = y;
 	this.radius = r;
@@ -350,6 +355,8 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color) {
 	this.dmgtick = 0; //Damage tick counter, used in Bullet.update() for determining damage
 
 	this.rotation = 0;
+
+	this.type = type;
 };
 
 //Update the bullet's position
@@ -540,6 +547,33 @@ function initLevelSelect() {
 
 			initGame();
 		}
+
+		if(y > 200 && y < 275 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
+			Options.planType = "fire";
+		}
+		if(y > 200 && y < 275 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
+			Options.planType = "air";
+		}
+		if(y > 200 && y < 275 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
+			Options.planType = "water";
+		}
+		if(y > 200 && y < 275 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
+			Options.planType = "rock";
+		}
+
+
+		if(y > 400 && y < 475 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
+			Options.wepType = "fire";
+		}
+		if(y > 400 && y < 475 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
+			Options.wepType = "air";
+		}
+		if(y > 400 && y < 475 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
+			Options.wepType = "water";
+		}
+		if(y > 400 && y < 475 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
+			Options.wepType = "rock";
+		}
 	}, false);
 } 
 
@@ -680,7 +714,7 @@ function initGame() {
 				var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 
 
-				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, 15, 10, "lawngreen");
+				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, 15, 10, "lawngreen", Options.wepType);
 				var lasersnd = new Audio("laser.wav");
 				lasersnd.play();
 				pBullets.push(bullet);
