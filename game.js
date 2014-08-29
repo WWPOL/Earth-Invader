@@ -15,21 +15,29 @@ var Options = {
 var wepTraits = {
 	fire: {
 		color: "orange",
+		plancolor: "#F72A0A",
+		planstroke: "CF2308",
 		rof: 20, //rate of fire
 		speed: 15
 	},
 	air: {
 		color: "ghostwhite",
+		plancolor: "#DEDEDE",
+		planstroke: "#BFBFBF",
 		rof: 12,
 		speed: 15
 	},
 	water: {
 		color: "deepskyblue",
+		plancolor: "#076DF2",
+		planstroke: "#0658C4",
 		rof: 20,
 		speed: 20
 	},
 	rock: {
 		color: "saddlebrown",
+		plancolor: "#6B4303",
+		planstroke: "#593802",
 		rof: 30,
 		speed: 10
 	}
@@ -264,13 +272,15 @@ Turret.prototype.findDirection = function (mX,mY) {
 	return dDir;
 };
 
-Planet = function(x, y, name) {
+Planet = function(x, y, name, color, stroke) {
 	this.x = x;
 	this.y = y;
 	this.health = 10000;
 	this.damageTaken = 0;
 	this.name = name;
 	this.radius = 70;
+	this.color = color;
+	this.stroke = stroke;
 }
 
 Planet.prototype.update = function(delta) {
@@ -281,10 +291,10 @@ Planet.prototype.update = function(delta) {
 Planet.prototype.draw = function(ctx) {
 	ctx.beginPath();
 	ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-	ctx.fillStyle = 'blue';
+	ctx.fillStyle = this.color;
 	ctx.fill();
 	ctx.lineWidth = 5;
-	ctx.strokeStyle = '#003300';
+	ctx.strokeStyle = this.stroke;
 	ctx.stroke();
 }
 
@@ -645,7 +655,7 @@ function initGame() {
 	var halfheight = gamecanvas.height / 2;
 	var gameOver = false;
 
-	var planet = new Planet(halfwidth, halfheight, "Planet");
+	var planet = new Planet(halfwidth, halfheight, "Planet", wepTraits[Options.wepType].plancolor, wepTraits[Options.wepType].planstroke);
 	var enemies = [];
 	var defenders = [];
 	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
