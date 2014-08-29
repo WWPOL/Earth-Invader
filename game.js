@@ -118,7 +118,7 @@ Enemy.prototype.update = function(delta) {
 
 		////////SHOOTING////////
 		if (this.count == this.trigger) {
-			var bullet = new Bullet(this.x, this.y, 3, this.playerX/toPlayerLength, this.playerY/toPlayerLength,10,10,"red",Options.planType);
+			var bullet = new Bullet(this.x, this.y, 4, this.playerX/toPlayerLength, this.playerY/toPlayerLength,5,10,"yellow",Options.planType);
 			this.eBullets.push(bullet);
 		}
 
@@ -959,6 +959,9 @@ function initGame() {
 		gamectx.fillText(Math.floor((Date.now() - start) / 1000), winwidth / 2, 30);
 		player.draw(gamectx);
 		pBullets.forEach(function(bullet){
+			bullet.draw(gamectx);
+		});
+		eBullets.forEach(function(bullet){
 			bullet.draw(gamectx);
 		});
 	};
