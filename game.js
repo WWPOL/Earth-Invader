@@ -12,6 +12,25 @@ var Options = {
 	wepType: "fire"
 };
 
+var planTraits = {
+	fire: {
+		plancolor: "#F72A0A",
+		planstroke: "CF2308"
+	},
+	air: {
+		plancolor: "#DEDEDE",
+		planstroke: "#BFBFBF"
+	},
+	water: {
+		plancolor: "#076DF2",
+		planstroke: "#0658C4"
+	},
+	rock: {
+		plancolor: "#6B4303",
+		planstroke: "#593802"
+	}
+}
+
 var wepTraits = {
 	fire: {
 		color: "orange",
@@ -655,7 +674,7 @@ function initGame() {
 	var halfheight = gamecanvas.height / 2;
 	var gameOver = false;
 
-	var planet = new Planet(halfwidth, halfheight, "Planet", wepTraits[Options.wepType].plancolor, wepTraits[Options.wepType].planstroke);
+	var planet = new Planet(halfwidth, halfheight, "Planet", planTraits[Options.planType].plancolor, planTraits[Options.planType].planstroke);
 	var enemies = [];
 	var defenders = [];
 	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
