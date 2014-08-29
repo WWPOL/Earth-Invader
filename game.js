@@ -843,28 +843,27 @@ function initGame() {
 
 	gamecanvas.addEventListener('mouseup', function (e) {
 		mousedown = false;
-	});
+	}, false);
 
 	gamecanvas.addEventListener("mousemove", function (e) {
 		var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
 		mouseX = e.clientX - rect.left;
 		mouseY = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
-	});
+	}, false);
 	window.addEventListener('keydown', function (e) {
 		keysDown[e.keyCode] = true;
-	});
-
+	}, false);
 	window.addEventListener('keyup', function(e) {
 		delete keysDown[e.keyCode];
-	});
+	}, false);
 
 	//main game loop, updates and renders the game
 	var main = function(){
 		var now = Date.now();
 		var delta = now - then;
 
-		update(delta / 1000);
 		if (!gameOver && renderops.game) {
+			update(delta / 1000);
 			render();
 		} else if (winGame && renderops.game) {
 			win()
@@ -1008,6 +1007,19 @@ function initGame() {
 			gameOver = false;
 			winGame = false;
 			renderops.game = false;
+
+			gamecanvas.removeEventListener('mousedown', function (e) {
+				mousedown = true; //set to 0, thus starting count
+				//shootcount = 0;
+			}, false);
+			gamecanvas.removeEventListener('mouseup', function (e) {
+				mousedown = false;
+			}, false);
+			gamecanvas.removeEventListener("mousemove", function (e) {
+				var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
+				mouseX = e.clientX - rect.left;
+				mouseY = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
+			}, false);
 			initLevelSelect();
 		}
 	}, false);
