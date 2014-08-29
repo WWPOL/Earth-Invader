@@ -288,21 +288,38 @@ Turret.prototype.findDirection = function (mX,mY) {
 	return dDir;
 };
 
-Planet = function(x, y, name, color, stroke) {
+Planet = function(x, y, name, color, stroke, bullets) {
 	this.x = x;
 	this.y = y;
 	this.health = 1000;
 	this.shield = 10000;
-	this.damageTaken = 0;
 	this.name = name;
 	this.radius = 70;
 	this.color = color;
+	this.bullets = bullets;
 	this.stroke = stroke;
+	this.alive = true;
 }
 
 Planet.prototype.update = function(delta) {
-	this.health += this.damageTaken;
-	this.damageTaken = 0;
+	for (var i = 0; i < this.bullets.length; i++) {
+		if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.shield > 0) {
+			this.shield -= 25;
+			this.bullets[i].alive = false;
+			var hit = new Audio("hit.wav");
+			hit.play();
+		} else if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.health > 0) {
+			this.health -= 5;
+			this.bullets[i].alive = false;
+			var hit = new Audio("hit.wav");
+			hit.play();
+		} else if (this.bullets[i].alive && collision(this,this.bullets[i])) { //if it collides with a bullet, kill itself and the bullet
+			this.bullets[i].alive = false;
+			this.alive = false;
+			var death = new Audio("enemyDeath.wav");
+			death.play();
+		}
+	}
 }
 
 Planet.prototype.draw = function(ctx) {
@@ -756,23 +773,24 @@ function initGame() {
 	var halfwidth = gamecanvas.width / 2;
 	var halfheight = gamecanvas.height / 2;
 	var gameOver = false;
-
-	var planet = new Planet(halfwidth, halfheight, "Planet", planTraits[Options.planType].plancolor, planTraits[Options.planType].planstroke);
-	var enemies = [];
-	var defenders = [];
-	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
-	var enemycolors = ["#CF2308", "#BFBFBF", "#0658C4", "#593802"];
+	var winGame = false;
 
 	//Variable to track if mouse is held down
 	var mousedown = false;
 	var shootcount = 0; //and how frequently to shoot
+	var pBullets = [];
+	var enemies = [];
+	var defenders = [];
+
+	var planet = new Planet(halfwidth, halfheight, "Planet", planTraits[Options.planType].plancolor, planTraits[Options.planType].planstroke, pBullets);
+	var planethealth = new Healthbar(clientWidth - 310, 10, planet);
 
 	//Create a player, an enemy, and assign the player to enemy so that it will follow it
 	var player = new Turret(halfwidth, 45, "Player", [enemies,defenders]);
-	var pBullets = [];
-
 	var playerhealth = new Healthbar(10, 10, player);
-	var planethealth = new Healthbar(clientWidth - 310, 10, planet);
+
+	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
+	var enemycolors = ["#CF2308", "#BFBFBF", "#0658C4", "#593802"];
 	var enemycount = 1;
 	var defendercount = 1;
 	var makeEnemies = function(x,y, color) {
@@ -832,6 +850,8 @@ function initGame() {
 		update(delta / 1000);
 		if (!gameOver) {
 			render();
+		} else if (winGame) {
+			win()
 		} else {
 			death();
 		};
@@ -884,6 +904,10 @@ function initGame() {
 			makeEnemies(spawns[randomint][0], spawns[randomint][1], enemycolors[Math.floor(Math.random() * 4)]);
 		};
 
+		if (planet.health <= 0) {
+			gameOver = true;
+			win = true;
+		}
 		if (player.health <= 0) {
 			gameOver = true;
 		};
@@ -924,6 +948,15 @@ function initGame() {
 		gamectx.fillStyle = "red";
 		gamectx.textAlign = "center";
 		gamectx.fillText("Game Over!", winwidth / 2, winheight / 2);
+	};
+
+	var win = function(){
+		clearScreen();
+
+		gamectx.font = "100pt Impact";
+		gamectx.fillStyle = "green";
+		gamectx.textAlign = "center";
+		gamectx.fillText("You Win!", winwidth / 2, winheight / 2);
 	};
 
 	//updates the time, runs the main loop
