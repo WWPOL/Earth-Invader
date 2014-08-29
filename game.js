@@ -639,6 +639,7 @@ function initGame() {
 	gamecanvas.height = clientHeight;
 	var halfwidth = gamecanvas.width / 2;
 	var halfheight = gamecanvas.height / 2;
+	var gameOver = false;
 
 	var planet = new Planet(halfwidth, halfheight, "Planet");
 	var enemies = [];
@@ -713,7 +714,11 @@ function initGame() {
 		var delta = now - then;
 
 		update(delta / 1000);
-		render();
+		if (!gameOver) {
+			render();
+		} else {
+			death();
+		};
 
 		then = now;
 
@@ -762,6 +767,10 @@ function initGame() {
 			var randomint = Math.floor(Math.random() * 8);
 			makeEnemies(spawns[randomint][0], spawns[randomint][1], enemycolors[Math.floor(Math.random() * 4)]);
 		};
+
+		if (player.health <= 0) {
+			gameOver = true;
+		};
 	};
 
 	//clears the screen
@@ -790,6 +799,15 @@ function initGame() {
 		pBullets.forEach(function(bullet){
 			bullet.draw(gamectx);
 		});
+	};
+
+	var death = function(){
+		clearScreen();
+
+		gamectx.font = "20pt Arial";
+		gamectx.fillStyle = "red";
+		gamectx.textAlign = "center";
+		gamectx.fillText("Game Over!", winwidth / 2, winheight / 2);
 	};
 
 	//updates the time, runs the main loop
