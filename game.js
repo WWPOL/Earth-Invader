@@ -517,7 +517,6 @@ function initLevelSelect() {
 	canvas.height = winheight;
 
 	var rendering = true;
-
 	var infoBox = "";
 
 	canvas.addEventListener('click', function(event) {
@@ -618,8 +617,12 @@ function initLevelSelect() {
 		ctx.textAlign = "center";
 		ctx.fillText("Select a Planet Type", winwidth / 2, 150);
 
-		ctx.fillStyle = "red";
-		ctx.fillRect((canvas.width / 4) / 2 + 100, 200, 200, 75);
+		if (Options.planType === "fire") {
+			ctx.fillStyle = "red";
+			ctx.fillRect((canvas.width / 4) / 2 + 100, 200, 200, 75);
+			ctx.strokeStyle == planTraits[Options.planType].planstroke;
+			ctx.stroke();
+		}
 		ctx.fillStyle = "black";
 		ctx.fillText("Fire", (canvas.width / 4) / 2 + 200, 250);
 
@@ -627,16 +630,28 @@ function initLevelSelect() {
 		ctx.fillRect((canvas.width / 2) - 250, 200, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Air", (canvas.width / 2) - 150, 250);
+		if (Options.planType === "air") {
+			ctx.strokeStyle == planTraits[Options.planType].planstroke;
+			ctx.stroke();
+		}
 
 		ctx.fillStyle = "blue";
 		ctx.fillRect((canvas.width / 2) + 50, 200, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Water", (canvas.width / 2) + 150, 250);
+		if (Options.planType === "water") {
+			ctx.strokeStyle == planTraits[Options.planType].planstroke;
+			ctx.stroke();
+		}
 
 		ctx.fillStyle = "brown";
 		ctx.fillRect(((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100), 200, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Rock", ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 250);
+		if (Options.planType === "rock") {
+			ctx.strokeStyle == planTraits[Options.planType].planstroke;
+			ctx.stroke();
+		}
 
 	/////////////////////////////////////////////////////////////
 
@@ -649,21 +664,37 @@ function initLevelSelect() {
 		ctx.fillRect((canvas.width / 4) / 2 + 100, 400, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Fire", (canvas.width / 4) / 2 + 200, 450);
+		if (Options.wepType === "fire") {
+			ctx.strokeStyle == planTraits[Options.planType].planstroke;
+			ctx.stroke();
+		}
 
 		ctx.fillStyle = "white";
 		ctx.fillRect((canvas.width / 2) - 250, 400, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Air", (canvas.width / 2) - 150, 450);
+		if (Options.wepType === "air") {
+			ctx.strokeStyle == planTraits[Options.planType].planstroke;
+			ctx.stroke();
+		}
 
 		ctx.fillStyle = "blue";
 		ctx.fillRect((canvas.width / 2) + 50, 400, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Water", (canvas.width / 2) + 150, 450);
+		if (Options.wepType === "water") {
+			ctx.strokeStyle == planTraits[Options.planType].planstroke;
+			ctx.stroke();
+		}
 
 		ctx.fillStyle = "brown";
 		ctx.fillRect(((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100), 400, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Rock", ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 450);
+		if (Options.wepType === "rock") {
+			ctx.strokeStyle == planTraits[Options.planType].planstroke;
+			ctx.stroke();
+		}
 
 		ctx.font = "20pt Arial";
 		ctx.fillStyle = "white";
