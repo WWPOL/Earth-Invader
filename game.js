@@ -15,7 +15,7 @@ var Options = {
 var planTraits = {
 	fire: {
 		plancolor: "#F72A0A",
-		planstroke: "CF2308"
+		planstroke: "#CF2308"
 	},
 	air: {
 		plancolor: "#DEDEDE",
@@ -34,29 +34,21 @@ var planTraits = {
 var wepTraits = {
 	fire: {
 		color: "orange",
-		plancolor: "#F72A0A",
-		planstroke: "CF2308",
 		rof: 20, //rate of fire
 		speed: 15
 	},
 	air: {
 		color: "ghostwhite",
-		plancolor: "#DEDEDE",
-		planstroke: "#BFBFBF",
 		rof: 12,
 		speed: 15
 	},
 	water: {
 		color: "deepskyblue",
-		plancolor: "#076DF2",
-		planstroke: "#0658C4",
 		rof: 20,
 		speed: 20
 	},
 	rock: {
 		color: "saddlebrown",
-		plancolor: "#6B4303",
-		planstroke: "#593802",
 		rof: 30,
 		speed: 10
 	}
@@ -524,68 +516,9 @@ function initLevelSelect() {
 	canvas.width = winwidth;
 	canvas.height = winheight;
 
-	ctx.font = "30pt Arial";
-	ctx.fillStyle = "white";
-	ctx.textAlign = "center";
-	ctx.fillText("Level Select", winwidth / 2, 50);
-	ctx.fillStyle = "green";
-	ctx.fillRect(canvas.width / 2 - 100, canvas.height - 150, 200, 75);
-	ctx.fillStyle = "black";
-	ctx.fillText("Play", winwidth / 2, winheight - 100);
+	var rendering = true;
 
-//////////////////////////////////////////////////////////
-
-	ctx.font = "20pt Arial";
-	ctx.fillStyle = "white";
-	ctx.textAlign = "center";
-	ctx.fillText("Select a Planet Type", winwidth / 2, 150);
-
-	ctx.fillStyle = "red";
-	ctx.fillRect((canvas.width / 4) / 2 + 100, 200, 200, 75);
-	ctx.fillStyle = "black";
-	ctx.fillText("Fire", (canvas.width / 4) / 2 + 200, 250);
-
-	ctx.fillStyle = "white";
-	ctx.fillRect((canvas.width / 2) - 250, 200, 200, 75);
-	ctx.fillStyle = "black";
-	ctx.fillText("Air", (canvas.width / 2) - 150, 250);
-
-	ctx.fillStyle = "blue";
-	ctx.fillRect((canvas.width / 2) + 50, 200, 200, 75);
-	ctx.fillStyle = "black";
-	ctx.fillText("Water", (canvas.width / 2) + 150, 250);
-
-	ctx.fillStyle = "brown";
-	ctx.fillRect(((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100), 200, 200, 75);
-	ctx.fillStyle = "black";
-	ctx.fillText("Rock", ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 250);
-
-/////////////////////////////////////////////////////////////
-
-	ctx.font = "20pt Arial";
-	ctx.fillStyle = "white";
-	ctx.textAlign = "center";
-	ctx.fillText("Select a Weapon Type", winwidth / 2, 350);
-
-	ctx.fillStyle = "red";
-	ctx.fillRect((canvas.width / 4) / 2 + 100, 400, 200, 75);
-	ctx.fillStyle = "black";
-	ctx.fillText("Fire", (canvas.width / 4) / 2 + 200, 450);
-
-	ctx.fillStyle = "white";
-	ctx.fillRect((canvas.width / 2) - 250, 400, 200, 75);
-	ctx.fillStyle = "black";
-	ctx.fillText("Air", (canvas.width / 2) - 150, 450);
-
-	ctx.fillStyle = "blue";
-	ctx.fillRect((canvas.width / 2) + 50, 400, 200, 75);
-	ctx.fillStyle = "black";
-	ctx.fillText("Water", (canvas.width / 2) + 150, 450);
-
-	ctx.fillStyle = "brown";
-	ctx.fillRect(((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100), 400, 200, 75);
-	ctx.fillStyle = "black";
-	ctx.fillText("Rock", ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 450);
+	var infoBox = "";
 
 	canvas.addEventListener('click', function(event) {
 		var cLeft = canvas.offsetLeft;
@@ -595,7 +528,8 @@ function initLevelSelect() {
 
 		if (y > canvas.height - 150 && y < canvas.height - 150 + 75 && x > canvas.width / 2 - 100 && x < canvas.width / 2 - 100 + 200) {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+			rendering = false;
+			clearScreen();
 			initGame();
 		}
 
@@ -626,7 +560,119 @@ function initLevelSelect() {
 			Options.wepType = "rock";
 		}
 	}, false);
-} 
+	window.addEventListener("mousemove", function (e) {
+		var rect = canvas.getBoundingClientRect(); //get bounding rectangle
+		x = e.clientX - rect.left;
+		y = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
+
+		if(y > 200 && y < 275 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
+			infoBox = "Fire Planet Info";
+		} else if(y > 200 && y < 275 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
+			infoBox = "Air Planet Info";
+		} else if(y > 200 && y < 275 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
+			infoBox = "Water Planet Info";
+		} else if(y > 200 && y < 275 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
+			infoBox = "Rock Planet Info";
+		} else if(y > 400 && y < 475 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
+			infoBox = "Fire Weapon Info";
+		} else if(y > 400 && y < 475 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
+			infoBox = "Air Weapon Info";
+		} else if(y > 400 && y < 475 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
+			infoBox = "Water Weapon Info";
+		} else if(y > 400 && y < 475 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
+			infoBox = "Rock Weapon Info";
+		} else {
+			infoBox = "";
+		}
+	}); 
+
+	var main = function(){
+		if (rendering) {
+			render();
+			requestAnimationFrame(main);
+		}
+	};
+
+	//clears the screen
+	var clearScreen = function(){
+		ctx.clearRect(0,0,canvas.width, canvas.height);
+	};
+
+	//clears the screen, and redraws the objects
+	var render = function(){
+		clearScreen();
+
+		ctx.font = "30pt Arial";
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center";
+		ctx.fillText("Level Select", winwidth / 2, 50);
+		ctx.fillStyle = "green";
+		ctx.fillRect(canvas.width / 2 - 100, canvas.height - 150, 200, 75);
+		ctx.fillStyle = "black";
+		ctx.fillText("Play", winwidth / 2, winheight - 100);
+
+	//////////////////////////////////////////////////////////
+
+		ctx.font = "20pt Arial";
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center";
+		ctx.fillText("Select a Planet Type", winwidth / 2, 150);
+
+		ctx.fillStyle = "red";
+		ctx.fillRect((canvas.width / 4) / 2 + 100, 200, 200, 75);
+		ctx.fillStyle = "black";
+		ctx.fillText("Fire", (canvas.width / 4) / 2 + 200, 250);
+
+		ctx.fillStyle = "white";
+		ctx.fillRect((canvas.width / 2) - 250, 200, 200, 75);
+		ctx.fillStyle = "black";
+		ctx.fillText("Air", (canvas.width / 2) - 150, 250);
+
+		ctx.fillStyle = "blue";
+		ctx.fillRect((canvas.width / 2) + 50, 200, 200, 75);
+		ctx.fillStyle = "black";
+		ctx.fillText("Water", (canvas.width / 2) + 150, 250);
+
+		ctx.fillStyle = "brown";
+		ctx.fillRect(((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100), 200, 200, 75);
+		ctx.fillStyle = "black";
+		ctx.fillText("Rock", ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 250);
+
+	/////////////////////////////////////////////////////////////
+
+		ctx.font = "20pt Arial";
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center";
+		ctx.fillText("Select a Weapon Type", winwidth / 2, 350);
+
+		ctx.fillStyle = "red";
+		ctx.fillRect((canvas.width / 4) / 2 + 100, 400, 200, 75);
+		ctx.fillStyle = "black";
+		ctx.fillText("Fire", (canvas.width / 4) / 2 + 200, 450);
+
+		ctx.fillStyle = "white";
+		ctx.fillRect((canvas.width / 2) - 250, 400, 200, 75);
+		ctx.fillStyle = "black";
+		ctx.fillText("Air", (canvas.width / 2) - 150, 450);
+
+		ctx.fillStyle = "blue";
+		ctx.fillRect((canvas.width / 2) + 50, 400, 200, 75);
+		ctx.fillStyle = "black";
+		ctx.fillText("Water", (canvas.width / 2) + 150, 450);
+
+		ctx.fillStyle = "brown";
+		ctx.fillRect(((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100), 400, 200, 75);
+		ctx.fillStyle = "black";
+		ctx.fillText("Rock", ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 450);
+
+		ctx.font = "20pt Arial";
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center";
+		ctx.fillText(infoBox, winwidth / 2, 525);
+	};
+
+	main();
+}
 
 function initStars() {
 	var starcanvas = document.getElementById("stars");
@@ -678,7 +724,7 @@ function initGame() {
 	var enemies = [];
 	var defenders = [];
 	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
-	var enemycolors = ["red", "blue", "white", "brown"];
+	var enemycolors = ["#CF2308", "#BFBFBF", "#0658C4", "#593802"];
 
 	//Variable to track if mouse is held down
 	var mousedown = false;
@@ -716,8 +762,8 @@ function initGame() {
 			defendercount += 1;
 		}
 	};
-	makeEnemies(halfwidth, halfheight + 100, "red");
-	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, "red");
+	makeEnemies(halfwidth, halfheight + 100, planTraits[Options.planType].planstroke);
+	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, planTraits[Options.planType].planstroke);
 
 	gamecanvas.addEventListener('mousedown', function (e) {
 		mousedown = true; //set to 0, thus starting count
