@@ -7,9 +7,8 @@ var mouseY = 0;
 var winheight = 0; //window width & height
 var winwidth = 0;
 
-var render = {
+var renderops = {
 	levelselect: false,
-	stars: false,
 	game: false
 }
 
@@ -492,6 +491,7 @@ function collision (a,b) {
 ///////////////// INIT FUNCTIONS \\\\\\\\\\\\\\\\\\\
 //Inits the main menu, shows title and play button
 function initMainMenu() {
+	initStars();
 	//This block initiliazes the mainmenu canvas, sets the context, and sets its width and height to that of the user's screen
 	var canvas = document.getElementById('mainmenu');
 	currentcanvas = 'mm';
@@ -554,7 +554,7 @@ function initLevelSelect() {
 	canvas.width = winwidth;
 	canvas.height = winheight;
 
-	render.levelselect = true;
+	renderops.levelselect = true;
 	var infoBox = "";
 
 	canvas.addEventListener('click', function(event) {
@@ -565,7 +565,7 @@ function initLevelSelect() {
 
 		if (y > canvas.height - 150 && y < canvas.height - 150 + 75 && x > canvas.width / 2 - 100 && x < canvas.width / 2 - 100 + 200) {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			render.levelselect = false;
+			renderops.levelselect = false;
 			clearScreen();
 			initGame();
 		}
@@ -624,7 +624,7 @@ function initLevelSelect() {
 	}); 
 
 	var main = function(){
-		if (render.levelselect) {
+		if (renderops.levelselect) {
 			render();
 			requestAnimationFrame(main);
 		}
@@ -767,18 +767,15 @@ function initStars() {
 		};
 	} 
 	render = function(){
-		if (render.stars) {
-			stars.forEach(function(star){
-				star.draw(starctx)
-			});
-		};
+		stars.forEach(function(star){
+			star.draw(starctx)
+		});
 	};
 	render();
 }
 
 //Because of issues with the files loading asynchronously and sometimes before the document was ready, I was forced to merge the three other files and encase them in an init function
 function initGame() {
-	initStars();
 	//Initialize the game canvas, get its context, and set its width and height to that of the screen
 	var gamecanvas = document.getElementById("game");
 	var gamectx = gamecanvas.getContext("2d");
@@ -791,7 +788,7 @@ function initGame() {
 	var halfheight = gamecanvas.height / 2;
 	var gameOver = false;
 	var winGame = false;
-	render.game = true;
+	renderops.game = true;
 
 	//Variable to track if mouse is held down
 	var mousedown = false;
@@ -867,11 +864,11 @@ function initGame() {
 		var delta = now - then;
 
 		update(delta / 1000);
-		if (!gameOver && render.game) {
+		if (!gameOver && renderops.game) {
 			render();
-		} else if (winGame && render.game) {
+		} else if (winGame && renderops.game) {
 			win()
-		} else if (render.game) {
+		} else if (renderops.game) {
 			death();
 		};
 
@@ -1010,8 +1007,7 @@ function initGame() {
 			gamectx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
 			gameOver = false;
 			winGame = false;
-			render.game = false;
-			render.stars = false;
+			renderops.game = false;
 			clearScreen();
 			initLevelSelect();
 		}
