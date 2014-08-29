@@ -7,6 +7,12 @@ var mouseY = 0;
 var winheight = 0; //window width & height
 var winwidth = 0;
 
+var render = {
+	levelselect: false,
+	stars: false,
+	game: false
+}
+
 var Options = {
 	planType: "fire",
 	wepType: "fire"
@@ -548,7 +554,7 @@ function initLevelSelect() {
 	canvas.width = winwidth;
 	canvas.height = winheight;
 
-	var rendering = true;
+	render.levelselect = true;
 	var infoBox = "";
 
 	canvas.addEventListener('click', function(event) {
@@ -559,7 +565,7 @@ function initLevelSelect() {
 
 		if (y > canvas.height - 150 && y < canvas.height - 150 + 75 && x > canvas.width / 2 - 100 && x < canvas.width / 2 - 100 + 200) {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			rendering = false;
+			render.levelselect = false;
 			clearScreen();
 			initGame();
 		}
@@ -618,7 +624,7 @@ function initLevelSelect() {
 	}); 
 
 	var main = function(){
-		if (rendering) {
+		if (render.levelselect) {
 			render();
 			requestAnimationFrame(main);
 		}
@@ -761,9 +767,11 @@ function initStars() {
 		};
 	} 
 	render = function(){
-		stars.forEach(function(star){
-			star.draw(starctx)
-		});
+		if (render.stars) {
+			stars.forEach(function(star){
+				star.draw(starctx)
+			});
+		};
 	};
 	render();
 }
@@ -783,6 +791,7 @@ function initGame() {
 	var halfheight = gamecanvas.height / 2;
 	var gameOver = false;
 	var winGame = false;
+	render.game = true;
 
 	//Variable to track if mouse is held down
 	var mousedown = false;
@@ -858,11 +867,11 @@ function initGame() {
 		var delta = now - then;
 
 		update(delta / 1000);
-		if (!gameOver) {
+		if (!gameOver && render.game) {
 			render();
-		} else if (winGame) {
+		} else if (winGame && render.game) {
 			win()
-		} else {
+		} else if (render.game) {
 			death();
 		};
 
@@ -962,6 +971,15 @@ function initGame() {
 		gamectx.fillStyle = "red";
 		gamectx.textAlign = "center";
 		gamectx.fillText("Game Over!", winwidth / 2, winheight / 2);
+
+		gamectx.font = "30pt Arial";
+		gamectx.fillStyle = "white";
+		gamectx.textAlign = "center";
+		gamectx.fillText("Level Select", winwidth / 2, 50);
+		gamectx.fillStyle = "green";
+		gamectx.fillRect(gamecanvas.width / 2 - 100, gamecanvas.height - 150, 200, 75);
+		gamectx.fillStyle = "black";
+		gamectx.fillText("Replay", winwidth / 2, winheight - 100);
 	};
 
 	var win = function(){
@@ -971,7 +989,33 @@ function initGame() {
 		gamectx.fillStyle = "green";
 		gamectx.textAlign = "center";
 		gamectx.fillText("You Win!", winwidth / 2, winheight / 2);
+
+		gamectx.font = "30pt Arial";
+		gamectx.fillStyle = "white";
+		gamectx.textAlign = "center";
+		gamectx.fillText("Level Select", winwidth / 2, 50);
+		gamectx.fillStyle = "green";
+		gamectx.fillRect(gamecanvas.width / 2 - 100, gamecanvas.height - 150, 200, 75);
+		gamectx.fillStyle = "black";
+		gamectx.fillText("Replay", winwidth / 2, winheight - 100);
 	};
+
+	gamecanvas.addEventListener('click', function(event) {
+		var cLeft = gamecanvas.offsetLeft;
+		var cTop = gamecanvas.offsetTop;
+		var x = event.pageX - cLeft;
+		var y = event.pageY - cTop;
+
+		if (y > gamecanvas.height - 150 && y < gamecanvas.height - 150 + 75 && x > gamecanvas.width / 2 - 100 && x < gamecanvas.width / 2 - 100 + 200 && gameOver) {
+			gamectx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
+			gameOver = false;
+			winGame = false;
+			render.game = false;
+			render.stars = false;
+			clearScreen();
+			initLevelSelect();
+		}
+	}, false);
 
 	//updates the time, runs the main loop
 	var then = Date.now();
