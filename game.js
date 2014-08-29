@@ -15,19 +15,23 @@ var Options = {
 var wepTraits = {
 	fire: {
 		color: "orange",
-		rof: 20 //rate of fire
+		rof: 20, //rate of fire
+		speed: 15
 	},
 	air: {
 		color: "ghostwhite",
-		rof: 12
+		rof: 12,
+		speed: 15
 	},
 	water: {
 		color: "deepskyblue",
-		rof: 20
+		rof: 20,
+		speed: 20
 	},
 	rock: {
 		color: "saddlebrown",
-		rof: 30
+		rof: 30,
+		speed: 10
 	}
 }
 /////////////////------------------\\\\\\\\\\\\\\\\\
@@ -737,7 +741,7 @@ function initGame() {
 				var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 
 
-				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, 15, 10, wepTraits[Options.wepType].color, Options.wepType);
+				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, 10, wepTraits[Options.wepType].color, Options.wepType);
 				var lasersnd = new Audio("laser.wav");
 				lasersnd.play();
 				pBullets.push(bullet);
