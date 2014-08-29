@@ -836,15 +836,16 @@ function initGame() {
 	makeEnemies(halfwidth, halfheight + 100, planTraits[Options.planType].planstroke);
 	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, planTraits[Options.planType].planstroke);
 
+////////////////////////////////////////
+/// Handlers
+
 	gamecanvas.addEventListener('mousedown', function (e) {
 		mousedown = true; //set to 0, thus starting count
 		//shootcount = 0;
 	}, false);
-
 	gamecanvas.addEventListener('mouseup', function (e) {
 		mousedown = false;
 	}, false);
-
 	gamecanvas.addEventListener("mousemove", function (e) {
 		var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
 		mouseX = e.clientX - rect.left;
@@ -856,6 +857,8 @@ function initGame() {
 	window.addEventListener('keyup', function(e) {
 		delete keysDown[e.keyCode];
 	}, false);
+
+/////////////////////////////////////////
 
 	//main game loop, updates and renders the game
 	var main = function(){
@@ -1007,19 +1010,6 @@ function initGame() {
 			gameOver = false;
 			winGame = false;
 			renderops.game = false;
-
-			gamecanvas.removeEventListener('mousedown', function (e) {
-				mousedown = true; //set to 0, thus starting count
-				//shootcount = 0;
-			}, false);
-			gamecanvas.removeEventListener('mouseup', function (e) {
-				mousedown = false;
-			}, false);
-			gamecanvas.removeEventListener("mousemove", function (e) {
-				var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
-				mouseX = e.clientX - rect.left;
-				mouseY = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
-			}, false);
 			initLevelSelect();
 		}
 	}, false);
