@@ -17,3 +17,10 @@ Mockup
 =====
 
 ![mockup](mockup.png)
+
+Credits
+=========
+
+Created by Rudhra Raveendran, Andrew Lee, Phillip Sifferlen, Matthew Chuang, and Zach Day.
+
+Special thanks to Benjamin Pelon for the sprites!
