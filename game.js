@@ -181,9 +181,8 @@ Turret.prototype.checkCollision = function (enemyArray) {
 			if (this.shield > 0) {
 				this.shield -= 5;
 				this.dmgcount = 60;
-			}
-			else {
-				this.playerhealth -= 5;
+			} else {
+				this.health -= 5;
 			}
 		}
 	}
