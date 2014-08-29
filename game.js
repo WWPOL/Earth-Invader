@@ -68,6 +68,7 @@ Enemy = function(x, y, width, height, orbit, color, bullets){
 	this.speed = 3;
 	this.orbit = orbit; //property determining distance of orbit
 	this.color = color;
+	this.health = 25;
 
 	this.bullets = bullets;
 
@@ -134,7 +135,12 @@ Enemy.prototype.update = function(delta) {
 
 		//check for collision with bullet
 		for (var i = 0; i < this.bullets.length; i++) {
-			if (this.bullets[i].alive && collision(this,this.bullets[i])) { //if it collides with a bullet, kill itself and the bullet
+			if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.health > 0) {
+				this.health -= 5;
+				this.bullets[i].alive = false;
+				var hit = new Audio("hit.wav");
+				hit.play();
+			} else if (this.bullets[i].alive && collision(this,this.bullets[i])) { //if it collides with a bullet, kill itself and the bullet
 				this.bullets[i].alive = false;
 				this.alive = false;
 				var eDeath = new Audio("enemyDeath.wav");
@@ -285,7 +291,8 @@ Turret.prototype.findDirection = function (mX,mY) {
 Planet = function(x, y, name, color, stroke) {
 	this.x = x;
 	this.y = y;
-	this.health = 10000;
+	this.health = 1000;
+	this.shield = 10000;
 	this.damageTaken = 0;
 	this.name = name;
 	this.radius = 70;
