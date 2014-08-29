@@ -597,7 +597,7 @@ function initLevelSelect() {
 			Options.wepType = "rock";
 		}
 	}, false);
-	window.addEventListener("mousemove", function (e) {
+	canvas.addEventListener("mousemove", function (e) {
 		var rect = canvas.getBoundingClientRect(); //get bounding rectangle
 		x = e.clientX - rect.left;
 		y = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
@@ -845,7 +845,7 @@ function initGame() {
 		mousedown = false;
 	});
 
-	window.addEventListener("mousemove", function (e) {
+	gamecanvas.addEventListener("mousemove", function (e) {
 		var rect = gamecanvas.getBoundingClientRect(); //get bounding rectangle
 		mouseX = e.clientX - rect.left;
 		mouseY = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
@@ -1008,7 +1008,6 @@ function initGame() {
 			gameOver = false;
 			winGame = false;
 			renderops.game = false;
-			clearScreen();
 			initLevelSelect();
 		}
 	}, false);
