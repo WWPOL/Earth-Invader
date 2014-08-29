@@ -913,7 +913,7 @@ function initGame() {
 	var death = function(){
 		clearScreen();
 
-		gamectx.font = "20pt Arial";
+		gamectx.font = "100pt Impact";
 		gamectx.fillStyle = "red";
 		gamectx.textAlign = "center";
 		gamectx.fillText("Game Over!", winwidth / 2, winheight / 2);
