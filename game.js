@@ -292,7 +292,7 @@ Planet = function(x, y, name, color, stroke, bullets) {
 	this.x = x;
 	this.y = y;
 	this.health = 1000;
-	this.shield = 10000;
+	this.shield = 5000;
 	this.name = name;
 	this.radius = 70;
 	this.color = color;
@@ -304,12 +304,12 @@ Planet = function(x, y, name, color, stroke, bullets) {
 Planet.prototype.update = function(delta) {
 	for (var i = 0; i < this.bullets.length; i++) {
 		if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.shield > 0) {
-			this.shield -= 25;
+			this.shield -= 10;
 			this.bullets[i].alive = false;
 			var hit = new Audio("hit.wav");
 			hit.play();
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.health > 0) {
-			this.health -= 5;
+			this.health -= 10;
 			this.bullets[i].alive = false;
 			var hit = new Audio("hit.wav");
 			hit.play();
