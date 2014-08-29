@@ -100,7 +100,6 @@ Enemy.prototype.update = function(delta) {
 	if(! (this.player === undefined) && this.alive){ //only update if alive
 		this.count = (this.count+1) % this.rof; //update counter
 
-
 		this.playerX = this.player.x;
 		this.playerY = this.player.y;
 
@@ -118,7 +117,7 @@ Enemy.prototype.update = function(delta) {
 
 		////////SHOOTING////////
 		if (this.count == this.trigger) {
-			var bullet = new Bullet(this.x, this.y, 4, this.playerX/toPlayerLength, this.playerY/toPlayerLength,5,10,"yellow",Options.planType);
+			var bullet = new Bullet(this.x, this.y, 4, toPlayerX/toPlayerLength, toPlayerY/toPlayerLength,1000,100,"yellow",Options.planType);
 			this.eBullets.push(bullet);
 		}
 
@@ -908,7 +907,6 @@ function initGame() {
 		pBullets.forEach(function(bullet){
 			bullet.update();
 		});
-		console.log(eBullets.length);
 		eBullets.forEach(function(bullet){
 			bullet.update();
 		});
