@@ -58,7 +58,7 @@ var wepTraits = {
 
 ///////////////// CLASSES \\\\\\\\\\\\\\\\\\\\\\\\\\
 //Init the enemy class
-Enemy = function(x, y, width, height, orbit, color, bullets){
+Enemy = function(x, y, width, height, orbit, color, pBullets, eBullets, rof) {
 	this.x = x;
 	this.y = y;
 	this.width = width;
@@ -70,13 +70,17 @@ Enemy = function(x, y, width, height, orbit, color, bullets){
 	this.color = color;
 	this.health = 25;
 
-	this.bullets = bullets;
+	this.rof = rof; //rate of fire
+	this.count = 0; //counter for shooting
+	this.trigger = Math.floor(Math.random()*rof); //number 0 to rof-1 that will be used as signal to fire
+
+	this.pBullets = pBullets; //player bullets, object will check for collision with these
+	this.eBullets = eBullets; //enemy bullets, object will push a new Bullet to these every time it shoots
 
 	this.radius = this.width * 1.2; //have collision circle cover corners better at expense of overcoverage on middle of sides
 
 	this.alive = true; //used for determining damage and whether to draw
 
-	this.dmgtick = 0; //damage tick counter, used in Enemy.update() for determining damage to player
 	//This allows for the enemy to rotate to face the player
 	this.rotation = 0;
 };
@@ -89,6 +93,9 @@ Enemy.prototype.assignplayer = function(player) {
 //Update the enemy's position
 Enemy.prototype.update = function(delta) {
 	if(! (this.player === undefined) && this.alive){ //only update if alive
+		this.count = (this.count+1) % this.rof; //update counter
+
+
 		this.playerX = this.player.x;
 		this.playerY = this.player.y;
 
@@ -103,9 +110,12 @@ Enemy.prototype.update = function(delta) {
 
 		this.rotation = Math.atan2(toPlayerY, toPlayerX);
 
-		this.dmgtick = (this.dmgtick+1) % 4; //keep between 0 and 3
 
-
+		////////SHOOTING////////
+		if (this.count == this.trigger) {
+			var bullet = new Bullet(this.x, this.y, 3, this.playerX/toPlayerLength, this.playerY/toPlayerLength,10,10,"red",Options.planType);
+			this.eBullets.push(bullet);
+		}
 
 		////////MOVEMENT////////
 
@@ -134,14 +144,14 @@ Enemy.prototype.update = function(delta) {
 
 
 		//check for collision with bullet
-		for (var i = 0; i < this.bullets.length; i++) {
-			if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.health > 0) {
+		for (var i = 0; i < this.pBullets.length; i++) {
+			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
 				this.health -= 5;
-				this.bullets[i].alive = false;
+				this.pBullets[i].alive = false;
 				var hit = new Audio("hit.wav");
 				hit.play();
-			} else if (this.bullets[i].alive && collision(this,this.bullets[i])) { //if it collides with a bullet, kill itself and the bullet
-				this.bullets[i].alive = false;
+			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
+				this.pBullets[i].alive = false;
 				this.alive = false;
 				var eDeath = new Audio("enemyDeath.wav");
 				eDeath.play();
@@ -418,7 +428,6 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color, type) {
 
 	this.alive = true; //Used for determining damage and whether to draw
 
-	this.dmgtick = 0; //Damage tick counter, used in Bullet.update() for determining damage
 
 	this.rotation = 0;
 
@@ -779,6 +788,7 @@ function initGame() {
 	var mousedown = false;
 	var shootcount = 0; //and how frequently to shoot
 	var pBullets = [];
+	var eBullets = [];
 	var enemies = [];
 	var defenders = [];
 
@@ -795,7 +805,7 @@ function initGame() {
 	var defendercount = 1;
 	var makeEnemies = function(x,y, color) {
 		var randOrbit = Math.round(Math.random()*50) + 30; //30 to 80
-		var enemy = new Enemy(x, y, 10, 10, randOrbit, color, pBullets);
+		var enemy = new Enemy(x, y, 10, 10, randOrbit, color, pBullets, eBullets, 100);
 		enemy.assignplayer(player);
 		enemies.push(enemy);
 		if (enemycount < 7) {
@@ -807,7 +817,7 @@ function initGame() {
 	};
 	var makeDefenders = function(x,y, color) {
 		var randOrbit = Math.round(Math.random()*50) + 40; //40 to 90
-		var enemy = new Enemy(x, y, 10, 10, randOrbit, color, pBullets);
+		var enemy = new Enemy(x, y, 10, 10, randOrbit, color, pBullets, eBullets, 100);
 		enemy.assignplayer(planet);
 		defenders.push(enemy);
 		if (defendercount < 7) {
@@ -865,9 +875,9 @@ function initGame() {
 	var update = function(delta){
 		//first, decide if new bullet should be added
 		if (mousedown != false) {
-			shootcount = (shootcount + 1) % wepTraits[Options.wepType].rof; //rate of fire: once every 15 frames
+			shootcount++;
  			
- 			if (shootcount == 1) {
+ 			if (shootcount % wepTraits[Options.wepType].rof == 1) { //use rate of fire property as modulo, fire every <rof> frames
  				var dx = mouseX - player.x; //use the global variables!
 				var dy = mouseY - player.y ;
 				var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
@@ -888,6 +898,10 @@ function initGame() {
 			enemy.update(delta, gamecanvas);
 		});	
 		pBullets.forEach(function(bullet){
+			bullet.update();
+		});
+		console.log(eBullets.length);
+		eBullets.forEach(function(bullet){
 			bullet.update();
 		});
 
