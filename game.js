@@ -40,22 +40,26 @@ var wepTraits = {
 	fire: {
 		color: "orange",
 		rof: 20, //rate of fire
-		speed: 15
+		speed: 15,
+		damage: 20
 	},
 	air: {
 		color: "ghostwhite",
 		rof: 12,
-		speed: 15
+		speed: 15,
+		damage: 8
 	},
 	water: {
 		color: "deepskyblue",
 		rof: 20,
-		speed: 20
+		speed: 20,
+		damage: 10
 	},
 	rock: {
 		color: "saddlebrown",
 		rof: 30,
-		speed: 10
+		speed: 10,
+		damage: 25
 	}
 }
 /////////////////------------------\\\\\\\\\\\\\\\\\
@@ -114,10 +118,10 @@ Enemy.prototype.update = function(delta) {
 
 		this.rotation = Math.atan2(toPlayerY, toPlayerX);
 
-
 		////////SHOOTING////////
-		if (this.count == this.trigger) {
-			var bullet = new Bullet(this.x, this.y, 4, toPlayerX/toPlayerLength, toPlayerY/toPlayerLength,1000,100,"yellow",Options.planType);
+		console.log(this.player.name);
+		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
+			var bullet = new Bullet(this.x, this.y, 4, toPlayerX, toPlayerY,10,100,"yellow",Options.planType);
 			this.eBullets.push(bullet);
 		}
 
@@ -150,7 +154,7 @@ Enemy.prototype.update = function(delta) {
 		//check for collision with bullet
 		for (var i = 0; i < this.pBullets.length; i++) {
 			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
-				this.health -= 5;
+				this.health -= this.pBullets[i].damage;
 				this.pBullets[i].alive = false;
 				var hit = new Audio("hit.wav");
 				hit.play();
@@ -890,7 +894,7 @@ function initGame() {
 				var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 
 
-				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, 10, wepTraits[Options.wepType].color, Options.wepType);
+				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType);
 				var lasersnd = new Audio("laser.wav");
 				lasersnd.play();
 				pBullets.push(bullet);
