@@ -119,9 +119,8 @@ Enemy.prototype.update = function(delta) {
 		this.rotation = Math.atan2(toPlayerY, toPlayerX);
 
 		////////SHOOTING////////
-		console.log(this.player.name);
 		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
-			var bullet = new Bullet(this.x, this.y, 4, toPlayerX, toPlayerY,10,100,"yellow",Options.planType);
+			var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, 10, "yellow", Options.planType);
 			this.eBullets.push(bullet);
 		}
 
@@ -183,19 +182,19 @@ Enemy.prototype.draw = function(ctx) {
 };
 
 //Init the player/turret
-Turret = function (x,y,name, eArrays) {
+Turret = function (x,y,name, eArrays, eBullets) {
 	this.x = x; 
 	this.y = y;
 	this.speed = 200;
-	this.health = 50; //balance parameter
+	this.health = 200; //balance parameter
 	this.shield = 500;
 	this.direction = 0; //radians
-	this.damage = 100;
 	this.name = name;
 	this.dmgcount = 0; //count for timing since last damaged, will be used for regenerating shield
 
 	this.radius = 40;
 	this.eArrays = eArrays; //array of enemy arrays 
+	this.eBullets = eBullets;
 
 };
 
@@ -207,6 +206,9 @@ Turret.prototype.checkCollision = function (enemyArray) {
 				this.dmgcount = 60;
 			} else {
 				this.health -= 5;
+			}
+			if (enemyArray[i].name === "bullet") {
+				enemyArray[i].alive = false;
 			}
 		}
 	}
@@ -240,6 +242,8 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 	for (var i = 0; i < this.eArrays.length; i++) {
 		this.checkCollision(this.eArrays[i]);
 	}
+
+	this.checkCollision(this.eBullets);
 
 	//damage-related stuff
 
@@ -431,7 +435,7 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color, type) {
 	this.dy = dy;
 	this.speed = speed; //constant that determines the velocity the bullet travels at
 	this.damage = damage; //The damage the bullet does
-
+	this.name = "bullet";
 	this.color = color;
 
 	this.alive = true; //Used for determining damage and whether to draw
@@ -805,7 +809,7 @@ function initGame() {
 	var planethealth = new Healthbar(clientWidth - 310, 10, planet);
 
 	//Create a player, an enemy, and assign the player to enemy so that it will follow it
-	var player = new Turret(halfwidth, 45, "Player", [enemies,defenders]);
+	var player = new Turret(halfwidth, 45, "Player", [enemies,defenders], eBullets);
 	var playerhealth = new Healthbar(10, 10, player);
 
 	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
