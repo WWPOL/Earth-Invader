@@ -7,6 +7,19 @@ var mouseY = 0;
 var winheight = 0; //window width & height
 var winwidth = 0;
 
+
+////////////////// LOAD IN SPRITES \\\\\\\\\\\\\\\\\\
+var sprite_fire = new Image();
+var sprite_rock = new Image();
+var sprite_water = new Image();
+var sprite_air = new Image();
+
+sprite_fire.src = 'assets/Fire-Sprite.png';
+sprite_rock.src = 'assets/Rock-Sprite.png';
+sprite_water.src = 'assets/Water-Sprite.png';
+sprite_air.src = 'assets/Air-Sprite.png';
+/////////////////------------------\\\\\\\\\\\\\\\\\
+
 var renderops = {
 	levelselect: false,
 	game: false
@@ -62,21 +75,37 @@ var wepTraits = {
 		damage: 25
 	}
 }
+
+//var enemycolors = ["#CF2308", "#BFBFBF", "#0658C4", "#593802"];
+var enemyTraits = {
+	fire: {
+		img: sprite_fire
+	},
+	air: {
+		img: sprite_air
+	},
+	water: {
+		img: sprite_water
+	},
+	rock: {
+		img: sprite_water
+	}
+}
 /////////////////------------------\\\\\\\\\\\\\\\\\
 
 
 ///////////////// CLASSES \\\\\\\\\\\\\\\\\\\\\\\\\\
 //Init the enemy class
-Enemy = function(x, y, width, height, orbit, color, pBullets, eBullets, rof) {
+Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, rof) {
 	this.x = x;
 	this.y = y;
 	this.width = width;
 	this.height = height;
-	this.cx = x + (this.width / 2);
-	this.cy = y + (this.height / 2);
+
+
 	this.speed = 3;
 	this.orbit = orbit; //property determining distance of orbit
-	this.color = color;
+	this.type = type;
 	this.health = 25;
 
 	this.rof = rof; //rate of fire
@@ -174,9 +203,10 @@ Enemy.prototype.draw = function(ctx) {
 		ctx.save();
 		ctx.translate(this.x, this.y);
 		ctx.rotate(this.rotation);
-		ctx.beginPath();
-		ctx.fillStyle = this.color;
-		ctx.fillRect(this.x - (this.x + this.width/2), this.y - (this.y + this.height/2), this.width, this.height);
+		ctx.drawImage(enemyTraits[this.type].img,-6,-6);
+		// ctx.beginPath();
+		// ctx.fillStyle = this.color;
+		// ctx.fillRect(this.x - (this.x + this.width/2), this.y - (this.y + this.height/2), this.width, this.height);
 		ctx.restore();
 	}
 };
@@ -813,35 +843,35 @@ function initGame() {
 	var playerhealth = new Healthbar(10, 10, player);
 
 	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
-	var enemycolors = ["#CF2308", "#BFBFBF", "#0658C4", "#593802"];
+	var enemytypes = ["fire", "air", "water", "rock"];
 	var enemycount = 1;
 	var defendercount = 1;
-	var makeEnemies = function(x,y, color) {
+	var makeEnemies = function(x,y, type) {
 		var randOrbit = Math.round(Math.random()*50) + 30; //30 to 80
-		var enemy = new Enemy(x, y, 10, 10, randOrbit, color, pBullets, eBullets, 100);
+		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, 100);
 		enemy.assignplayer(player);
 		enemies.push(enemy);
 		if (enemycount < 7) {
 			setTimeout(function(){
-				makeEnemies(x, y, color);
+				makeEnemies(x, y, type);
 			}, 1000);
 			enemycount += 1;
 		}
 	};
-	var makeDefenders = function(x,y, color) {
+	var makeDefenders = function(x,y, type) {
 		var randOrbit = Math.round(Math.random()*50) + 40; //40 to 90
-		var enemy = new Enemy(x, y, 10, 10, randOrbit, color, pBullets, eBullets, 100);
+		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, 100);
 		enemy.assignplayer(planet);
 		defenders.push(enemy);
 		if (defendercount < 7) {
 			setTimeout(function(){
-				makeDefenders(x, y, color);
+				makeDefenders(x, y, type);
 			}, 1000);
 			defendercount += 1;
 		}
 	};
-	makeEnemies(halfwidth, halfheight + 100, planTraits[Options.planType].planstroke);
-	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, planTraits[Options.planType].planstroke);
+	makeEnemies(halfwidth, halfheight + 100, Options.planType);
+	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, Options.planType);
 
 ////////////////////////////////////////
 /// Handlers
@@ -929,7 +959,7 @@ function initGame() {
 			wave = Date.now();
 			enemycount = 1;
 			var randomint = Math.floor(Math.random() * 8);
-			makeEnemies(spawns[randomint][0], spawns[randomint][1], enemycolors[Math.floor(Math.random() * 4)]);
+			makeEnemies(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
 		};
 
 		if (planet.health <= 0) {
