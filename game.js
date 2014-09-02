@@ -14,10 +14,20 @@ var sprite_rock = new Image();
 var sprite_water = new Image();
 var sprite_air = new Image();
 
+var boom_fire = new Image();
+var boom_rock = new Image();
+var boom_water = new Image();
+var boom_air = new Image();
+
 sprite_fire.src = 'assets/Fire-Sprite.png';
 sprite_rock.src = 'assets/Rock-Sprite.png';
 sprite_water.src = 'assets/Water-Sprite.png';
 sprite_air.src = 'assets/Air-Sprite.png';
+
+boom_fire.src = 'assets/Fire-Boom.png';
+boom_rock.src = 'assets/Rock-Boom.png';
+boom_water.src = 'assets/Water-Boom.png';
+boom_air.src = 'assets/Air-Boom.png';
 /////////////////------------------\\\\\\\\\\\\\\\\\
 
 var renderops = {
@@ -79,16 +89,20 @@ var wepTraits = {
 //var enemycolors = ["#CF2308", "#BFBFBF", "#0658C4", "#593802"];
 var enemyTraits = {
 	fire: {
-		img: sprite_fire
+		img: sprite_fire,
+		boom: boom_fire
 	},
 	air: {
-		img: sprite_air
+		img: sprite_air,
+		boom: boom_air
 	},
 	water: {
-		img: sprite_water
+		img: sprite_water,
+		boom: boom_water
 	},
 	rock: {
-		img: sprite_water
+		img: sprite_water,
+		boom: boom_water
 	}
 }
 /////////////////------------------\\\\\\\\\\\\\\\\\
@@ -118,6 +132,7 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, rof) {
 	this.radius = this.width * 1.2; //have collision circle cover corners better at expense of overcoverage on middle of sides
 
 	this.alive = true; //used for determining damage and whether to draw
+	this.explode = false;
 
 	//This allows for the enemy to rotate to face the player
 	this.rotation = 0;
@@ -189,6 +204,7 @@ Enemy.prototype.update = function(delta) {
 			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
 				this.pBullets[i].alive = false;
 				this.alive = false;
+				this.explode = 1; //draw explosion sprite
 				var eDeath = new Audio("enemyDeath.wav");
 				eDeath.play();
 			}
@@ -204,10 +220,17 @@ Enemy.prototype.draw = function(ctx) {
 		ctx.translate(this.x, this.y);
 		ctx.rotate(this.rotation);
 		ctx.drawImage(enemyTraits[this.type].img,-6,-6);
-		// ctx.beginPath();
-		// ctx.fillStyle = this.color;
-		// ctx.fillRect(this.x - (this.x + this.width/2), this.y - (this.y + this.height/2), this.width, this.height);
 		ctx.restore();
+	}
+	else {
+		if (this.explode) {
+			ctx.save();
+			ctx.translate(this.x, this.y);
+			ctx.rotate(this.rotation);
+			ctx.drawImage(enemyTraits[this.type].boom,-6,-6);
+			ctx.restore();
+			this.explode = (this.explode+1)%7; //add a count, when this.explode hits 4 (or 0) it will go false
+		}
 	}
 };
 
@@ -903,8 +926,8 @@ function initGame() {
 		var delta = now - then;
 
 		if (!gameOver && renderops.game) {
+			render();			
 			update(delta / 1000);
-			render();
 		} else if (winGame && renderops.game) {
 			win()
 		} else if (renderops.game) {
