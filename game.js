@@ -94,20 +94,37 @@ var wepTraits = {
 var enemyTraits = {
 	fire: {
 		img: sprite_fire,
-		boom: boom_fire
+		boom: boom_fire,
+		speed: 3,
+		rof: 20,
+		health: 25,
+		bulletColor: "orange"
 	},
 	air: {
 		img: sprite_air,
-		boom: boom_air
+		boom: boom_air,
+		speed: 4,
+		rof: 100,
+		health: 10,
+		bulletColor: "ghostwhite"
 	},
 	water: {
 		img: sprite_water,
-		boom: boom_water
+		boom: boom_water,
+		speed: 3,
+		rof: 100,
+		health: 25,
+		bulletColor: "deepskyblue"
 	},
 	rock: {
 		img: sprite_water,
-		boom: boom_water
+		boom: boom_water,
+		speed: 2,
+		rof: 100,
+		health: 35,
+		bulletColor: "saddlebrown"
 	}
+
 }
 /////////////////------------------\\\\\\\\\\\\\\\\\
 
@@ -120,15 +137,14 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, rof) {
 	this.width = width;
 	this.height = height;
 
-
-	this.speed = 3;
-	this.orbit = orbit; //property determining distance of orbit
 	this.type = type;
-	this.health = 25;
+	this.speed = enemyTraits[this.type].speed;
+	this.orbit = orbit; //property determining distance of orbit
+	this.health = enemyTraits[this.type].health;
 
-	this.rof = rof; //rate of fire
+	this.rof = enemyTraits[this.type].rof; //rate of fire
 	this.count = 0; //counter for shooting
-	this.trigger = Math.floor(Math.random()*rof); //number 0 to rof-1 that will be used as signal to fire
+	this.trigger = Math.floor(Math.random()*this.rof); //number 0 to rof-1 that will be used as signal to fire
 
 	this.pBullets = pBullets; //player bullets, object will check for collision with these
 	this.eBullets = eBullets; //enemy bullets, object will push a new Bullet to these every time it shoots
@@ -168,7 +184,7 @@ Enemy.prototype.update = function(delta) {
 
 		////////SHOOTING////////
 		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
-			var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, 10, "yellow", Options.planType);
+			var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType);
 			this.eBullets.push(bullet);
 		}
 
@@ -874,9 +890,10 @@ function initGame() {
 	var enemytypes = ["fire", "air", "water", "rock"];
 	var enemycount = 1;
 	var defendercount = 1;
+
 	var makeEnemies = function(x,y, type) {
 		var randOrbit = Math.round(Math.random()*50) + 30; //30 to 80
-		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, 100);
+		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets);
 		enemy.assignplayer(player);
 		enemies.push(enemy);
 		if (enemycount < 7) {
