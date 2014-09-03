@@ -117,8 +117,8 @@ var enemyTraits = {
 		bulletColor: "deepskyblue"
 	},
 	rock: {
-		img: sprite_water,
-		boom: boom_water,
+		img: sprite_rock,
+		boom: boom_rock,
 		speed: 2,
 		rof: 100,
 		health: 35,
