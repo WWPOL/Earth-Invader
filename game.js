@@ -9,6 +9,8 @@ var winwidth = 0;
 
 
 ////////////////// LOAD IN SPRITES \\\\\\\\\\\\\\\\\\
+var sprite_player = new Image();
+
 var sprite_fire = new Image();
 var sprite_rock = new Image();
 var sprite_water = new Image();
@@ -18,6 +20,8 @@ var boom_fire = new Image();
 var boom_rock = new Image();
 var boom_water = new Image();
 var boom_air = new Image();
+
+sprite_player.src = 'assets/Shooter.png';
 
 sprite_fire.src = 'assets/Fire-Sprite.png';
 sprite_rock.src = 'assets/Rock-Sprite.png';
@@ -340,18 +344,19 @@ Turret.prototype.draw = function (ctx) {
 	}
 	ctx.closePath();	
 
-	ctx.beginPath();
-	ctx.arc(0, 0, 10, 0, 2 * Math.PI, false);
-	ctx.fillStyle = 'green';
-	ctx.fill();
-	ctx.lineWidth = 2;
-	ctx.strokeStyle = '#003300';
-	ctx.stroke();
+	ctx.drawImage(sprite_player,-12,-12);
+	// ctx.beginPath();
+	// ctx.arc(0, 0, 10, 0, 2 * Math.PI, false);
+	// ctx.fillStyle = 'green';
+	// ctx.fill();
+	// ctx.lineWidth = 2;
+	// ctx.strokeStyle = '#003300';
+	// ctx.stroke();
 
 
-	ctx.fillStyle = "#FF0000";
-	ctx.fillRect(-15,-1,10,2);
-	ctx.closePath();
+	// ctx.fillStyle = "#FF0000";
+	// ctx.fillRect(-15,-1,10,2);
+	// ctx.closePath();
 	ctx.restore(); //restore back to original
 };
 
