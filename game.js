@@ -97,7 +97,7 @@ var enemyTraits = {
 		boom: boom_fire,
 		speed: 3,
 		rof: 20,
-		health: 25,
+		health: 50,
 		damage: 10,
 		bulletColor: "orange"
 	},
@@ -106,7 +106,7 @@ var enemyTraits = {
 		boom: boom_air,
 		speed: 4,
 		rof: 100,
-		health: 10,
+		health: 25,
 		damage: 5,
 		bulletColor: "ghostwhite"
 	},
@@ -115,7 +115,7 @@ var enemyTraits = {
 		boom: boom_water,
 		speed: 3,
 		rof: 100,
-		health: 25,
+		health: 75,
 		damage: 15,
 		bulletColor: "deepskyblue"
 	},
@@ -124,7 +124,7 @@ var enemyTraits = {
 		boom: boom_rock,
 		speed: 2,
 		rof: 100,
-		health: 35,
+		health: 100,
 		damage: 20,
 		bulletColor: "saddlebrown"
 	}
@@ -221,7 +221,7 @@ Enemy.prototype.update = function(delta) {
 		//check for collision with bullet
 		for (var i = 0; i < this.pBullets.length; i++) {
 			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
-				this.health -= this.pBullets[i].damage;
+				this.health -= wepTraits[Options.wepType].damage;
 				this.pBullets[i].alive = false;
 				var hit = new Audio("hit.wav");
 				hit.play();
@@ -279,10 +279,10 @@ Turret.prototype.checkCollision = function (enemyArray) {
 	for (var i = 0; i < enemyArray.length; i++) {
 		if (enemyArray[i].alive && collision(this,enemyArray[i])) {
 			if (this.shield > 0) {
-				this.shield -= 5;
+				this.shield -= enemyTraits[Options.planType].damage;
 				this.dmgcount = 60;
 			} else {
-				this.health -= 5;
+				this.health -= enemyTraits[Options.planType].damage;
 			}
 			if (enemyArray[i].name === "bullet") {
 				enemyArray[i].alive = false;
@@ -404,12 +404,12 @@ Planet = function(x, y, name, color, stroke, bullets) {
 Planet.prototype.update = function(delta) {
 	for (var i = 0; i < this.bullets.length; i++) {
 		if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.shield > 0) {
-			this.shield -= 10;
+			this.shield -= wepTraits[Options.wepType].damage;
 			this.bullets[i].alive = false;
 			var hit = new Audio("hit.wav");
 			hit.play();
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.health > 0) {
-			this.health -= 10;
+			this.health -= wepTraits[Options.wepType].damage;
 			this.bullets[i].alive = false;
 			var hit = new Audio("hit.wav");
 			hit.play();
