@@ -746,14 +746,14 @@ function initLevelSelect() {
 		ctx.textAlign = "center";
 		ctx.fillText("Select a Planet Type", winwidth / 2, 150);
 
+		ctx.fillStyle = "red";
+		ctx.fillRect((canvas.width / 4) / 2 + 100, 200, 200, 75);
+		ctx.fillStyle = "black";
+		ctx.fillText("Fire", (canvas.width / 4) / 2 + 200, 250);
 		if (Options.planType === "fire") {
-			ctx.fillStyle = "red";
-			ctx.fillRect((canvas.width / 4) / 2 + 100, 200, 200, 75);
 			ctx.strokeStyle == planTraits[Options.planType].planstroke;
 			ctx.stroke();
 		}
-		ctx.fillStyle = "black";
-		ctx.fillText("Fire", (canvas.width / 4) / 2 + 200, 250);
 
 		ctx.fillStyle = "white";
 		ctx.fillRect((canvas.width / 2) - 250, 200, 200, 75);
