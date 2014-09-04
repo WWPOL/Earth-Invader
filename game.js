@@ -328,7 +328,7 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 		this.dmgcount--;
 	}
 
-	if (this.shield < 500 && this.shield > 0 && this.dmgcount == 0) {
+	if (this.shield < 200 && this.shield > 0 && this.dmgcount == 0) {
 		this.shield += 0.25; //shield will regenerate very slowly
 	}
 
