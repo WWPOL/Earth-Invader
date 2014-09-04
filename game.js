@@ -251,7 +251,7 @@ Enemy.prototype.draw = function(ctx) {
 			ctx.save();
 			ctx.translate(this.x, this.y);
 			ctx.rotate(this.rotation);
-			ctx.drawImage(enemyTraits[this.type].boom,-6,-6);
+			ctx.drawImage(enemyTraits[this.type].boom,-6,-6,28,28);
 			ctx.restore();
 			this.explode = (this.explode+1)%7; //add a count, when this.explode hits 4 (or 0) it will go false
 		}
