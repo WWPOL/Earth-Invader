@@ -7,6 +7,11 @@ var mouseY = 0;
 var winheight = 0; //window width & height
 var winwidth = 0;
 
+var score = 0;
+var enemiesKilled = 0;
+var time = 0;
+var scoremult = 1;
+
 
 ////////////////// LOAD IN SPRITES \\\\\\\\\\\\\\\\\\
 var sprite_player = new Image();
@@ -273,6 +278,7 @@ Enemy.prototype.update = function(delta) {
 			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
 				this.pBullets[i].alive = false;
 				this.alive = false;
+				enemiesKilled += 1;
 				this.explode = 1; //draw explosion sprite
 				var eDeath = new Audio();
 				eDeath.src = jsfxr(sounds[this.type].death);
@@ -330,11 +336,16 @@ Turret.prototype.checkCollision = function (enemyArray) {
 				var hit = new Audio();
 				hit.src = jsfxr(sounds.player.hit);
 				hit.play();
-			} else {
+			} else if (this.shield <= 0 && this.health > 0) {
 				this.health -= enemyTraits[Options.planType].damage;
 				var hit = new Audio();
 				hit.src = jsfxr(sounds.player.hit);
 				hit.play();
+			} else if (this.shield <= 0 && this.health <= 0) {
+				this.health -= enemyTraits[Options.planType].damage;
+				var death = new Audio();
+				death.src = jsfxr(sounds.player.death);
+				death.play();
 			}
 			if (enemyArray[i].name === "bullet") {
 				enemyArray[i].alive = false;
@@ -390,9 +401,6 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 	}
 
 	if (this.health < 0) {
-		var death = new Audio();
-		death.src = jsfxr();
-		death.play(sounds.player.death);
 		this.health = 0;
 	}
 
@@ -1137,6 +1145,8 @@ function initGame() {
 		if (player.health <= 0) {
 			gameOver = true;
 		};
+		time = Math.floor((Date.now() - start) / 1000);
+		score = Math.round(((enemiesKilled / time) * 1000) * scoremult);
 	};
 
 	//clears the screen
@@ -1160,7 +1170,7 @@ function initGame() {
 		gamectx.font = "20pt Arial";
 		gamectx.fillStyle = "white";
 		gamectx.textAlign = "center";
-		gamectx.fillText(Math.floor((Date.now() - start) / 1000), winwidth / 2, 30);
+		gamectx.fillText(time, winwidth / 2, 30);
 		player.draw(gamectx);
 		pBullets.forEach(function(bullet){
 			bullet.draw(gamectx);
@@ -1177,6 +1187,9 @@ function initGame() {
 		gamectx.fillStyle = "red";
 		gamectx.textAlign = "center";
 		gamectx.fillText("Game Over!", winwidth / 2, winheight / 2);
+
+		gamectx.font = "75pt Impact";
+		gamectx.fillText("Score: " + score, winwidth / 2, (winheight / 2) + 110);
 
 		gamectx.font = "30pt Arial";
 		gamectx.fillStyle = "white";
@@ -1195,6 +1208,9 @@ function initGame() {
 		gamectx.fillStyle = "green";
 		gamectx.textAlign = "center";
 		gamectx.fillText("You Win!", winwidth / 2, winheight / 2);
+
+		gamectx.font = "75pt Impact";
+		gamectx.fillText("Score: " + score, winwidth / 2, (winheight / 2) + 110);
 
 		gamectx.font = "30pt Arial";
 		gamectx.fillStyle = "white";
