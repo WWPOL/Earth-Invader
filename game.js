@@ -430,6 +430,21 @@ Planet.prototype.draw = function(ctx) {
 	ctx.lineWidth = 5;
 	ctx.strokeStyle = this.stroke;
 	ctx.stroke();
+
+	//draw shield
+	var shieldColor = "#"; 
+	for (var i = 0; i < 3; i++) {
+		shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+	}
+
+	ctx.beginPath();
+	ctx.arc(this.x, this.y, this.radius * 1.5, 0, 2 * Math.PI, false);
+	ctx.lineWidth = 7;
+	ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
+	if (this.shield > 0) { //only draw if greater than 0
+		ctx.stroke(); 
+	}
+	ctx.closePath();
 }
 
 Star = function(x, y, color) {
