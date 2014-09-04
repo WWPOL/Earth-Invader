@@ -957,7 +957,7 @@ function initGame() {
 		var now = Date.now();
 		var delta = now - then;
 
-		if (!gameOver && renderops.game) {
+		if (!gameOver && renderops.game && !winGame) {
 			render();			
 			update(delta / 1000);
 		} else if (winGame && renderops.game) {
