@@ -1,8 +1,8 @@
 Todo
 =====
-[ ] Make Player fire shoot like a flamethrower, insane RoF, but bullets die at short distance. Fire also should burn them for a few seconds. Air should be like a blast wave and pushes them back. Rock collats. Water does splash damage, slows enemies.
-[ ] Powerups
-[ ] diff damage for diff enemy types
+- [ ] Make Player fire shoot like a flamethrower, insane RoF, but bullets die at short distance. Fire also should burn them for a fw seconds. Air should be like a blast wave and pushes them back. Rock collats. Water does splash damage, slows enemies.  
+- [ ] Powerups  
+- [ ] diff damage for diff enemy types
 
 Earth Invader
 =====
