@@ -66,9 +66,9 @@ var planTraits = {
 var wepTraits = {
 	fire: {
 		color: "orange",
-		rof: 20, //rate of fire
+		rof: 5, //rate of fire
 		speed: 15,
-		damage: 20
+		damage: 15
 	},
 	air: {
 		color: "ghostwhite",
@@ -98,6 +98,7 @@ var enemyTraits = {
 		speed: 3,
 		rof: 20,
 		health: 25,
+		damage: 10,
 		bulletColor: "orange"
 	},
 	air: {
@@ -106,6 +107,7 @@ var enemyTraits = {
 		speed: 4,
 		rof: 100,
 		health: 10,
+		damage: 5,
 		bulletColor: "ghostwhite"
 	},
 	water: {
@@ -114,6 +116,7 @@ var enemyTraits = {
 		speed: 3,
 		rof: 100,
 		health: 25,
+		damage: 15,
 		bulletColor: "deepskyblue"
 	},
 	rock: {
@@ -122,6 +125,7 @@ var enemyTraits = {
 		speed: 2,
 		rof: 100,
 		health: 35,
+		damage: 20,
 		bulletColor: "saddlebrown"
 	}
 
@@ -184,7 +188,7 @@ Enemy.prototype.update = function(delta) {
 
 		////////SHOOTING////////
 		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
-			var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType);
+			var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType, this, false);
 			this.eBullets.push(bullet);
 		}
 
@@ -501,7 +505,7 @@ Healthbar.prototype.draw = function(ctx) {
 	ctx.closePath();
 }
 
-Bullet = function(x, y, r, dx, dy, speed, damage, color, type) {
+Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot) {
 	this.x = x;
 	this.y = y;
 	this.radius = r;
@@ -511,13 +515,16 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color, type) {
 	this.damage = damage; //The damage the bullet does
 	this.name = "bullet";
 	this.color = color;
+	this.birth = Date.now();
 
 	this.alive = true; //Used for determining damage and whether to draw
+	this.owner = owner;
 
 
 	this.rotation = 0;
 
 	this.type = type;
+	this.playershot = playershot;
 };
 
 //Update the bullet's position
@@ -528,6 +535,9 @@ Bullet.prototype.update = function(delta){
 	else {
 		this.x += this.speed * this.dx;
 		this.y += this.speed * this.dy;
+	}
+	if ((this.type === "fire") && (distance(this.x,this.y,this.owner.x,this.owner.y) > 150) && (this.playershot)) {
+		this.alive = false;
 	}
 
 };
@@ -964,7 +974,7 @@ function initGame() {
 	//updates the positions of the player and enemy
 	var update = function(delta){
 		//first, decide if new bullet should be added
-		if (mousedown != false) {
+		if (mousedown) {
 			shootcount++;
  			
  			if (shootcount % wepTraits[Options.wepType].rof == 1) { //use rate of fire property as modulo, fire every <rof> frames
@@ -973,7 +983,7 @@ function initGame() {
 				var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 
 
-				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType);
+				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
 				var lasersnd = new Audio("laser.wav");
 				lasersnd.play();
 				pBullets.push(bullet);
