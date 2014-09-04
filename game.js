@@ -44,6 +44,47 @@ var Options = {
 	wepType: "fire"
 };
 
+var sounds = {
+	player: {
+		fire: [3,0.3758,0.0389,0.4992,0.56,0.5291,,,0.0115,0.1529,0.2918,-0.2967,-0.849,-0.2789,,-0.3001,-0.1337,0.4522,0.9619,0.0049,-0.543,0.0878,0.0741,0.5],
+		air: [2,,0.242,,0.2856,0.5935,0.2,-0.1545,,,,,,0.4263,-0.3038,,,,1,,,0.1972,,0.5],
+		water: [3,,0.14,0.5702,0.4047,0.97,,,,,,0.0856,0.7404,,,0.4366,,,1,,,,,0.5],
+		rock: [2,,0.1486,0.0618,0.0313,0.3235,0.0103,-0.4143,,,,,,0.2042,0.1735,,,,1,,,,,0.5],
+		death: [0,0.0344,0.2434,0.0007,0.6978,0.5593,,0.0009,-0.1852,0.188,,-0.8373,0.5945,-0.8342,-0.0007,,0.0003,-0.0709,0.9177,-0.1776,0.7897,,0.0001,0.5],
+		hit: [1,,0.0125,,0.1674,0.6682,,-0.3997,,,,,,,,,,,1,,,,,0.5],
+		shielddown: [3,,0.2837,0.5598,0.4561,0.0189,,,,,,,,,,,,,1,,,,,0.5],
+		shieldback: [1,0.9203,0.7129,0.2955,0.369,0.5223,,-0.0713,0.1758,0.7845,0.9862,-0.968,-0.8643,0.7915,-0.0807,,-0.3867,-0.0029,0.9063,0.0015,,0.0282,-0.0049,0.5]
+	},
+	planet: {
+		death: [3,,0.2159,0.7801,0.97,0.07,,,,,,,0.89,,,,,0.32,0.79,,0.11,0.4,-0.36,0.5],
+		hit: [3,,0.0112,,0.31,0.0875,,-0.0122,,,,0.422,0.8441,,,,0.1835,-0.0441,1,,,,,0.5]
+	},
+	fire: {
+		hit: [2,,0.011,,0.2299,0.6347,0.0408,-0.4464,0.2178,0.0469,0.0193,0.0419,0.0302,0.0684,0.0369,0.0177,-0.0717,0.0732,0.9868,-0.0122,0.0097,0.074,-0.0184,0.5],
+		shoot: [1,,0.1636,0.2996,0.2184,0.5588,0.2816,-0.2181,,,,,,0.2688,0.0118,,0.1677,-0.0588,1,,,,,0.5],
+		death: [3,,0.3766,0.2533,0.4427,0.1865,,-0.2766,,,,-0.2171,0.8871,,,0.7384,0.5009,-0.2509,1,,,,,0.5]
+	},
+	air: {
+		hit: [1,,0.0536,,0.2621,0.631,,-0.4006,,,,,,,,,,,1,,,,,0.5],
+		shoot: [2,,0.1136,0.1444,0.3466,0.9639,0.2139,-0.2432,,,,,,0.8125,-0.3376,,,,1,,,0.2307,,0.5],
+		death: [3,,0.2042,0.2207,0.4078,0.1535,,0.2536,,,,0.0739,0.7854,,,,-0.1692,-0.2249,1,,,,,0.5]
+	},
+	water: {
+		hit: [1,,0.01,,0.2682,0.7035,,-0.367,,,,,,,,,,,1,,,0.1467,,0.5],
+		shoot: [0,,0.3498,,0.2535,0.3297,,0.2893,,,,,,0.0596,,,,,0.8007,,,0.0934,,0.5],
+		death: [3,,0.3065,0.6898,0.3659,0.042,,0.2063,,,,-0.6731,0.6848,,,,,,1,,,,,0.5]
+	},
+	rock: {
+		hit: [3,,0.0129,,0.28,0.2587,,-0.5081,,,,,,,,,,,1,,,,,0.5],
+		shoot: [2,0.0518,0.19,0.31,0.3405,0.3398,0.0424,-0.4251,0.0355,0.1033,0.1365,-0.0342,0.0407,0.0517,-0.0559,0.0628,0.3034,-0.2626,1,0.0017,0.0805,0.0027,-0.0163,0.5],
+		death: [3,,0.2477,0.2528,0.4555,0.0385,,0.044,,,,-0.247,0.7443,,,,,,1,,,,,0.5]
+	},
+	powerup: {
+		trishot: [0,0.0474,0.1545,0.4804,0.518,0.4414,0.1353,-0.0068,0.0824,,,-0.0384,0.0189,0.0616,0.0708,0.115,0.0828,0.0371,0.8901,-0.1333,0.0065,0.0344,0.0251,0.5]
+	},
+	click: [0,,0.1601,,0.0198,0.586,,,,,,,,0.5755,,,,,1,,,0.1,,0.5]
+}
+
 var planTraits = {
 	fire: {
 		plancolor: "#F72A0A",
@@ -189,6 +230,9 @@ Enemy.prototype.update = function(delta) {
 		////////SHOOTING////////
 		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
 			var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType, this, false);
+			var shoot = new Audio();
+			shoot.src = jsfxr(sounds[this.type].shoot);
+			shoot.play();
 			this.eBullets.push(bullet);
 		}
 
@@ -223,13 +267,15 @@ Enemy.prototype.update = function(delta) {
 			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
 				this.health -= wepTraits[Options.wepType].damage;
 				this.pBullets[i].alive = false;
-				var hit = new Audio("hit.wav");
+				var hit = new Audio();
+				hit.src = jsfxr(sounds[this.type].hit);
 				hit.play();
 			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
 				this.pBullets[i].alive = false;
 				this.alive = false;
 				this.explode = 1; //draw explosion sprite
-				var eDeath = new Audio("enemyDeath.wav");
+				var eDeath = new Audio();
+				eDeath.src = jsfxr(sounds[this.type].death);
 				eDeath.play();
 			}
 		}
@@ -281,8 +327,14 @@ Turret.prototype.checkCollision = function (enemyArray) {
 			if (this.shield > 0) {
 				this.shield -= enemyTraits[Options.planType].damage;
 				this.dmgcount = 60;
+				var hit = new Audio();
+				hit.src = jsfxr(sounds.player.hit);
+				hit.play();
 			} else {
 				this.health -= enemyTraits[Options.planType].damage;
+				var hit = new Audio();
+				hit.src = jsfxr(sounds.player.hit);
+				hit.play();
 			}
 			if (enemyArray[i].name === "bullet") {
 				enemyArray[i].alive = false;
@@ -338,6 +390,9 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 	}
 
 	if (this.health < 0) {
+		var death = new Audio();
+		death.src = jsfxr();
+		death.play(sounds.player.death);
 		this.health = 0;
 	}
 
@@ -406,17 +461,20 @@ Planet.prototype.update = function(delta) {
 		if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.shield > 0) {
 			this.shield -= wepTraits[Options.wepType].damage;
 			this.bullets[i].alive = false;
-			var hit = new Audio("hit.wav");
+			var hit = new Audio();
+			hit.src = jsfxr(sounds.planet.hit);
 			hit.play();
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.health > 0) {
 			this.health -= wepTraits[Options.wepType].damage;
 			this.bullets[i].alive = false;
-			var hit = new Audio("hit.wav");
+			var hit = new Audio();
+			hit.src = jsfxr(sounds.planet.hit);
 			hit.play();
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i])) { //if it collides with a bullet, kill itself and the bullet
 			this.bullets[i].alive = false;
 			this.alive = false;
-			var death = new Audio("enemyDeath.wav");
+			var death = new Audio();
+			death.src = jsfxr(sounds.planet.death);
 			death.play();
 		}
 	}
@@ -497,7 +555,8 @@ Healthbar.prototype.draw = function(ctx) {
 	if (this.shield) {
 		if (this.shield == 0) {
 			if (this.playsound) {
-				var shielddown = new Audio("shielddown.wav");
+				var shielddown = new Audio();
+				shielddown.src = jsfxr(sounds.player.shielddown);
 				shielddown.play();
 				this.playsound = false;
 			}
@@ -644,6 +703,9 @@ function initMainMenu() {
 		elements.forEach(function(element) {
 			if (y > element.top && y < element.top + element.height && x > element.left && x < element.left + element.width) {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				var clicksnd = new Audio();
+				clicksnd.src = jsfxr(sounds.click);
+				clicksnd.play();
 				initLevelSelect();
 			}
 		});
@@ -673,34 +735,69 @@ function initLevelSelect() {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			renderops.levelselect = false;
 			clearScreen();
+			var clicksnd = new Audio();
+			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.play();
 			initGame();
 		}
 
 		if(y > 200 && y < 275 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
 			Options.planType = "fire";
+			var clicksnd = new Audio();
+			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.play();
+
 		}
 		if(y > 200 && y < 275 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
 			Options.planType = "air";
+			var clicksnd = new Audio();
+			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.play();
+
 		}
 		if(y > 200 && y < 275 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
 			Options.planType = "water";
+			var clicksnd = new Audio();
+			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.play();
+
 		}
 		if(y > 200 && y < 275 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
 			Options.planType = "rock";
+			var clicksnd = new Audio();
+			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.play();
+
 		}
 
 
 		if(y > 400 && y < 475 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
 			Options.wepType = "fire";
+			var clicksnd = new Audio();
+			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.play();
+
 		}
 		if(y > 400 && y < 475 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
 			Options.wepType = "air";
+			var clicksnd = new Audio();
+			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.play();
+
 		}
 		if(y > 400 && y < 475 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
 			Options.wepType = "water";
+			var clicksnd = new Audio();
+			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.play();
+
 		}
 		if(y > 400 && y < 475 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
 			Options.wepType = "rock";
+			var clicksnd = new Audio();
+			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.play();
+
 		}
 	}, false);
 	canvas.addEventListener("mousemove", function (e) {
@@ -999,7 +1096,8 @@ function initGame() {
 
 
 				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
-				var lasersnd = new Audio("laser.wav");
+				var lasersnd = new Audio();
+				lasersnd.src = jsfxr(sounds.player[Options.wepType]);
 				lasersnd.play();
 				pBullets.push(bullet);
 
