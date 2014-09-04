@@ -21,17 +21,17 @@ var boom_rock = new Image();
 var boom_water = new Image();
 var boom_air = new Image();
 
-sprite_player.src = 'assets/Shooter.png';
+sprite_player.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAMAAADzN3VRAAACB1BMVEUAAAB+V0x5Z2EhIBpXVVE+PDZ2c3BUUUw/PjwwLysuLCccGxMWFhHSNQ4PDguBfnxnYVhNTEZHRUFEQj5DQDtnPjA1NC8sKCMmJRoZGRkeHRgYFxcTEg7799aDc2/TzWmTg2J3amF4ZV9nZF1fWVTAl1DIoE1RT0pXTEhZUUfPyEZsUERKSETJnDiWSTgzMi+VRiutRyrKSSeHPScrKicoJyQlIyFgXCBFQh5OSx2yPR0rKhseHRs7ORqDJBbkQRPgPxPnPRHyPBHpPw7uOAnoNgngOQj8+vL29ODx77/587OGhIOMgXzc1Hh8d3RqZ2R3aWLOxmCjilqEaVpwYlqWbFl9YlljYll0YFlpXVmjjFhhXljGwVaMfVafhFXTylSvm1R9YFHGs09eVE2wkEyubkySekusXEp3ckmbiUhvVkfbzkaDeUTFu0HEm0FeXEBaS0BMSkDVyz9xZz99ez18Uj3FmzycUjzKkzpVQDpAPjhCPzc8OjawTzWNTDVqRTVFRDPToTJwbjKERTHisy5XOistLCuySip9PiqfmCdHQiVTUSRxbSE2NCGLgyCAMyCSNh4zKx1sLxzEOhuYOhukNBurNxpQJxmvlhfoRRaYkBV6cBW6LxTvQRMjIxMkIRK8sxHEMxFZJhATEQ70Iw0fHg2PKAvoOQnaKwj0Oge9KAYFBQXsMgSiyY3CAAAAA3RSTlMA/QkiuOOKAAABTklEQVQoz2KgFKzEIe5g7+w8F4u4XJh2nWF7bWoFugQ/Wzi7OrtmslJKI5qEnzKLoA4nMweLYlAeilFsyiw6HJx8qyWBUlG6CAmj4JAsjRoTM2ZJmzYR9oC4MoRMot5kUX1xi54ma2YTDvWIBJiEi6G2lWu/uOUCrZjZzDamYoU5SVCZ5VbNBgvtps/S8pLNzZeSljaz7lrK5wSUWOPGy8u7YtWyGfGAyboHZvAs5pORkSlqWQLS4zZ1wpQ5dov6sj095M3n8fBI83DPB+thcDWuNOadNLG7U963xEJCylS/oRjmBD2N+mmtnL22lua23FJcwpqZcFenK0UWiLCKiTNLcEtyCamkIXnVhy1aiJWVi5tZQkxQIFYVOXi82VSERKo4uVjZBRTU0ILUn0VYmLVaEEOCgYmx3KBDVLQ0VBVL3Dk6OtjPxBHfLpQmJABQO0XZ4Qew3wAAAABJRU5ErkJggg==';
 
-sprite_fire.src = 'assets/Fire-Sprite.png';
-sprite_rock.src = 'assets/Rock-Sprite.png';
-sprite_water.src = 'assets/Water-Sprite.png';
-sprite_air.src = 'assets/Air-Sprite.png';
+sprite_fire.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAOVBMVEUAAAD/ugD/xgD/kwD/vgD/hwD/fQD/6AD/swD/qAD/3AD/nwD/mgD/ggD/lgD/jgD/1QD/0AD/dwAZEj0xAAAAAnRSTlMADH8lgRMAAABiSURBVAgdBcGHAcMgEACxy3c6eP9hIwEw7SYAsHW5vZ4AHjFm2esJxPfFbiWvw4wv/MxRcpPla+w9WxPpfHFUhzYzecy1lquWmVxQPe5lJfcHHrpHK+kJcI42k54AwGiSAH82EAPJABiB9wAAAABJRU5ErkJggg==';
+sprite_rock.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMBAMAAACkW0HUAAAAKlBMVEUAAACWTBeGQhKKRBOCQBJxOBBtNg+QSBV0OhBfMA59PhF4PBFmMw9IJQ2Rt3ZcAAAAAXRSTlMAQObYZgAAAFlJREFUCNdjYGAQFGQAkUZKhgwMjELaW5QFGBg1wsJWKTCYu+Yc63JnKNp69maEM4NQ6Nybqc4MwkszZ2a7MzC7hh3bosDAqOLR1VTAwCBs4qIOMqbYmIEBAAogE865++QUAAAAAElFTkSuQmCC';
+sprite_water.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAV1BMVEUAAACE0vuE0vsJgsEUisUJeLELdKoikstCqd4If7w8pds2oNcdj8oQgrwJfLkNe7QwnNMYjMgOhsMUf7d8zvdtxfNbuekyn9cllc8hi8AaiMAypuRPseOwitA1AAAAA3RSTlMAEgSF73AUAAAAa0lEQVQIHQXBhQHDMBAAsUsfzHaY2v3nrMSHzxTqHQCAb1lkTe0BuOIiKt1sADGsKuO9m0O+VMXsPHJziqok3/b9VGdWSebjd0R1iqoks7Zod5irSOpm3YFcwioisjlAjnOtYRsAMMXwPgB/e/QEuuONR8gAAAAASUVORK5CYII=';
+sprite_air.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAS1BMVEUAAADt7e3o5+e6tLTq6uro5ubv7+/n5ubs7Ozu7u7d2tra19fv7+/Szs7s6+vY1NTp6Ojh3d3n5eXk4eHKxcXFwMC7tbWopKSyrq4u3EvSAAAACXRSTlMANB7+OygEQUBBWsCSAAAAbElEQVQIHRXBhwHDIAwEwAe3qEvgkv0njXMHYP0QpfQVrzaGu4+4GtCzWISz7F6xkSplSYTtIKW/FLMF5C7CEmLXg5zFrzBbHpCSu49iO7/Yk0jVJ9t5o40xSyLClg4ck1l1yrnh1TZVqr0DP+LRBkPdaWJGAAAAAElFTkSuQmCC';
 
-boom_fire.src = 'assets/Fire-Boom.png';
-boom_rock.src = 'assets/Rock-Boom.png';
-boom_water.src = 'assets/Water-Boom.png';
-boom_air.src = 'assets/Air-Boom.png';
+boom_fire.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAAilBMVEUAAAD/Pw//Lw//kAP/Qwz/QAz/FxL/fgT/aAb/hgP/Swn/cgX/dwT/UQj/YQb/iwP/ngL/Rwr/Wgf/bQb/dQX/Kw7/Nwz/Sgn/fgD/ExP/Kg//ewP/agX/Pwv/VQj/FxL/YQb/agX/Tgj/FBP/Pwz/HhH/nAH/owL/mAL/qQH/yAD/uQH/sAH/1gAycOBjAAAAJ3RSTlMAAgT+BgsJ/v389/39/Pn+/vv7+PXz8vEcFhH69vT08vDs4y387iQsv7HRAAAAnUlEQVQIHQXBhQHCQBAEwD15jbvgGgH6b48ZQEdWoLsbgCbY16UnGjIC9GIBe4qeY6LQvmIQc57mQ3G0R88ATcypJOWhFQKjqmtqZd1kdYwR5po4WT77Rw4NGxDRLS33374UiX8CoKYov9uyyMRvmOhdK5uTEGZlZPnV3tK1ltydyeAOYAhNHyhmM2AAOoVH543GzEB17M52flRKAP4ZPwpqAq4EtQAAAABJRU5ErkJggg==';
+boom_rock.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAAbFBMVEV1Xg6ehQ1sVg8AAAChiAyulAyQeA2AaQ+JcQ91XxF5Yg5/aA9oUw9fSRCJcQ2HcA9mUA98ZA5tVxByXBBfShBnUQ9tVw+UfQ5tVw9wWg9nUQ9oUhBfShCMcw+XfQ+FbBCbgwuqjhaylhmfhBJCRDr6AAAAHXRSTlMEAQwADAf+/f79/PUIFBT3/v79+/r59/cb99mBd8UDXQUAAACWSURBVAgdDcEHAsIgEATAXY7e0uwKJPH/f9QZwIBakKApEKiYMpm84WNMGZhHojgrxlkQouaW0BqWDgHIS/Qh9GEhNADLzbnw7S0LgJJLcq4d32Xd3h/c733f+3F2P3yM0Pp6ncN5NM+qK0jFS9v3tkDhT/Tkg7UxqD+ImUat1ujtWZAhLipmS431hQLeHjR1UkatG9QPaPsInqWXDWQAAAAASUVORK5CYII=';
+boom_water.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAAxlBMVEUAAABCltg6iNIzhdAfXcIiXcM0dcw3jtNCftBDkdYvb8k5ktQqeswkascwiNAvhc8tgM04mtc7jNMphM4sf809ktVBodpDnNgqfcwziNAugs43jtMldskyhdA6l9YofMswjdExfc4aY8Myd8w4idEjbsg6jtM4hdBHsd9MsuArbsk7pNk4htAaY8Mvd8s0l9QibscfZsQ1k9QwcMkxg881i9I5jtMqectIoNpJlddGg9MzjNI8ltZRvuRKtuBOseBHsN9Eqtxc7/LmAAAAO3RSTlMADwkDEAgC/R0VBf37Hv7+/v39/Pbz/v39+fn28/Lw8O7t7amki2VUJh8a/v349vX18O/s4c20oYhIMg6F3XkAAACuSURBVAgdBcEFAsIwAASwq8vccBju7tBh//8UCWADIe2lRyFBOWh6WgrW9wQwLzjoSI2NPFZA0Cs0pL63ZmanKO/Xxwyckau/Sdw0q20NoINgEkerMPutnxBoN1uNKH5/v+mMMII8i8Kk9np9lAvzMyhbDOPf+1NXfl52IcAPlXNVWk2l5YAYeo2b70ZeV4MDE883pHTkkQyIhGnvKZYdZdmiGAgwArB5p6khCbV/ugkQqCbu2aMAAAAASUVORK5CYII=';
+boom_air.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAAq1BMVEUAAADp4+Px7e3t5ubo4eHa09PVysrv7Ozu5+fm39/z8PDw6enf2dno4+PZ0tLVycnj29vq5OT08/Ps5ubr5ubs6ur+/PzAsLD8+/vAtrb28/PLvr7SysrEtbXPyMjQycnz8fHi3Nzazs7f2tr29PTs6eni39/n4+PNwMC7s7PDsrLr5eXRw8Pq4+PLvr7s6urFtrbp5ubFtLT////18vLr4+Ph2Njq39/d09Mjzk5BAAAANHRSTlMA/v7++vn49AL+/f317u0H+vn19PDeSy0QDwn78fHw6ebk4uHUv7+glIiDZ1RJRzw1Ix8cfDwE3AAAAItJREFUCB0FwQVig0AAALAc7tRt7u5A+/+XLQG+1o9w2PjoC37yG/x1revuc1fs8znbJtl4ytv3w3YZ+85q6PLVbRqit9MAdmkZx2OUDOegf8nKcQynYwavF2fZNEXHKa6i2ZWH1TIJZRhDjF9IQxQPQw3QhEhVV+jxPJsjXbQUXCYNuFsAKOxZ3/MP1sYKW7vFUKgAAAAASUVORK5CYII=';
 /////////////////------------------\\\\\\\\\\\\\\\\\
 
 var renderops = {
@@ -957,11 +957,11 @@ function initGame() {
 		var now = Date.now();
 		var delta = now - then;
 
-		if (!gameOver && renderops.game && !winGame) {
+		if (winGame) {
+			win()
+		} else if (!gameOver) {
 			render();			
 			update(delta / 1000);
-		} else if (winGame && renderops.game) {
-			win()
 		} else if (renderops.game) {
 			death();
 		};
