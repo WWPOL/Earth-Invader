@@ -478,7 +478,7 @@ Healthbar = function(x, y, owner) {
 Healthbar.prototype.update = function(delta, owner) {
 	this.health = owner.health;
 	this.healthpercent = this.health / this.maxhealth;
-	if (this.shield !== false && owner.shield !== false) {
+	if (this.shield && owner.shield) {
 		this.shield = owner.shield;
 		this.shieldpercent = this.shield / this.maxshield;
 	}
@@ -494,7 +494,7 @@ Healthbar.prototype.draw = function(ctx) {
 	ctx.textAlign = "center";
 	ctx.fillText(this.name, this.x + 150, this.y + 15);
 
-	if (this.shield !== false) {
+	if (this.shield) {
 		if (this.shield == 0) {
 			if (this.playsound) {
 				var shielddown = new Audio("shielddown.wav");
