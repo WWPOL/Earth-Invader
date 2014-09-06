@@ -118,7 +118,7 @@ var wepTraits = {
 	},
 	air: {
 		color: "ghostwhite",
-		rof: 12,
+		rof: 75,//12,
 		speed: 15,
 		damage: 8
 	},
@@ -271,22 +271,34 @@ Enemy.prototype.update = function(delta) {
 		for (var i = 0; i < this.pBullets.length; i++) {
 			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
 				this.health -= wepTraits[Options.wepType].damage;
+
+				if (Options.wepType === "air") {
+					this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
+					this.x -= toPlayerX * this.speed * 30;
+					this.y -= toPlayerY * this.speed * 30;
+				}
+
+				//Collision with penetration, needs work
 				if (!this.pBullets[i].penetrate) {
 					this.pBullets[i].alive = false;
 				} else if (this.pBullets[i].penetrate && !this.pBullets[i].currentenemy === this) {
 					this.pBullets[i].currentenemy = this;
 					this.pBullets[i].penetratecount += 1;
 				}
+
 				var hit = new Audio();
 				hit.src = jsfxr(sounds[this.type].hit);
 				hit.play();
 			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
+
+				//Collision with penetration, needs work
 				if (!this.pBullets[i].penetrate) {
 					this.pBullets[i].alive = false;
 				} else if (this.pBullets[i].penetrate && !this.pBullets[i].currentenemy === this) {
 					this.pBullets[i].currentenemy = this;
 					this.pBullets[i].penetratecount += 1;
 				}
+
 				this.alive = false;
 				enemiesKilled += 1;
 				this.explode = 1; //draw explosion sprite
@@ -1123,6 +1135,16 @@ function initGame() {
 
 
 				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
+				if (Options.wepType === "air") {
+					var bullet2 = new Bullet(player.x, player.y, 3, (dx - 150)/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
+					var bullet3 = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, (dy - 150)/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
+					var bullet4 = new Bullet(player.x, player.y, 3, (dx - 100)/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
+					var bullet5 = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, (dy - 100)/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
+					pBullets.push(bullet2);
+					pBullets.push(bullet3);
+					pBullets.push(bullet4);
+					pBullets.push(bullet5);
+				}
 				var lasersnd = new Audio();
 				lasersnd.src = jsfxr(sounds.player[Options.wepType]);
 				lasersnd.play();
