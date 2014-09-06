@@ -271,12 +271,22 @@ Enemy.prototype.update = function(delta) {
 		for (var i = 0; i < this.pBullets.length; i++) {
 			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
 				this.health -= wepTraits[Options.wepType].damage;
-				this.pBullets[i].alive = false;
+				if (!this.pBullets[i].penetrate) {
+					this.pBullets[i].alive = false;
+				} else if (this.pBullets[i].penetrate && !this.pBullets[i].currentenemy === this) {
+					this.pBullets[i].currentenemy = this;
+					this.pBullets[i].penetratecount += 1;
+				}
 				var hit = new Audio();
 				hit.src = jsfxr(sounds[this.type].hit);
 				hit.play();
 			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
-				this.pBullets[i].alive = false;
+				if (!this.pBullets[i].penetrate) {
+					this.pBullets[i].alive = false;
+				} else if (this.pBullets[i].penetrate && !this.pBullets[i].currentenemy === this) {
+					this.pBullets[i].currentenemy = this;
+					this.pBullets[i].penetratecount += 1;
+				}
 				this.alive = false;
 				enemiesKilled += 1;
 				this.explode = 1; //draw explosion sprite
@@ -601,12 +611,18 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot
 
 	this.alive = true; //Used for determining damage and whether to draw
 	this.owner = owner;
-
+	this.playershot = playershot;
 
 	this.rotation = 0;
+	this.penetratecount = 0;
+	this.currentenemy = 0;
+	this.penetrate = false;
 
 	this.type = type;
-	this.playershot = playershot;
+	if (this.type === "rock" && this.playershot) {
+		this.penetrate = true;
+		this.radius = 4;
+	}
 };
 
 //Update the bullet's position
@@ -619,6 +635,9 @@ Bullet.prototype.update = function(delta){
 		this.y += this.speed * this.dy;
 	}
 	if ((this.type === "fire") && (distance(this.x,this.y,this.owner.x,this.owner.y) > 150) && (this.playershot)) {
+		this.alive = false;
+	}
+	if (this.penetratecount > 3) {
 		this.alive = false;
 	}
 
