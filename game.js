@@ -686,28 +686,31 @@ Healthbar.prototype.draw = function(ctx) {
 	ctx.textAlign = "center";
 	ctx.fillText(this.name, this.x + 150, this.y + 15);
 
-	if (this.shield) {
-		if (this.shield == 0) {
-			if (this.playsound) {
-				var shielddown = new Audio();
-				shielddown.src = jsfxr(sounds.player.shielddown);
-				shielddown.play();
-				this.playsound = false;
-			}
-			ctx.fillStyle = "white";
-			ctx.font = "12pt Arial";
-			ctx.textAlign = "center";
-			ctx.fillText("Shields down!", this.x + 150, this.y + 45);
+	if (this.shield > 0) {
+		ctx.fillStyle = "blue";
+		ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
+		ctx.font = "12pt Arial";
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center";
+		ctx.fillText("Shields", this.x + 150, this.y + 45);
+		this.playsound = true;
+	} else if (this.shield === 0) {
+		if (this.playsound) {
+			var shielddown = new Audio();
+			shielddown.src = jsfxr(sounds.player.shielddown);
+			shielddown.play();
+			this.playsound = false;
 		}
-		else {
-			ctx.fillStyle = "blue";
-			ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
-			ctx.font = "12pt Arial";
-			ctx.fillStyle = "white";
-			ctx.textAlign = "center";
-			ctx.fillText("Shields", this.x + 150, this.y + 45);
-		}
-	}	
+		ctx.fillStyle = "white";
+		ctx.font = "12pt Arial";
+		ctx.textAlign = "center";
+		ctx.fillText("Shields down!", this.x + 150, this.y + 45);
+	} else if (this.shield <= 0) {
+		ctx.fillStyle = "white";
+		ctx.font = "12pt Arial";
+		ctx.textAlign = "center";
+		ctx.fillText("Shields down!", this.x + 150, this.y + 45);
+	}
 
 
 	ctx.closePath();
