@@ -452,17 +452,24 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 		this.dmgcount--;
 	}
 
-	if (this.shield < 200 && this.shield > 0 && this.dmgcount == 0) {
+	if (this.shield < 200 && this.shield >=0 && this.dmgcount == 0) {
 		this.shield += 0.25; //shield will regenerate very slowly
+	}
+	if (this.shield > 0) {
+		this.radius = 40;
 	}
 
 	if (this.shield <= 0) {
 		this.radius = 10; //collision detection radius set to 40 (shield), reduced when shield is 
+	}
+	if (this.shield < 0) {
 		this.shield = 0;
+		this.dmgcount = 180;
 	}
 
 	if (this.health < 0) {
 		this.health = 0;
+		this.alive = false;
 	}
 
 	this.direction += dDir;
@@ -480,7 +487,7 @@ Turret.prototype.draw = function (ctx) {
 			shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
 		}
 		ctx.beginPath();
-		ctx.arc(0, 0, this.radius, 0, 2 * Math.PI, false);
+		ctx.arc(0, 0, 40, 0, 2 * Math.PI, false);
 		ctx.lineWidth = 4;
 		ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
 		if (this.shield > 0) { //only draw if greater than 0
@@ -514,6 +521,7 @@ Planet = function(x, y, name, color, stroke, bullets) {
 	this.alive = true;
 	this.damagemult = 1;
 	this.totaldamage = 0;
+	this.dmgcount = 0;
 }
 
 Planet.prototype.update = function(delta) {
@@ -562,6 +570,7 @@ Planet.prototype.update = function(delta) {
 		if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.shield > 0) {
 			this.shield -= wepTraits[Options.wepType].damage * this.damagemult;
 			this.totaldamage += wepTraits[Options.wepType].damage * this.damagemult;
+			this.dmgcount = 60;
 			this.bullets[i].alive = false;
 			var hit = new Audio();
 			hit.src = jsfxr(sounds.planet.hit);
@@ -581,12 +590,32 @@ Planet.prototype.update = function(delta) {
 			death.play();
 		}
 	}
+	if (this.dmgcount > 0) {
+		this.dmgcount--;
+	}
+	if (this.shield < 1000 && this.shield >= 0 && this.dmgcount == 0) {
+		this.shield += 0.25; //shield will regenerate very slowly
+	}
+	if (this.shield > 0) {
+		this.radius = 135;
+	}
+	if (this.shield <= 0) {
+		this.radius = 70; //collision detection radius set to 40 (shield), reduced when shield is 
+	}
+	if (this.shield < 0) {
+		this.shield = 0;
+		this.dmgcount = 180;
+	}
+	if (this.health <= 0) {
+		this.health = 0;
+		this.alive = true;
+	}
 }
 
 Planet.prototype.draw = function(ctx) {
 	if (this.alive) {
 		ctx.beginPath();
-		ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+		ctx.arc(this.x, this.y, 70, 0, 2 * Math.PI, false);
 		ctx.fillStyle = this.color;
 		ctx.fill();
 		ctx.lineWidth = 5;
@@ -600,7 +629,7 @@ Planet.prototype.draw = function(ctx) {
 		}
 
 		ctx.beginPath();
-		ctx.arc(this.x, this.y, this.radius * 1.5, 0, 2 * Math.PI, false);
+		ctx.arc(this.x, this.y, 135, 0, 2 * Math.PI, false);
 		ctx.lineWidth = 7;
 		ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
 		if (this.shield > 0) { //only draw if greater than 0
