@@ -604,7 +604,7 @@ Planet.prototype.update = function(delta) {
 	}
 	if (this.shield < 0) {
 		this.shield = 0;
-		this.dmgcount = 180;
+		this.dmgcount = 500;
 	}
 	if (this.health <= 0) {
 		this.health = 0;
