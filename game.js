@@ -352,16 +352,13 @@ Enemy.prototype.draw = function(ctx) {
 		ctx.rotate(this.rotation);
 		ctx.drawImage(enemyTraits[this.type].img,-6,-6);
 		ctx.restore();
-	}
-	else {
-		if (this.explode) {
-			ctx.save();
-			ctx.translate(this.x, this.y);
-			ctx.rotate(this.rotation);
-			ctx.drawImage(enemyTraits[this.type].boom,-6,-6,28,28);
-			ctx.restore();
-			this.explode = (this.explode+1)%7; //add a count, when this.explode hits 4 (or 0) it will go false
-		}
+	} else if (this.explode) {
+		ctx.save();
+		ctx.translate(this.x, this.y);
+		ctx.rotate(this.rotation);
+		ctx.drawImage(enemyTraits[this.type].boom,-6,-6,28,28);
+		ctx.restore();
+		this.explode = (this.explode+1)%7; //add a count, when this.explode hits 4 (or 0) it will go false
 	}
 };
 
@@ -379,6 +376,7 @@ Turret = function (x,y,name, eArrays, eBullets) {
 	this.radius = 40;
 	this.eArrays = eArrays; //array of enemy arrays 
 	this.eBullets = eBullets;
+	this.alive = true;
 
 };
 
@@ -414,21 +412,29 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 	if (65 in keysDown) { //left
 		if (this.x > 0) {
 			this.x -= this.speed * delta;
+		} else {
+			this.x = gc.width;
 		}
 	}
 	if (87 in keysDown) { //up
 		if (this.y > 0) {
 			this.y -= this.speed * delta;
+		} else {
+			this.y = gc.height;
 		}
 	}
 	if (68 in keysDown) { //right
-		if (this.x < gc.width - 20) {
+		if (this.x < gc.width) {
 			this.x += this.speed * delta;
+		} else {
+			this.x = 0;
 		}
 	}
 	if (83 in keysDown) { //down
-		if (this.y < gc.height - 20) {
+		if (this.y < gc.height) {
 			this.y += this.speed * delta;
+		} else {
+			this.y = 0;
 		}
 	}
 	var dDir = this.findDirection(mouseX,mouseY); //delta in direction
@@ -463,39 +469,29 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 };
 
 Turret.prototype.draw = function (ctx) { 
-	ctx.save(); //save the state to stack before rotating
-	ctx.translate(this.x,this.y);
-	ctx.rotate(this.direction);
+	if (this.alive) {
+		ctx.save(); //save the state to stack before rotating
+		ctx.translate(this.x,this.y);
+		ctx.rotate(this.direction);
 
-	//draw shield
-	var shieldColor = "#"; 
-	for (var i = 0; i < 3; i++) {
-		shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+		//draw shield
+		var shieldColor = "#"; 
+		for (var i = 0; i < 3; i++) {
+			shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+		}
+
+		ctx.beginPath();
+		ctx.arc(0, 0, 40, 0, 2 * Math.PI, false);
+		ctx.lineWidth = 4;
+		ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
+		if (this.shield > 0) { //only draw if greater than 0
+			ctx.stroke(); 
+		}
+		ctx.closePath();	
+
+		ctx.drawImage(sprite_player,-12,-12);
+		ctx.restore(); //restore back to original
 	}
-
-	ctx.beginPath();
-	ctx.arc(0, 0, 40, 0, 2 * Math.PI, false);
-	ctx.lineWidth = 4;
-	ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
-	if (this.shield > 0) { //only draw if greater than 0
-		ctx.stroke(); 
-	}
-	ctx.closePath();	
-
-	ctx.drawImage(sprite_player,-12,-12);
-	// ctx.beginPath();
-	// ctx.arc(0, 0, 10, 0, 2 * Math.PI, false);
-	// ctx.fillStyle = 'green';
-	// ctx.fill();
-	// ctx.lineWidth = 2;
-	// ctx.strokeStyle = '#003300';
-	// ctx.stroke();
-
-
-	// ctx.fillStyle = "#FF0000";
-	// ctx.fillRect(-15,-1,10,2);
-	// ctx.closePath();
-	ctx.restore(); //restore back to original
 };
 
 Turret.prototype.findDirection = function (mX,mY) {
@@ -589,28 +585,30 @@ Planet.prototype.update = function(delta) {
 }
 
 Planet.prototype.draw = function(ctx) {
-	ctx.beginPath();
-	ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-	ctx.fillStyle = this.color;
-	ctx.fill();
-	ctx.lineWidth = 5;
-	ctx.strokeStyle = this.stroke;
-	ctx.stroke();
+	if (this.alive) {
+		ctx.beginPath();
+		ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+		ctx.fillStyle = this.color;
+		ctx.fill();
+		ctx.lineWidth = 5;
+		ctx.strokeStyle = this.stroke;
+		ctx.stroke();
 
-	//draw shield
-	var shieldColor = "#"; 
-	for (var i = 0; i < 3; i++) {
-		shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
-	}
+		//draw shield
+		var shieldColor = "#"; 
+		for (var i = 0; i < 3; i++) {
+			shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+		}
 
-	ctx.beginPath();
-	ctx.arc(this.x, this.y, this.radius * 1.5, 0, 2 * Math.PI, false);
-	ctx.lineWidth = 7;
-	ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
-	if (this.shield > 0) { //only draw if greater than 0
-		ctx.stroke(); 
+		ctx.beginPath();
+		ctx.arc(this.x, this.y, this.radius * 1.5, 0, 2 * Math.PI, false);
+		ctx.lineWidth = 7;
+		ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
+		if (this.shield > 0) { //only draw if greater than 0
+			ctx.stroke(); 
+		}
+		ctx.closePath();
 	}
-	ctx.closePath();
 }
 
 Star = function(x, y, color) {
@@ -1262,10 +1260,11 @@ function initGame() {
 			win = true;
 		}
 		if (player.health <= 0) {
+			player.alive = false;
 			gameOver = true;
 		};
 		time = Math.floor((Date.now() - start) / 1000);
-		score = Math.round((((enemiesKilled * planet.totaldamage) / time) * 1000) * scoremult);
+		score = Math.round((((enemiesKilled * planet.totaldamage) / time) * 10) * scoremult);
 	};
 
 	//clears the screen
@@ -1351,6 +1350,14 @@ function initGame() {
 			gamectx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
 			gameOver = false;
 			winGame = false;
+			for (x in enemies) {
+				enemies[x].alive = false;
+			}
+			for (x in pBullets) {
+				pBullets[x].alive = false;
+			}
+			planet.alive = false;
+			player.alive = false;
 			renderops.game = false;
 			initLevelSelect();
 		}
