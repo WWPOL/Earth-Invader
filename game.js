@@ -478,10 +478,11 @@ Turret.prototype.draw = function (ctx) {
 	ctx.lineWidth = 4;
 	ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
 	if (this.shield > 0) { //only draw if greater than 0
-		ctx.stroke(); 
+		ctx.stroke();
 	}
-	ctx.closePath();	
+	ctx.closePath();
 
+	ctx.scale(-1, 1);
 	ctx.drawImage(sprite_player,-12,-12);
 	// ctx.beginPath();
 	// ctx.arc(0, 0, 10, 0, 2 * Math.PI, false);
