@@ -327,7 +327,7 @@ Enemy.prototype.update = function(delta) {
 					this.pBullets[i].currentenemy = this;
 					this.pBullets[i].penetratecount += 1;
 				}*/
-
+				this.pBullets[i].alive = false;
 				var hit = new Audio();
 				hit.src = jsfxr(sounds[this.type].hit);
 				hit.play();
