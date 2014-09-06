@@ -191,6 +191,7 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, rof) {
 	this.speed = enemyTraits[this.type].speed;
 	this.orbit = orbit; //property determining distance of orbit
 	this.health = enemyTraits[this.type].health;
+	this.damagemult = 1;
 
 	this.rof = enemyTraits[this.type].rof; //rate of fire
 	this.count = 0; //counter for shooting
@@ -269,8 +270,49 @@ Enemy.prototype.update = function(delta) {
 
 		//check for collision with bullet
 		for (var i = 0; i < this.pBullets.length; i++) {
+			if (this.type === "fire") {
+				if (this.pBullets[i].type === "fire") {
+					this.damagemult = 1;
+				} else if (this.pBullets[i].type === "air") {
+					this.damagemult = 1.5;
+				} else if (this.pBullets[i].type === "water") {
+					this.damagemult = 0.5;
+				} else if (this.pBullets[i].type === "rock") {
+					this.damagemult = 1;
+				};
+			} else if (this.type === "air") {
+				if (this.pBullets[i].type === "fire") {
+					this.damagemult = 0.5;
+				} else if (this.pBullets[i].type === "air") {
+					this.damagemult = 1;
+				} else if (this.pBullets[i].type === "water") {
+					this.damagemult = 1;
+				} else if (this.pBullets[i].type === "rock") {
+					this.damagemult = 1.5;
+				};
+			} else if (this.type === "water") {
+				if (this.pBullets[i].type === "fire") {
+					this.damagemult = 1.5;
+				} else if (this.pBullets[i].type === "air") {
+					this.damagemult = 1;
+				} else if (this.pBullets[i].type === "water") {
+					this.damagemult = 1;
+				} else if (this.pBullets[i].type === "rock") {
+					this.damagemult = 0.5;
+				};
+			} else if (this.type === "rock") {
+				if (this.pBullets[i].type === "fire") {
+					this.damagemult = 1;
+				} else if (this.pBullets[i].type === "air") {
+					this.damagemult = 0.5;
+				} else if (this.pBullets[i].type === "water") {
+					this.damagemult = 1.5;
+				} else if (this.pBullets[i].type === "rock") {
+					this.damagemult = 1;
+				};
+			};
 			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
-				this.health -= wepTraits[Options.wepType].damage;
+				this.health -= wepTraits[Options.wepType].damage * this.damagemult;
 
 				if (Options.wepType === "air") {
 					this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
@@ -278,27 +320,18 @@ Enemy.prototype.update = function(delta) {
 					this.y -= toPlayerY * this.speed * 30;
 				}
 
-				//Collision with penetration, needs work
+				/*Collision with penetration, needs work
 				if (!this.pBullets[i].penetrate) {
 					this.pBullets[i].alive = false;
 				} else if (this.pBullets[i].penetrate && !this.pBullets[i].currentenemy === this) {
 					this.pBullets[i].currentenemy = this;
 					this.pBullets[i].penetratecount += 1;
-				}
+				}*/
 
 				var hit = new Audio();
 				hit.src = jsfxr(sounds[this.type].hit);
 				hit.play();
 			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
-
-				//Collision with penetration, needs work
-				if (!this.pBullets[i].penetrate) {
-					this.pBullets[i].alive = false;
-				} else if (this.pBullets[i].penetrate && !this.pBullets[i].currentenemy === this) {
-					this.pBullets[i].currentenemy = this;
-					this.pBullets[i].penetratecount += 1;
-				}
-
 				this.alive = false;
 				enemiesKilled += 1;
 				this.explode = 1; //draw explosion sprite
@@ -484,18 +517,60 @@ Planet = function(x, y, name, color, stroke, bullets) {
 	this.bullets = bullets;
 	this.stroke = stroke;
 	this.alive = true;
+	this.damagemult = 1;
 }
 
 Planet.prototype.update = function(delta) {
 	for (var i = 0; i < this.bullets.length; i++) {
+		if (this.type === "fire") {
+			if (this.pBullets[i].type === "fire") {
+				this.damagemult = 1;
+			} else if (this.pBullets[i].type === "air") {
+				this.damagemult = 1.5;
+			} else if (this.pBullets[i].type === "water") {
+				this.damagemult = 0.5;
+			} else if (this.pBullets[i].type === "rock") {
+				this.damagemult = 1;
+			};
+		} else if (this.type === "air") {
+			if (this.pBullets[i].type === "fire") {
+				this.damagemult = 0.5;
+			} else if (this.pBullets[i].type === "air") {
+				this.damagemult = 1;
+			} else if (this.pBullets[i].type === "water") {
+				this.damagemult = 1;
+			} else if (this.pBullets[i].type === "rock") {
+				this.damagemult = 1.5;
+			};
+		} else if (this.type === "water") {
+			if (this.pBullets[i].type === "fire") {
+				this.damagemult = 1.5;
+			} else if (this.pBullets[i].type === "air") {
+				this.damagemult = 1;
+			} else if (this.pBullets[i].type === "water") {
+				this.damagemult = 1;
+			} else if (this.pBullets[i].type === "rock") {
+				this.damagemult = 0.5;
+			};
+		} else if (this.type === "rock") {
+			if (this.pBullets[i].type === "fire") {
+				this.damagemult = 1;
+			} else if (this.pBullets[i].type === "air") {
+				this.damagemult = 0.5;
+			} else if (this.pBullets[i].type === "water") {
+				this.damagemult = 1.5;
+			} else if (this.pBullets[i].type === "rock") {
+				this.damagemult = 1;
+			};
+		};
 		if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.shield > 0) {
-			this.shield -= wepTraits[Options.wepType].damage;
+			this.shield -= wepTraits[Options.wepType].damage * this.damagemult;
 			this.bullets[i].alive = false;
 			var hit = new Audio();
 			hit.src = jsfxr(sounds.planet.hit);
 			hit.play();
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.health > 0) {
-			this.health -= wepTraits[Options.wepType].damage;
+			this.health -= wepTraits[Options.wepType].damage * this.damagemult;
 			this.bullets[i].alive = false;
 			var hit = new Audio();
 			hit.src = jsfxr(sounds.planet.hit);
@@ -845,21 +920,21 @@ function initLevelSelect() {
 		y = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
 
 		if(y > 200 && y < 275 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
-			infoBox = "Fire Planet Info";
+			infoBox = "Weak against Air, resistant to Water.";
 		} else if(y > 200 && y < 275 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
-			infoBox = "Air Planet Info";
+			infoBox = "Weak against Rock, resistant to Fire.";
 		} else if(y > 200 && y < 275 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
-			infoBox = "Water Planet Info";
+			infoBox = "Weak against Fire, resistant to Rock.";
 		} else if(y > 200 && y < 275 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
-			infoBox = "Rock Planet Info";
+			infoBox = "Weak against Water, resistant to Air.";
 		} else if(y > 400 && y < 475 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
-			infoBox = "Fire Weapon Info";
+			infoBox = "Effective against Water, less effective against Air.";
 		} else if(y > 400 && y < 475 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
-			infoBox = "Air Weapon Info";
+			infoBox = "Effective against Fire, less effective against Rock.";
 		} else if(y > 400 && y < 475 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
-			infoBox = "Water Weapon Info";
+			infoBox = "Effective against Rock, less effective against Fire.";
 		} else if(y > 400 && y < 475 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
-			infoBox = "Rock Weapon Info";
+			infoBox = "Effective against Air, less effective against Water.";
 		} else {
 			infoBox = "";
 		}
