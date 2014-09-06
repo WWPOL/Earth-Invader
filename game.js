@@ -518,6 +518,7 @@ Planet = function(x, y, name, color, stroke, bullets) {
 	this.stroke = stroke;
 	this.alive = true;
 	this.damagemult = 1;
+	this.totaldamage = 0;
 }
 
 Planet.prototype.update = function(delta) {
@@ -565,12 +566,14 @@ Planet.prototype.update = function(delta) {
 		};
 		if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.shield > 0) {
 			this.shield -= wepTraits[Options.wepType].damage * this.damagemult;
+			this.totaldamage += wepTraits[Options.wepType].damage * this.damagemult;
 			this.bullets[i].alive = false;
 			var hit = new Audio();
 			hit.src = jsfxr(sounds.planet.hit);
 			hit.play();
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.health > 0) {
 			this.health -= wepTraits[Options.wepType].damage * this.damagemult;
+			this.totaldamage += wepTraits[Options.wepType].damage * this.damagemult;
 			this.bullets[i].alive = false;
 			var hit = new Audio();
 			hit.src = jsfxr(sounds.planet.hit);
@@ -1262,7 +1265,7 @@ function initGame() {
 			gameOver = true;
 		};
 		time = Math.floor((Date.now() - start) / 1000);
-		score = Math.round(((enemiesKilled / time) * 1000) * scoremult);
+		score = Math.round((((enemiesKilled * planet.totaldamage) / time) * 1000) * scoremult);
 	};
 
 	//clears the screen
