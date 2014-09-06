@@ -26,7 +26,7 @@ var boom_rock = new Image();
 var boom_water = new Image();
 var boom_air = new Image();
 
-sprite_player.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAMAAADzN3VRAAACB1BMVEUAAAB+V0x5Z2EhIBpXVVE+PDZ2c3BUUUw/PjwwLysuLCccGxMWFhHSNQ4PDguBfnxnYVhNTEZHRUFEQj5DQDtnPjA1NC8sKCMmJRoZGRkeHRgYFxcTEg7799aDc2/TzWmTg2J3amF4ZV9nZF1fWVTAl1DIoE1RT0pXTEhZUUfPyEZsUERKSETJnDiWSTgzMi+VRiutRyrKSSeHPScrKicoJyQlIyFgXCBFQh5OSx2yPR0rKhseHRs7ORqDJBbkQRPgPxPnPRHyPBHpPw7uOAnoNgngOQj8+vL29ODx77/587OGhIOMgXzc1Hh8d3RqZ2R3aWLOxmCjilqEaVpwYlqWbFl9YlljYll0YFlpXVmjjFhhXljGwVaMfVafhFXTylSvm1R9YFHGs09eVE2wkEyubkySekusXEp3ckmbiUhvVkfbzkaDeUTFu0HEm0FeXEBaS0BMSkDVyz9xZz99ez18Uj3FmzycUjzKkzpVQDpAPjhCPzc8OjawTzWNTDVqRTVFRDPToTJwbjKERTHisy5XOistLCuySip9PiqfmCdHQiVTUSRxbSE2NCGLgyCAMyCSNh4zKx1sLxzEOhuYOhukNBurNxpQJxmvlhfoRRaYkBV6cBW6LxTvQRMjIxMkIRK8sxHEMxFZJhATEQ70Iw0fHg2PKAvoOQnaKwj0Oge9KAYFBQXsMgSiyY3CAAAAA3RSTlMA/QkiuOOKAAABTklEQVQoz2KgFKzEIe5g7+w8F4u4XJh2nWF7bWoFugQ/Wzi7OrtmslJKI5qEnzKLoA4nMweLYlAeilFsyiw6HJx8qyWBUlG6CAmj4JAsjRoTM2ZJmzYR9oC4MoRMot5kUX1xi54ma2YTDvWIBJiEi6G2lWu/uOUCrZjZzDamYoU5SVCZ5VbNBgvtps/S8pLNzZeSljaz7lrK5wSUWOPGy8u7YtWyGfGAyboHZvAs5pORkSlqWQLS4zZ1wpQ5dov6sj095M3n8fBI83DPB+thcDWuNOadNLG7U963xEJCylS/oRjmBD2N+mmtnL22lua23FJcwpqZcFenK0UWiLCKiTNLcEtyCamkIXnVhy1aiJWVi5tZQkxQIFYVOXi82VSERKo4uVjZBRTU0ILUn0VYmLVaEEOCgYmx3KBDVLQ0VBVL3Dk6OtjPxBHfLpQmJABQO0XZ4Qew3wAAAABJRU5ErkJggg==';
+sprite_player.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAMAAADzN3VRAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH3gkGAh069n+LkgAAAhBQTFRF+vr5////AAAABQUFDw4LExEOExIOFBMQFhYRGBcUGBcXGRkZHBsTHh0YHh0bHx4NISAaIyMTJCESJSMhJiUaKCckKyobKyonLCgjLSwrLiwnMC8rMysdMzIvNTQvNjQhOzkaPDo2Pjw2Pz48QD44Qj83Q0A7REI+RUIeRUQzR0IlR0VBSkhETEpATUxGTksdUCcZUU9KU1EkVFFMVUA6VzorV0xIV1VRWSYQWVFHWktAXlRNXlxAX1lUYFwgYV5YY2JZZz4wZ2FYZ2RdaV1ZakU1amdkbC8cbFBEb1ZHcGJacG4ycWc/cW0hdGBZdnNwd2lid2phd3JJeGVfenAVfFI9fHd0fT4qfWBRfWJZfXs9f1hNgDMggX58gyQWg3Nvg3lEhEUxhGlahoSDhz0ni4MgjH1WjIF8jUw1jygLkjYeknpLk4NilUYrlkk4lmxZmDobmJAVm4lInFI8n4RVn5gno4pao4xYpDQbqzcarFxKrUcqrm5Mr5YXr5tUsE81sJBMsj0dskoqui8UvLMRvSgGwJdQxDMRxDobxJtBxZs8xbtBxrNPxsFWyKBNyZw4ykknypM6zsZgz8hG0jUO06Ey08pU081p1cs/2isI285G3NR44DkI4D8T4rMu5EET5z0R6DYJ6DkJ6EUW6T8O7DIE7jgJ70ET8e+/8jwR9CMN9DoH9vTg+fOz+/fW/Pry+p9c2AAAAAJ0Uk5TAAB2k804AAAAAWJLR0QB/wIt3gAAAVpJREFUKM9jYMQFGIiTWYZDZvH8uQsWYJFpyw91dAzPLY5mQJPpy3HSU1VSVzd3i0WVAUoYK0lJq6hp2/onI8u0pTnpyYkI8EgpKWnb+6cjZPqzbZk4uXlEBCTklNSsXIKr4DJFluqc7DwKdvoK8tKmla5meTAZH01ZUV4RjajZ00uNZNynpJikLATJrGQR4uHg4uAQtJu+ZsWsVIu45oKsijkgmVXzZrCxsbGwcgRNWr9uWm1m68wpU6bMWQrWw68lJszFxWvTvW7t5EKDuPbcxMZFUHt6EnTlRPkEQnont+hLxCxs9KheBnNbnZ+hsriAmLevhoSsY0dexAS4q7tKAozVJPm4BYTFFc08vZIQMoz95YHmytzMLNLKOubO/vHI4dZZBpQSkNbRM3cOi0UN66kNwdaWxobGDv6x6PEzsaa+qTrDIzIeS5wuX7Jk/lwc6WA1GWkHBQAAvH1XOkRKwwEAAAAASUVORK5CYII=';
 
 sprite_fire.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAOVBMVEUAAAD/ugD/xgD/kwD/vgD/hwD/fQD/6AD/swD/qAD/3AD/nwD/mgD/ggD/lgD/jgD/1QD/0AD/dwAZEj0xAAAAAnRSTlMADH8lgRMAAABiSURBVAgdBcGHAcMgEACxy3c6eP9hIwEw7SYAsHW5vZ4AHjFm2esJxPfFbiWvw4wv/MxRcpPla+w9WxPpfHFUhzYzecy1lquWmVxQPe5lJfcHHrpHK+kJcI42k54AwGiSAH82EAPJABiB9wAAAABJRU5ErkJggg==';
 sprite_rock.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMBAMAAACkW0HUAAAAKlBMVEUAAACWTBeGQhKKRBOCQBJxOBBtNg+QSBV0OhBfMA59PhF4PBFmMw9IJQ2Rt3ZcAAAAAXRSTlMAQObYZgAAAFlJREFUCNdjYGAQFGQAkUZKhgwMjELaW5QFGBg1wsJWKTCYu+Yc63JnKNp69maEM4NQ6Nybqc4MwkszZ2a7MzC7hh3bosDAqOLR1VTAwCBs4qIOMqbYmIEBAAogE865++QUAAAAAElFTkSuQmCC';
@@ -42,7 +42,7 @@ boom_air.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt
 var renderops = {
 	levelselect: false,
 	game: false
-}
+};
 
 var Options = {
 	planType: "fire",
@@ -479,9 +479,8 @@ Turret.prototype.draw = function (ctx) {
 		for (var i = 0; i < 3; i++) {
 			shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
 		}
-
 		ctx.beginPath();
-		ctx.arc(0, 0, 40, 0, 2 * Math.PI, false);
+		ctx.arc(0, 0, this.radius, 0, 2 * Math.PI, false);
 		ctx.lineWidth = 4;
 		ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
 		if (this.shield > 0) { //only draw if greater than 0
@@ -1094,6 +1093,9 @@ function initStars() {
 
 //Because of issues with the files loading asynchronously and sometimes before the document was ready, I was forced to merge the three other files and encase them in an init function
 function initGame() {
+	var igc = document.createElement('canvas');
+	igc.id = 'game';
+	document.body.appendChild(igc);
 	//Initialize the game canvas, get its context, and set its width and height to that of the screen
 	var gamecanvas = document.getElementById("game");
 	var gamectx = gamecanvas.getContext("2d");
@@ -1359,6 +1361,7 @@ function initGame() {
 			planet.alive = false;
 			player.alive = false;
 			renderops.game = false;
+			document.body.removeChild(igc);
 			initLevelSelect();
 		}
 	}, false);
