@@ -1309,7 +1309,7 @@ function initGame() {
 			var randomint = Math.floor(Math.random() * 8);
 			makeEnemies(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
 			if (defenders.length < 14) {
-				defendercount = 1;
+				defendercount = 15 - defenders.length; //15 as 14 + 1, to make sure that it spawns in case there are 0 defenders
 				makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, Options.planType);
 			}
 		};
