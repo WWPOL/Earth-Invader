@@ -512,7 +512,7 @@ Planet = function(x, y, name, color, stroke, bullets) {
 	this.health = 5000;
 	this.shield = 1000;
 	this.name = name;
-	this.radius = 70;
+	this.radius = 100;
 	this.color = color;
 	this.bullets = bullets;
 	this.stroke = stroke;
@@ -572,6 +572,7 @@ Planet.prototype.update = function(delta) {
 			hit.src = jsfxr(sounds.planet.hit);
 			hit.play();
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.health > 0) {
+			this.radius = 70;
 			this.health -= wepTraits[Options.wepType].damage * this.damagemult;
 			this.totaldamage += wepTraits[Options.wepType].damage * this.damagemult;
 			this.bullets[i].alive = false;
@@ -590,7 +591,7 @@ Planet.prototype.update = function(delta) {
 
 Planet.prototype.draw = function(ctx) {
 	ctx.beginPath();
-	ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+	ctx.arc(this.x, this.y, 70, 0, 2 * Math.PI, false);
 	ctx.fillStyle = this.color;
 	ctx.fill();
 	ctx.lineWidth = 5;
@@ -604,7 +605,7 @@ Planet.prototype.draw = function(ctx) {
 	}
 
 	ctx.beginPath();
-	ctx.arc(this.x, this.y, this.radius * 1.5, 0, 2 * Math.PI, false);
+	ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
 	ctx.lineWidth = 7;
 	ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
 	if (this.shield > 0) { //only draw if greater than 0
