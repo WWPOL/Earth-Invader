@@ -747,20 +747,22 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot
 
 //Update the bullet's position
 Bullet.prototype.update = function(delta){
-	if (this.x < 0 || this.x > winwidth || this.y < 0 || this.y > winheight) {
-		this.alive = false;
-	}
-	else {
-		this.x += this.speed * this.dx;
-		this.y += this.speed * this.dy;
-	}
-	if ((this.type === "fire") && (distance(this.x,this.y,this.owner.x,this.owner.y) > 150) && (this.playershot)) {
-		this.alive = false;
-	}
-	if (this.penetratecount > 3) {
-		this.alive = false;
-	}
+	if (this.alive) {
+		if (this.x < 0 || this.x > winwidth || this.y < 0 || this.y > winheight) {
+			this.alive = false;
+		}
+		else {
+			this.x += this.speed * this.dx;
+			this.y += this.speed * this.dy;
+		}
+		if ((this.type === "fire") && (distance(this.x,this.y,this.owner.x,this.owner.y) > 150) && (this.playershot)) {
+			this.alive = false;
+		}
+		if (this.penetratecount > 3) {
+			this.alive = false;
+		}
 
+	}
 };
 
 //Draw the bullet object
