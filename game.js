@@ -412,29 +412,21 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 	if (65 in keysDown) { //left
 		if (this.x > 0) {
 			this.x -= this.speed * delta;
-		} else {
-			this.x = gc.width;
 		}
 	}
 	if (87 in keysDown) { //up
 		if (this.y > 0) {
 			this.y -= this.speed * delta;
-		} else {
-			this.y = gc.height;
 		}
 	}
 	if (68 in keysDown) { //right
 		if (this.x < gc.width) {
 			this.x += this.speed * delta;
-		} else {
-			this.x = 0;
 		}
 	}
 	if (83 in keysDown) { //down
 		if (this.y < gc.height) {
 			this.y += this.speed * delta;
-		} else {
-			this.y = 0;
 		}
 	}
 	var dDir = this.findDirection(mouseX,mouseY); //delta in direction
