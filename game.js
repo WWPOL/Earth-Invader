@@ -671,7 +671,7 @@ Healthbar = function(x, y, owner) {
 Healthbar.prototype.update = function(delta, owner) {
 	this.health = owner.health;
 	this.healthpercent = this.health / this.maxhealth;
-	if (this.shield && owner.shield) {
+	if (this.shield !== false && owner.shield !== false) { //use triple equality, b/c 0 == false, and updates will stop at 0 and not draw correctly
 		this.shield = owner.shield;
 		this.shieldpercent = this.shield / this.maxshield;
 	}
