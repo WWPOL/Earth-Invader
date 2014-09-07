@@ -182,7 +182,7 @@ var enemyTraits = {
 
 ///////////////// CLASSES \\\\\\\\\\\\\\\\\\\\\\\\\\
 //Init the enemy class
-Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, rof) {
+Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 	this.x = x;
 	this.y = y;
 	this.width = width;
@@ -827,6 +827,58 @@ Bullet.prototype.draw = function(ctx) {
 		ctx.restore();
 	}
 };
+
+Powerup = function(x,y,type,player) {
+	this.x = x;
+	this.y = y;
+	this.type = type;
+	this.name = "powerup";
+	this.color = "white";
+	if (this.type === "tri") {
+		this.name = "TRISHOT";
+		this.color = "white";
+	} else if (this.type === "fast") {
+		this.name = "FASTSHOT";
+		this.color = "red";
+	} else if (this.type === "splash") {
+		this.name = "SPLASHSHOT";
+		this.color = "blue";
+	} else if (this.type === "penetrate") {
+		this.name = "PENETRATE";
+		this.color = "brown";
+	} else if (this.type === "health") {
+		this.name = "HEALTH";
+		this.color = "maroon";
+	} else if (this.type === "invincibility") {
+		this.name = "INVINCIBILITY";
+		this.color = "gold";
+	}
+	this.radius = 30;
+	this.player = player;
+	this.alive = true;
+};
+
+Powerup.prototype.update = function() {
+	if (this.alive) {	
+		this.x += 5;
+		this.y += 6;
+	}
+}
+
+Powerup.prototype.draw = function(ctx) {
+	if (this.alive) {
+		ctx.save();
+		ctx.translate(this.x, this.y);
+		ctx.beginPath();
+		ctx.fillStyle = this.color;
+		ctx.arc(0, 0, this.radius, 0, 2*Math.PI);
+		ctx.fill();
+		ctx.font = "12pt Arial";
+		ctx.textAlign = "center";
+		ctx.fillText(this.name, this.x, this.y + 15);
+		ctx.restore();
+	}
+}
 /////////////////---------\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -1327,8 +1379,8 @@ function initGame() {
 	var defendercount = 1;
 
 	var makeEnemies = function(x,y, type) {
-		var randOrbit = Math.round(Math.random()*50) + 30; //30 to 80
-		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets);
+		var randOrbit = Math.round(Math.random()*20) + 60; //30 to 80
+		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, false);
 		enemy.assignplayer(player);
 		enemies.push(enemy);
 		if (enemycount < 7) {
@@ -1339,8 +1391,8 @@ function initGame() {
 		}
 	};
 	var makeDefenders = function(x,y, type) {
-		var randOrbit = Math.round(Math.random()*50) + 40; //40 to 90
-		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, 100);
+		var randOrbit = Math.round(Math.random()*20) + 80; //40 to 90
+		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, false);
 		enemy.assignplayer(planet);
 		defenders.push(enemy);
 		if (defendercount < 14) {
@@ -1528,6 +1580,10 @@ function initGame() {
 
 		gamectx.font = "75pt Impact";
 		gamectx.fillText("Score: " + score, winwidth / 2, (winheight / 2) + 110);
+
+		gamectx.font = "30pt Impact";
+		gamectx.fillText("Time: " + time + " seconds", winwidth / 2, (winheight / 2) + 150);
+		gamectx.fillText("Enemies Killed: " + enemiesKilled, winwidth / 2, (winheight / 2) + 185);
 
 		gamectx.font = "30pt Arial";
 		gamectx.fillStyle = "white";
