@@ -40,6 +40,7 @@ boom_air.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt
 /////////////////------------------\\\\\\\\\\\\\\\\\
 
 var renderops = {
+	main: false,
 	levelselect: false,
 	game: false
 };
@@ -120,7 +121,7 @@ var wepTraits = {
 		color: "ghostwhite",
 		rof: 75,//12,
 		speed: 15,
-		damage: 8
+		damage: 15
 	},
 	water: {
 		color: "deepskyblue",
@@ -863,12 +864,13 @@ function initMainMenu() {
 	winheight = document.documentElement.clientHeight;
 	canvas.width = winwidth;
 	canvas.height = winheight;
+	renderops.main = true;
 
-	//Render the Title
-	ctx.font = "30pt Arial";
-	ctx.fillStyle = "white";
-	ctx.textAlign = "center";
-	ctx.fillText("Earth Invader", winwidth / 2, 50);
+	canvas.addEventListener("mousemove", function (e) {
+		var rect = canvas.getBoundingClientRect(); //get bounding rectangle
+		mouseX = e.clientX - rect.left;
+		mouseY = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
+	}, false);
 
 	//Initialize Array of clickable elements, and then push in the parameters that would make a rectangle ***Note, this may be innefficient for just one element, consider revision
 	var elements = [];
@@ -880,17 +882,6 @@ function initMainMenu() {
 		left: winwidth / 2 - 100
 	});
 
-	//render each object in elements as per parameters
-	elements.forEach(function(element) {
-		ctx.fillStyle = element.color;
-		ctx.fillRect(element.left, element.top, element.width, element.height);
-	});
-
-	//render text on the start button
-	ctx.fillStyle = "black";
-	ctx.fillText("Start", winwidth / 2, winheight / 2 + 100);
-
-
 	//Initialize click handler for start button. It checks every click on the canvas if it is in the bounds of any of the elements, in this case, the start button
 	canvas.addEventListener('click', function(event) {
 		var cLeft = canvas.offsetLeft;
@@ -901,6 +892,8 @@ function initMainMenu() {
 		elements.forEach(function(element) {
 			if (y > element.top && y < element.top + element.height && x > element.left && x < element.left + element.width) {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				renderops.main = false;
+				clearScreen();
 				var clicksnd = new Audio();
 				clicksnd.src = jsfxr(sounds.click);
 				clicksnd.play();
@@ -911,6 +904,51 @@ function initMainMenu() {
 			}
 		});
 	}, false);
+
+	var main = function(){
+		if (renderops.main) {
+			render();
+			requestAnimationFrame(main);
+		}
+	};
+
+	//clears the screen
+	var clearScreen = function(){
+		ctx.clearRect(0,0,canvas.width, canvas.height);
+	};
+
+	//clears the screen, and redraws the objects
+	var render = function(){
+		clearScreen();
+
+		//Render the Title
+		ctx.font = "30pt Arial";
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center";
+		ctx.fillText("Earth Invader", winwidth / 2, 50);
+
+		//render each object in elements as per parameters
+		elements.forEach(function(element) {
+			ctx.fillStyle = element.color;
+			ctx.fillRect(element.left, element.top, element.width, element.height);
+		});
+
+		//render text on the start button
+		ctx.fillStyle = "black";
+		ctx.fillText("Start", winwidth / 2, winheight / 2 + 100);
+
+		var cursorcolor = "#"; 
+		for (var i = 0; i < 3; i++) {
+			cursorcolor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+		}
+		ctx.fillStyle = cursorcolor;
+		ctx.fillRect(mouseX + 1,mouseY + 4,2,8);
+		ctx.fillRect(mouseX + 4,mouseY + 1,8,2);
+		ctx.fillRect(mouseX + 1,mouseY - 8,2,8);
+		ctx.fillRect(mouseX - 8,mouseY + 1,8,2);
+	};
+
+	main();
 }
 
 //Initialize the level select menu. So far, it is basically just a main menu again, nothing new.
@@ -1022,6 +1060,8 @@ function initLevelSelect() {
 		var rect = canvas.getBoundingClientRect(); //get bounding rectangle
 		x = e.clientX - rect.left;
 		y = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
+		mouseX = e.clientX - rect.left;
+		mouseY = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
 
 		if(y > 200 && y < 275 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
 			infoBox = "Weak against Air, resistant to Water.";
@@ -1159,6 +1199,16 @@ function initLevelSelect() {
 		ctx.fillStyle = "white";
 		ctx.textAlign = "center";
 		ctx.fillText(infoBox, winwidth / 2, 525);
+
+		var cursorcolor = "#"; 
+		for (var i = 0; i < 3; i++) {
+			cursorcolor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+		}
+		ctx.fillStyle = cursorcolor;
+		ctx.fillRect(mouseX + 1,mouseY + 4,2,8);
+		ctx.fillRect(mouseX + 4,mouseY + 1,8,2);
+		ctx.fillRect(mouseX + 1,mouseY - 8,2,8);
+		ctx.fillRect(mouseX - 8,mouseY + 1,8,2);
 	};
 
 	main();
@@ -1450,6 +1500,16 @@ function initGame() {
 		eBullets.forEach(function(bullet){
 			bullet.draw(gamectx);
 		});
+
+		var cursorcolor = "#"; 
+		for (var i = 0; i < 3; i++) {
+			cursorcolor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+		}
+		gamectx.fillStyle = cursorcolor;
+		gamectx.fillRect(mouseX + 1,mouseY + 4,2,8);
+		gamectx.fillRect(mouseX + 4,mouseY + 1,8,2);
+		gamectx.fillRect(mouseX + 1,mouseY - 10,2,8);
+		gamectx.fillRect(mouseX - 10,mouseY + 1,8,2);
 	};
 
 	var gameoverscreen = function(didwin){
@@ -1477,6 +1537,17 @@ function initGame() {
 		gamectx.fillRect(gamecanvas.width / 2 - 100, gamecanvas.height - 150, 200, 75);
 		gamectx.fillStyle = "black";
 		gamectx.fillText("Replay", winwidth / 2, winheight - 100);
+
+		var cursorcolor = "#"; 
+		for (var i = 0; i < 3; i++) {
+			cursorcolor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+		}
+		gamectx.fillStyle = cursorcolor;
+		gamectx.fillRect(mouseX + 1,mouseY + 4,2,8);
+		gamectx.fillRect(mouseX + 4,mouseY + 1,8,2);
+		gamectx.fillRect(mouseX + 1,mouseY - 10,2,8);
+		gamectx.fillRect(mouseX - 10,mouseY + 1,8,2);
+
 	};
 
 	gamecanvas.addEventListener('click', function(event) {
