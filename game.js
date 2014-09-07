@@ -215,7 +215,7 @@ Enemy.prototype.assignplayer = function(player) {
 };
 
 //Update the enemy's position
-Enemy.prototype.update = function(delta) {
+Enemy.prototype.update = function(planet) {
 	if(! (this.player === undefined) && this.alive){ //only update if alive
 		this.count = (this.count+1) % this.rof; //update counter
 
@@ -246,7 +246,7 @@ Enemy.prototype.update = function(delta) {
 
 		var approach = true; // tracks if enemy is currently approaching player
 		//Move towards the player
-		if (toPlayerLength > this.orbit+5 || this.player.shield <= 0){ //if shield is down enemy will continue to approach 
+		if ((toPlayerLength > this.orbit+5 || this.player.shield <= 0) && this.player !== planet){ //if shield is down enemy will continue to approach 
 			this.angle = Math.atan2(toPlayerY,toPlayerX)+Math.PI;
 			this.x += toPlayerX * this.speed;
 			this.y += toPlayerY * this.speed;
@@ -345,7 +345,7 @@ Enemy.prototype.update = function(delta) {
 };
 
 //As it sounds, draw the enemy object
-Enemy.prototype.draw = function(ctx) {
+Enemy.prototype.draw = function(ctx, array) {
 	if (this.alive) { //only draw if alive
 		ctx.save();
 		ctx.translate(this.x, this.y);
@@ -359,6 +359,9 @@ Enemy.prototype.draw = function(ctx) {
 		ctx.drawImage(enemyTraits[this.type].boom,-6,-6,28,28);
 		ctx.restore();
 		this.explode = (this.explode+1)%7; //add a count, when this.explode hits 4 (or 0) it will go false
+	} else if (!this.alive && !this.boom) {
+		var index = array.indexOf(this);
+		array.splice(index, 1);
 	}
 };
 
@@ -377,6 +380,7 @@ Turret = function (x,y,name, eArrays, eBullets) {
 	this.eArrays = eArrays; //array of enemy arrays 
 	this.eBullets = eBullets;
 	this.alive = true;
+	this.regen = false;
 
 };
 
@@ -385,7 +389,9 @@ Turret.prototype.checkCollision = function (enemyArray) {
 		if (enemyArray[i].alive && collision(this,enemyArray[i])) {
 			if (this.shield > 0) {
 				this.shield -= enemyTraits[Options.planType].damage;
-				this.dmgcount = 60;
+				if (!this.regen) {
+					this.dmgcount = 120;
+				}
 				var hit = new Audio();
 				hit.src = jsfxr(sounds.player.hit);
 				hit.play();
@@ -412,21 +418,29 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 	if (65 in keysDown) { //left
 		if (this.x > 0) {
 			this.x -= this.speed * delta;
+		} else {
+			this.x = gc.width;
 		}
 	}
 	if (87 in keysDown) { //up
 		if (this.y > 0) {
 			this.y -= this.speed * delta;
+		} else {
+			this.y = gc.height;
 		}
 	}
 	if (68 in keysDown) { //right
 		if (this.x < gc.width) {
 			this.x += this.speed * delta;
+		} else {
+			this.x = 0;
 		}
 	}
 	if (83 in keysDown) { //down
 		if (this.y < gc.height) {
 			this.y += this.speed * delta;
+		} else {
+			this.y = 0;
 		}
 	}
 	var dDir = this.findDirection(mouseX,mouseY); //delta in direction
@@ -446,6 +460,7 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 
 	if (this.shield < 200 && this.shield >=0 && this.dmgcount == 0) {
 		this.shield += 0.25; //shield will regenerate very slowly
+		this.regen = false;
 	}
 	if (this.shield > 0) {
 		this.radius = 40;
@@ -456,7 +471,8 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 	}
 	if (this.shield < 0) {
 		this.shield = 0;
-		this.dmgcount = 180;
+		this.dmgcount = 540;
+		this.regen = true;
 	}
 
 	if (this.health < 0) {
@@ -514,9 +530,10 @@ Planet = function(x, y, name, color, stroke, bullets) {
 	this.damagemult = 1;
 	this.totaldamage = 0;
 	this.dmgcount = 0;
+	this.regen = false;
 }
 
-Planet.prototype.update = function(delta) {
+Planet.prototype.update = function() {
 	for (var i = 0; i < this.bullets.length; i++) {
 		if (this.type === "fire") {
 			if (this.pBullets[i].type === "fire") {
@@ -562,7 +579,9 @@ Planet.prototype.update = function(delta) {
 		if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.shield > 0) {
 			this.shield -= wepTraits[Options.wepType].damage * this.damagemult;
 			this.totaldamage += wepTraits[Options.wepType].damage * this.damagemult;
-			this.dmgcount = 60;
+			if (!this.regen) {
+				this.dmgcount = 180;
+			}
 			this.bullets[i].alive = false;
 			var hit = new Audio();
 			hit.src = jsfxr(sounds.planet.hit);
@@ -588,6 +607,7 @@ Planet.prototype.update = function(delta) {
 	}
 	if (this.shield < 1000 && this.shield >= 0 && this.dmgcount == 0) {
 		this.shield += 0.25; //shield will regenerate very slowly
+		this.regen = false;
 	}
 	if (this.shield > 0) {
 		this.radius = 135;
@@ -597,7 +617,8 @@ Planet.prototype.update = function(delta) {
 	}
 	if (this.shield < 0) {
 		this.shield = 0;
-		this.dmgcount = 500;
+		this.dmgcount = 1500;
+		this.regen = true;
 	}
 	if (this.health <= 0) {
 		this.health = 0;
@@ -660,7 +681,7 @@ Healthbar = function(x, y, owner) {
 	}
 }
 
-Healthbar.prototype.update = function(delta, owner) {
+Healthbar.prototype.update = function(owner) {
 	this.health = owner.health;
 	this.healthpercent = this.health / this.maxhealth;
 	if (this.shield !== false && owner.shield !== false) { //use triple equality, b/c 0 == false, and updates will stop at 0 and not draw correctly
@@ -738,10 +759,12 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot
 };
 
 //Update the bullet's position
-Bullet.prototype.update = function(delta){
+Bullet.prototype.update = function(array){
 	if (this.alive) {
 		if (this.x < 0 || this.x > winwidth || this.y < 0 || this.y > winheight) {
 			this.alive = false;
+			var index = array.indexOf(this);
+			array.splice(index, 1);
 		}
 		else {
 			this.x += this.speed * this.dx;
@@ -749,9 +772,13 @@ Bullet.prototype.update = function(delta){
 		}
 		if ((this.type === "fire") && (distance(this.x,this.y,this.owner.x,this.owner.y) > 150) && (this.playershot)) {
 			this.alive = false;
+			var index = array.indexOf(this);
+			array.splice(index, 1);
 		}
 		if (this.penetratecount > 3) {
 			this.alive = false;
+			var index = array.indexOf(this);
+			array.splice(index, 1);
 		}
 
 	}
@@ -1174,7 +1201,7 @@ function initGame() {
 		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, 100);
 		enemy.assignplayer(planet);
 		defenders.push(enemy);
-		if (defendercount < 7) {
+		if (defendercount < 14) {
 			setTimeout(function(){
 				makeDefenders(x, y, type);
 			}, 1000);
@@ -1259,29 +1286,32 @@ function initGame() {
 		}
 
 		enemies.forEach(function(enemy){
-			enemy.update(delta, gamecanvas);
+			enemy.update(planet);
 		});
 		defenders.forEach(function(enemy){
-			enemy.update(delta, gamecanvas);
+			enemy.update(planet);
 		});	
 		pBullets.forEach(function(bullet){
-			bullet.update();
+			bullet.update(pBullets);
 		});
 		eBullets.forEach(function(bullet){
-			bullet.update();
+			bullet.update(eBullets);
 		});
 
 		player.update(delta, gamecanvas);
-		playerhealth.update(delta, player);
-		planethealth.update(delta, planet);
-		planet.update(delta);
-
+		playerhealth.update(player);
+		planethealth.update(planet);
+		planet.update();
 
 		if (((Date.now() - wave) / 1000) > 15) {
 			wave = Date.now();
 			enemycount = 1;
 			var randomint = Math.floor(Math.random() * 8);
 			makeEnemies(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
+			if (defenders.length < 14) {
+				defendercount = 1;
+				makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, Options.planType);
+			}
 		};
 
 		if (planet.health <= 0) {
@@ -1307,10 +1337,10 @@ function initGame() {
 
 		planet.draw(gamectx);
 		enemies.forEach(function(enemy){
-			enemy.draw(gamectx);
+			enemy.draw(gamectx, enemies);
 		});
 		defenders.forEach(function(enemy){
-			enemy.draw(gamectx);
+			enemy.draw(gamectx, defenders);
 		});
 		playerhealth.draw(gamectx);
 		planethealth.draw(gamectx);
