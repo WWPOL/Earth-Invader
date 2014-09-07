@@ -352,16 +352,13 @@ Enemy.prototype.draw = function(ctx) {
 		ctx.rotate(this.rotation);
 		ctx.drawImage(enemyTraits[this.type].img,-6,-6);
 		ctx.restore();
-	}
-	else {
-		if (this.explode) {
-			ctx.save();
-			ctx.translate(this.x, this.y);
-			ctx.rotate(this.rotation);
-			ctx.drawImage(enemyTraits[this.type].boom,-6,-6,28,28);
-			ctx.restore();
-			this.explode = (this.explode+1)%7; //add a count, when this.explode hits 4 (or 0) it will go false
-		}
+	} else if (this.explode) {
+		ctx.save();
+		ctx.translate(this.x, this.y);
+		ctx.rotate(this.rotation);
+		ctx.drawImage(enemyTraits[this.type].boom,-6,-6,28,28);
+		ctx.restore();
+		this.explode = (this.explode+1)%7; //add a count, when this.explode hits 4 (or 0) it will go false
 	}
 };
 
@@ -379,6 +376,7 @@ Turret = function (x,y,name, eArrays, eBullets) {
 	this.radius = 40;
 	this.eArrays = eArrays; //array of enemy arrays 
 	this.eBullets = eBullets;
+	this.alive = true;
 
 };
 
@@ -414,21 +412,29 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 	if (65 in keysDown) { //left
 		if (this.x > 0) {
 			this.x -= this.speed * delta;
+		} else {
+			this.x = gc.width;
 		}
 	}
 	if (87 in keysDown) { //up
 		if (this.y > 0) {
 			this.y -= this.speed * delta;
+		} else {
+			this.y = gc.height;
 		}
 	}
 	if (68 in keysDown) { //right
-		if (this.x < gc.width - 20) {
+		if (this.x < gc.width) {
 			this.x += this.speed * delta;
+		} else {
+			this.x = 0;
 		}
 	}
 	if (83 in keysDown) { //down
-		if (this.y < gc.height - 20) {
+		if (this.y < gc.height) {
 			this.y += this.speed * delta;
+		} else {
+			this.y = 0;
 		}
 	}
 	var dDir = this.findDirection(mouseX,mouseY); //delta in direction
@@ -446,56 +452,52 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 		this.dmgcount--;
 	}
 
-	if (this.shield < 200 && this.shield > 0 && this.dmgcount == 0) {
+	if (this.shield < 200 && this.shield >=0 && this.dmgcount == 0) {
 		this.shield += 0.25; //shield will regenerate very slowly
+	}
+	if (this.shield > 0) {
+		this.radius = 40;
 	}
 
 	if (this.shield <= 0) {
 		this.radius = 10; //collision detection radius set to 40 (shield), reduced when shield is 
+	}
+	if (this.shield < 0) {
 		this.shield = 0;
+		this.dmgcount = 180;
 	}
 
 	if (this.health < 0) {
 		this.health = 0;
+		this.alive = false;
 	}
 
 	this.direction += dDir;
 };
 
 Turret.prototype.draw = function (ctx) { 
-	ctx.save(); //save the state to stack before rotating
-	ctx.translate(this.x,this.y);
-	ctx.rotate(this.direction);
+	if (this.alive) {
+		ctx.save(); //save the state to stack before rotating
+		ctx.translate(this.x,this.y);
+		ctx.rotate(this.direction);
 
-	//draw shield
-	var shieldColor = "#"; 
-	for (var i = 0; i < 3; i++) {
-		shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+		//draw shield
+		var shieldColor = "#"; 
+		for (var i = 0; i < 3; i++) {
+			shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+		}
+		ctx.beginPath();
+		ctx.arc(0, 0, 40, 0, 2 * Math.PI, false);
+		ctx.lineWidth = 4;
+		ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
+		if (this.shield > 0) { //only draw if greater than 0
+			ctx.stroke(); 
+		}
+		ctx.closePath();	
+
+		ctx.drawImage(sprite_player,-12,-12);
+		ctx.restore(); //restore back to original
 	}
-
-	ctx.beginPath();
-	ctx.arc(0, 0, 40, 0, 2 * Math.PI, false);
-	ctx.lineWidth = 4;
-	ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
-	if (this.shield > 0) { //only draw if greater than 0
-		ctx.stroke();
-	}
-	ctx.closePath();
-
-	ctx.drawImage(sprite_player,-12,-12);
-	// ctx.beginPath();
-	// ctx.arc(0, 0, 10, 0, 2 * Math.PI, false);
-	// ctx.fillStyle = 'green';
-	// ctx.fill();
-	// ctx.lineWidth = 2;
-	// ctx.strokeStyle = '#003300';
-	// ctx.stroke();
-
-
-	// ctx.fillStyle = "#FF0000";
-	// ctx.fillRect(-15,-1,10,2);
-	// ctx.closePath();
-	ctx.restore(); //restore back to original
 };
 
 Turret.prototype.findDirection = function (mX,mY) {
@@ -519,6 +521,7 @@ Planet = function(x, y, name, color, stroke, bullets) {
 	this.alive = true;
 	this.damagemult = 1;
 	this.totaldamage = 0;
+	this.dmgcount = 0;
 }
 
 Planet.prototype.update = function(delta) {
@@ -567,6 +570,7 @@ Planet.prototype.update = function(delta) {
 		if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.shield > 0) {
 			this.shield -= wepTraits[Options.wepType].damage * this.damagemult;
 			this.totaldamage += wepTraits[Options.wepType].damage * this.damagemult;
+			this.dmgcount = 60;
 			this.bullets[i].alive = false;
 			var hit = new Audio();
 			hit.src = jsfxr(sounds.planet.hit);
@@ -587,31 +591,53 @@ Planet.prototype.update = function(delta) {
 			death.play();
 		}
 	}
+	if (this.dmgcount > 0) {
+		this.dmgcount--;
+	}
+	if (this.shield < 1000 && this.shield >= 0 && this.dmgcount == 0) {
+		this.shield += 0.25; //shield will regenerate very slowly
+	}
+	if (this.shield > 0) {
+		this.radius = 135;
+	}
+	if (this.shield <= 0) {
+		this.radius = 70; //collision detection radius set to 40 (shield), reduced when shield is 
+	}
+	if (this.shield < 0) {
+		this.shield = 0;
+		this.dmgcount = 500;
+	}
+	if (this.health <= 0) {
+		this.health = 0;
+		this.alive = true;
+	}
 }
 
 Planet.prototype.draw = function(ctx) {
-	ctx.beginPath();
-	ctx.arc(this.x, this.y, 70, 0, 2 * Math.PI, false);
-	ctx.fillStyle = this.color;
-	ctx.fill();
-	ctx.lineWidth = 5;
-	ctx.strokeStyle = this.stroke;
-	ctx.stroke();
+	if (this.alive) {
+		ctx.beginPath();
+		ctx.arc(this.x, this.y, 70, 0, 2 * Math.PI, false);
+		ctx.fillStyle = this.color;
+		ctx.fill();
+		ctx.lineWidth = 5;
+		ctx.strokeStyle = this.stroke;
+		ctx.stroke();
 
-	//draw shield
-	var shieldColor = "#"; 
-	for (var i = 0; i < 3; i++) {
-		shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
-	}
+		//draw shield
+		var shieldColor = "#"; 
+		for (var i = 0; i < 3; i++) {
+			shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+		}
 
-	ctx.beginPath();
-	ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-	ctx.lineWidth = 7;
-	ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
-	if (this.shield > 0) { //only draw if greater than 0
-		ctx.stroke(); 
+		ctx.beginPath();
+		ctx.arc(this.x, this.y, 135, 0, 2 * Math.PI, false);
+		ctx.lineWidth = 7;
+		ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
+		if (this.shield > 0) { //only draw if greater than 0
+			ctx.stroke(); 
+		}
+		ctx.closePath();
 	}
-	ctx.closePath();
 }
 
 Star = function(x, y, color) {
@@ -661,28 +687,31 @@ Healthbar.prototype.draw = function(ctx) {
 	ctx.textAlign = "center";
 	ctx.fillText(this.name, this.x + 150, this.y + 15);
 
-	if (this.shield) {
-		if (this.shield == 0) {
-			if (this.playsound) {
-				var shielddown = new Audio();
-				shielddown.src = jsfxr(sounds.player.shielddown);
-				shielddown.play();
-				this.playsound = false;
-			}
-			ctx.fillStyle = "white";
-			ctx.font = "12pt Arial";
-			ctx.textAlign = "center";
-			ctx.fillText("Shields down!", this.x + 150, this.y + 45);
+	if (this.shield > 0) {
+		ctx.fillStyle = "blue";
+		ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
+		ctx.font = "12pt Arial";
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center";
+		ctx.fillText("Shields", this.x + 150, this.y + 45);
+		this.playsound = true;
+	} else if (this.shield === 0) {
+		if (this.playsound) {
+			var shielddown = new Audio();
+			shielddown.src = jsfxr(sounds.player.shielddown);
+			shielddown.play();
+			this.playsound = false;
 		}
-		else {
-			ctx.fillStyle = "blue";
-			ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
-			ctx.font = "12pt Arial";
-			ctx.fillStyle = "white";
-			ctx.textAlign = "center";
-			ctx.fillText("Shields", this.x + 150, this.y + 45);
-		}
-	}	
+		ctx.fillStyle = "white";
+		ctx.font = "12pt Arial";
+		ctx.textAlign = "center";
+		ctx.fillText("Shields down!", this.x + 150, this.y + 45);
+	} else if (this.shield <= 0) {
+		ctx.fillStyle = "white";
+		ctx.font = "12pt Arial";
+		ctx.textAlign = "center";
+		ctx.fillText("Shields down!", this.x + 150, this.y + 45);
+	}
 
 
 	ctx.closePath();
@@ -1097,6 +1126,9 @@ function initStars() {
 
 //Because of issues with the files loading asynchronously and sometimes before the document was ready, I was forced to merge the three other files and encase them in an init function
 function initGame() {
+	var igc = document.createElement('canvas');
+	igc.id = 'game';
+	document.body.appendChild(igc);
 	//Initialize the game canvas, get its context, and set its width and height to that of the screen
 	var gamecanvas = document.getElementById("game");
 	var gamectx = gamecanvas.getContext("2d");
@@ -1263,10 +1295,11 @@ function initGame() {
 			win = true;
 		}
 		if (player.health <= 0) {
+			player.alive = false;
 			gameOver = true;
 		};
 		time = Math.floor((Date.now() - start) / 1000);
-		score = Math.round((((enemiesKilled * planet.totaldamage) / time) * 1000) * scoremult);
+		score = Math.round((((enemiesKilled * planet.totaldamage) / time) * 10) * scoremult);
 	};
 
 	//clears the screen
@@ -1352,7 +1385,16 @@ function initGame() {
 			gamectx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
 			gameOver = false;
 			winGame = false;
+			for (x in enemies) {
+				enemies[x].alive = false;
+			}
+			for (x in pBullets) {
+				pBullets[x].alive = false;
+			}
+			planet.alive = false;
+			player.alive = false;
 			renderops.game = false;
+			document.body.removeChild(igc);
 			initLevelSelect();
 		}
 	}, false);
