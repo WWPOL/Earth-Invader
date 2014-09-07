@@ -114,7 +114,7 @@ var wepTraits = {
 		color: "orange",
 		rof: 5, //rate of fire
 		speed: 15,
-		damage: 15
+		damage: 5
 	},
 	air: {
 		color: "ghostwhite",
@@ -239,6 +239,9 @@ Enemy.prototype.update = function(planet) {
 			var shoot = new Audio();
 			shoot.src = jsfxr(sounds[this.type].shoot);
 			shoot.play();
+			shoot.addEventListener('ended', function() {
+			    delete shoot;
+			}, false);
 			this.eBullets.push(bullet);
 		}
 
@@ -331,6 +334,9 @@ Enemy.prototype.update = function(planet) {
 				var hit = new Audio();
 				hit.src = jsfxr(sounds[this.type].hit);
 				hit.play();
+				hit.addEventListener('ended', function() {
+				    delete hit;
+				}, false);
 			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
 				this.alive = false;
 				enemiesKilled += 1;
@@ -338,6 +344,9 @@ Enemy.prototype.update = function(planet) {
 				var eDeath = new Audio();
 				eDeath.src = jsfxr(sounds[this.type].death);
 				eDeath.play();
+				eDeath.addEventListener('ended', function() {
+				    delete eDeath;
+				}, false);
 			}
 		}
 
@@ -395,16 +404,25 @@ Turret.prototype.checkCollision = function (enemyArray) {
 				var hit = new Audio();
 				hit.src = jsfxr(sounds.player.hit);
 				hit.play();
+				hit.addEventListener('ended', function() {
+				    delete hit;
+				}, false);
 			} else if (this.shield <= 0 && this.health > 0) {
 				this.health -= enemyTraits[Options.planType].damage;
 				var hit = new Audio();
 				hit.src = jsfxr(sounds.player.hit);
 				hit.play();
+				hit.addEventListener('ended', function() {
+				    delete hit;
+				}, false);
 			} else if (this.shield <= 0 && this.health <= 0) {
 				this.health -= enemyTraits[Options.planType].damage;
 				var death = new Audio();
 				death.src = jsfxr(sounds.player.death);
 				death.play();
+				death.addEventListener('ended', function() {
+				    delete death;
+				}, false);
 			}
 			if (enemyArray[i].name === "bullet") {
 				enemyArray[i].alive = false;
@@ -586,6 +604,9 @@ Planet.prototype.update = function() {
 			var hit = new Audio();
 			hit.src = jsfxr(sounds.planet.hit);
 			hit.play();
+			hit.addEventListener('ended', function() {
+			    delete hit;
+			}, false);
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.health > 0) {
 			this.radius = 70;
 			this.health -= wepTraits[Options.wepType].damage * this.damagemult;
@@ -594,12 +615,18 @@ Planet.prototype.update = function() {
 			var hit = new Audio();
 			hit.src = jsfxr(sounds.planet.hit);
 			hit.play();
+			hit.addEventListener('ended', function() {
+			    delete hit;
+			}, false);
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i])) { //if it collides with a bullet, kill itself and the bullet
 			this.bullets[i].alive = false;
 			this.alive = false;
 			var death = new Audio();
 			death.src = jsfxr(sounds.planet.death);
 			death.play();
+			death.addEventListener('ended', function() {
+			    delete death;
+			}, false);
 		}
 	}
 	if (this.dmgcount > 0) {
@@ -713,6 +740,9 @@ Healthbar.prototype.draw = function(ctx) {
 			var shielddown = new Audio();
 			shielddown.src = jsfxr(sounds.player.shielddown);
 			shielddown.play();
+			shielddown.addEventListener('ended', function() {
+			    delete shielddown;
+			}, false);
 			this.playsound = false;
 		}
 		ctx.fillStyle = "white";
@@ -874,6 +904,9 @@ function initMainMenu() {
 				var clicksnd = new Audio();
 				clicksnd.src = jsfxr(sounds.click);
 				clicksnd.play();
+				clicksnd.addEventListener('ended', function() {
+				    delete clicksnd;
+				}, false);
 				initLevelSelect();
 			}
 		});
@@ -906,6 +939,9 @@ function initLevelSelect() {
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
 			clicksnd.play();
+			clicksnd.addEventListener('ended', function() {
+			    delete clicksnd;
+			}, false);
 			initGame();
 		}
 
@@ -914,14 +950,18 @@ function initLevelSelect() {
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
 			clicksnd.play();
-
+			clicksnd.addEventListener('ended', function() {
+			    delete clicksnd;
+			}, false);
 		}
 		if(y > 200 && y < 275 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
 			Options.planType = "air";
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
 			clicksnd.play();
-
+			clicksnd.addEventListener('ended', function() {
+			    delete clicksnd;
+			}, false);
 		}
 		if(y > 200 && y < 275 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
 			Options.planType = "water";
@@ -935,7 +975,9 @@ function initLevelSelect() {
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
 			clicksnd.play();
-
+			clicksnd.addEventListener('ended', function() {
+			    delete clicksnd;
+			}, false);
 		}
 
 
@@ -944,28 +986,36 @@ function initLevelSelect() {
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
 			clicksnd.play();
-
+			clicksnd.addEventListener('ended', function() {
+			    delete clicksnd;
+			}, false);
 		}
 		if(y > 400 && y < 475 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
 			Options.wepType = "air";
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
 			clicksnd.play();
-
+			clicksnd.addEventListener('ended', function() {
+			    delete clicksnd;
+			}, false);
 		}
 		if(y > 400 && y < 475 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
 			Options.wepType = "water";
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
 			clicksnd.play();
-
+			clicksnd.addEventListener('ended', function() {
+			    delete clicksnd;
+			}, false);
 		}
 		if(y > 400 && y < 475 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
 			Options.wepType = "rock";
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
 			clicksnd.play();
-
+			clicksnd.addEventListener('ended', function() {
+			    delete clicksnd;
+			}, false);
 		}
 	}, false);
 	canvas.addEventListener("mousemove", function (e) {
@@ -1162,10 +1212,52 @@ function initGame() {
 	var halfheight = gamecanvas.height / 2;
 	var gameOver = false;
 	var winGame = false;
-	renderops.game = true;
+
+	if (Options.planType === "fire") {
+		if (Options.wepType === "fire") {
+			scoremult = 1;
+		} else if (Options.wepType === "air") {
+			scoremult = 0.5;
+		} else if (Options.wepType === "water") {
+			scoremult = 1.5;
+		} else if (Options.wepType === "rock") {
+			scoremult = 1;
+		};
+	} else if (Options.planType === "air") {
+		if (Options.wepType === "fire") {
+			scoremult = 1.5;
+		} else if (Options.wepType === "air") {
+			scoremult = 1;
+		} else if (Options.wepType === "water") {
+			scoremult = 1;
+		} else if (Options.wepType === "rock") {
+			scoremult = 0.5;
+		};
+	} else if (Options.planType === "water") {
+		if (Options.wepType === "fire") {
+			scoremult = 0.5;
+		} else if (Options.wepType === "air") {
+			scoremult = 1;
+		} else if (Options.wepType === "water") {
+			scoremult = 1;
+		} else if (Options.wepType === "rock") {
+			scoremult = 1.5;
+		};
+	} else if (Options.planType === "rock") {
+		if (Options.wepType === "fire") {
+			scoremult = 1;
+		} else if (Options.wepType === "air") {
+			scoremult = 1.5;
+		} else if (Options.wepType === "water") {
+			scoremult = 0.5;
+		} else if (Options.wepType === "rock") {
+			scoremult = 1;
+		};
+	};
 
 	//Variable to track if mouse is held down
 	var mousedown = false;
+	var firing = false;
 	var shootcount = 0; //and how frequently to shoot
 	var pBullets = [];
 	var eBullets = [];
@@ -1240,14 +1332,14 @@ function initGame() {
 		var now = Date.now();
 		var delta = now - then;
 
-		if (winGame) {
-			win()
-		} else if (!gameOver) {
-			render();			
+		if (!gameOver) {
 			update(delta / 1000);
-		} else if (renderops.game) {
-			death();
-		};
+			render();			
+		} else if (gameOver && winGame) {
+			gameoverscreen(true);
+		} else if (gameOver && !winGame) {
+			gameoverscreen(false);
+		}
 
 		then = now;
 
@@ -1280,6 +1372,9 @@ function initGame() {
 				var lasersnd = new Audio();
 				lasersnd.src = jsfxr(sounds.player[Options.wepType]);
 				lasersnd.play();
+				lasersnd.addEventListener('ended', function() {
+				    delete lasersnd;
+				}, false);
 				pBullets.push(bullet);
 
  			} 
@@ -1316,7 +1411,7 @@ function initGame() {
 
 		if (planet.health <= 0) {
 			gameOver = true;
-			win = true;
+			winGame = true;
 		}
 		if (player.health <= 0) {
 			player.alive = false;
@@ -1357,34 +1452,19 @@ function initGame() {
 		});
 	};
 
-	var death = function(){
+	var gameoverscreen = function(didwin){
 		clearScreen();
 
 		gamectx.font = "100pt Impact";
-		gamectx.fillStyle = "red";
-		gamectx.textAlign = "center";
-		gamectx.fillText("Game Over!", winwidth / 2, winheight / 2);
-
-		gamectx.font = "75pt Impact";
-		gamectx.fillText("Score: " + score, winwidth / 2, (winheight / 2) + 110);
-
-		gamectx.font = "30pt Arial";
-		gamectx.fillStyle = "white";
-		gamectx.textAlign = "center";
-		gamectx.fillText("Level Select", winwidth / 2, 50);
-		gamectx.fillStyle = "green";
-		gamectx.fillRect(gamecanvas.width / 2 - 100, gamecanvas.height - 150, 200, 75);
-		gamectx.fillStyle = "black";
-		gamectx.fillText("Replay", winwidth / 2, winheight - 100);
-	};
-
-	var win = function(){
-		clearScreen();
-
-		gamectx.font = "100pt Impact";
-		gamectx.fillStyle = "green";
-		gamectx.textAlign = "center";
-		gamectx.fillText("You Win!", winwidth / 2, winheight / 2);
+		if (didwin) {
+			gamectx.fillStyle = "green";
+			gamectx.textAlign = "center";
+			gamectx.fillText("You Win!", winwidth / 2, winheight / 2);
+		} else if (!didwin) {
+			gamectx.fillStyle = "red";
+			gamectx.textAlign = "center";
+			gamectx.fillText("Game Over!", winwidth / 2, winheight / 2);
+		}
 
 		gamectx.font = "75pt Impact";
 		gamectx.fillText("Score: " + score, winwidth / 2, (winheight / 2) + 110);
