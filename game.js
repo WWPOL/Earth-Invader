@@ -8,7 +8,7 @@ var winheight = 0; //window width & height
 var winwidth = 0;
 
 var score = 0;
-var enemiesKilled = 0;
+var enemiesKilled = 1;
 var time = 0;
 var scoremult = 1;
 
@@ -576,7 +576,7 @@ Planet = function(x, y, name, color, stroke, bullets) {
 	this.stroke = stroke;
 	this.alive = true;
 	this.damagemult = 1;
-	this.totaldamage = 0;
+	this.totaldamage = 1;
 	this.dmgcount = 0;
 	this.regen = false;
 }
