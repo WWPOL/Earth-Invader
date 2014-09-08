@@ -1662,9 +1662,6 @@ function initGame() {
 		gamectx.fillText("Enemies Killed: " + enemiesKilled, winwidth / 2, (winheight / 2) + 185);
 
 		gamectx.font = "30pt Arial";
-		gamectx.fillStyle = "white";
-		gamectx.textAlign = "center";
-		gamectx.fillText("Level Select", winwidth / 2, 50);
 		gamectx.fillStyle = "green";
 		gamectx.fillRect(gamecanvas.width / 2 - 100, gamecanvas.height - 150, 200, 75);
 		gamectx.fillStyle = "black";
