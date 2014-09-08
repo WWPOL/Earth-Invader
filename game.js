@@ -142,7 +142,7 @@ var enemyTraits = {
 	fire: {
 		img: sprite_fire,
 		boom: boom_fire,
-		speed: 3,
+		speed: 4,
 		rof: 20,
 		health: 50,
 		damage: 10,
@@ -151,7 +151,7 @@ var enemyTraits = {
 	air: {
 		img: sprite_air,
 		boom: boom_air,
-		speed: 4,
+		speed: 5,
 		rof: 100,
 		health: 25,
 		damage: 5,
@@ -1502,9 +1502,11 @@ function initGame() {
 
 		if (((Date.now() - wave) / 1000) > 15) {
 			wave = Date.now();
-			enemycount = 1;
-			var randomint = Math.floor(Math.random() * 8);
-			makeEnemies(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
+			if (enemies.length < 100) {
+				enemycount = 1;
+				var randomint = Math.floor(Math.random() * 8);
+				makeEnemies(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
+			}
 			if (defenders.length < 14) {
 				defendercount = 15 - defenders.length; //15 as 14 + 1, to make sure that it spawns in case there are 0 defenders
 				makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, Options.planType);
