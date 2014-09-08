@@ -119,9 +119,9 @@ var wepTraits = {
 	},
 	air: {
 		color: "ghostwhite",
-		rof: 75,//12,
+		rof: 50,//12,
 		speed: 15,
-		damage: 15
+		damage: 20
 	},
 	water: {
 		color: "deepskyblue",
@@ -539,7 +539,7 @@ Planet = function(x, y, name, color, stroke, bullets) {
 	this.x = x;
 	this.y = y;
 	this.health = 5000;
-	this.shield = 1000;
+	this.shield = 3000;
 	this.name = name;
 	this.radius = 100;
 	this.color = color;
@@ -633,7 +633,7 @@ Planet.prototype.update = function() {
 	if (this.dmgcount > 0) {
 		this.dmgcount--;
 	}
-	if (this.shield < 1000 && this.shield >= 0 && this.dmgcount == 0) {
+	if (this.shield < 3000 && this.shield >= 0 && this.dmgcount == 0) {
 		this.shield += 0.25; //shield will regenerate very slowly
 		this.regen = false;
 	}
