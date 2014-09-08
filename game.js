@@ -193,6 +193,7 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 	this.speed = enemyTraits[this.type].speed;
 	this.orbit = orbit; //property determining distance of orbit
 	this.health = enemyTraits[this.type].health;
+	this.damage = enemyTraits[this.type].damage;
 
 	this.damagemult = 1;
 
@@ -215,6 +216,7 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 		this.shield = this.health;
 		this.health *= 5;
 		this.speed = 3;
+		this.damage *= 3;
 	}
 };
 
@@ -244,7 +246,11 @@ Enemy.prototype.update = function(planet) {
 
 		////////SHOOTING////////
 		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
-			var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType, this, false);
+			if (this.isboss) {
+				var bullet = new Bullet(this.x, this.y, 6, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType, this, false, this.damage);
+			} else {
+				var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType, this, false, this.damage);
+			}
 			var shoot = new Audio();
 			shoot.src = jsfxr(sounds[this.type].shoot);
 			shoot.play();
@@ -410,11 +416,15 @@ Turret = function (x,y,name, eArrays, eBullets) {
 
 };
 
-Turret.prototype.checkCollision = function (enemyArray) {
+Turret.prototype.checkCollision = function (enemyArray, isbullet) {
 	for (var i = 0; i < enemyArray.length; i++) {
 		if (enemyArray[i].alive && collision(this,enemyArray[i])) {
 			if (this.shield > 0) {
-				this.shield -= enemyTraits[Options.planType].damage;
+				if (isbullet) {
+					this.shield -= 20;
+				} else {
+					this.shield -= enemyArray[i].damage;
+				}
 				if (!this.regen) {
 					this.dmgcount = 120;
 				}
@@ -425,7 +435,11 @@ Turret.prototype.checkCollision = function (enemyArray) {
 				    delete hit;
 				}, false);
 			} else if (this.shield <= 0 && this.health > 0) {
-				this.health -= enemyTraits[Options.planType].damage;
+				if (isbullet) {
+					this.health -= 20;
+				} else {
+					this.health -= enemyArray[i].damage;
+				}
 				var hit = new Audio();
 				hit.src = jsfxr(sounds.player.hit);
 				hit.play();
@@ -433,7 +447,6 @@ Turret.prototype.checkCollision = function (enemyArray) {
 				    delete hit;
 				}, false);
 			} else if (this.shield <= 0 && this.health <= 0) {
-				this.health -= enemyTraits[Options.planType].damage;
 				var death = new Audio();
 				death.src = jsfxr(sounds.player.death);
 				death.play();
@@ -482,10 +495,10 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 
 	//collision
 	for (var i = 0; i < this.eArrays.length; i++) {
-		this.checkCollision(this.eArrays[i]);
+		this.checkCollision(this.eArrays[i], false);
 	}
 
-	this.checkCollision(this.eBullets);
+	this.checkCollision(this.eBullets, true);
 
 	//damage-related stuff
 
@@ -800,7 +813,7 @@ Healthbar.prototype.draw = function(ctx) {
 	}
 }
 
-Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot) {
+Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot, damage) {
 	this.x = x;
 	this.y = y;
 	this.radius = r;
@@ -811,6 +824,7 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot
 	this.name = "bullet";
 	this.color = color;
 	this.birth = Date.now();
+	this.damage = damage;
 
 	this.alive = true; //Used for determining damage and whether to draw
 	this.owner = owner;
@@ -1509,12 +1523,12 @@ function initGame() {
 				var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 
 
-				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
+				var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
 				if (Options.wepType === "air") {
-					var bullet2 = new Bullet(player.x, player.y, 3, (dx - 150)/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
-					var bullet3 = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, (dy - 150)/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
-					var bullet4 = new Bullet(player.x, player.y, 3, (dx - 100)/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
-					var bullet5 = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, (dy - 100)/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
+					var bullet2 = new Bullet(player.x, player.y, 3, (dx - 150)/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
+					var bullet3 = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, (dy - 150)/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
+					var bullet4 = new Bullet(player.x, player.y, 3, (dx - 100)/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
+					var bullet5 = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, (dy - 100)/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
 					pBullets.push(bullet2);
 					pBullets.push(bullet3);
 					pBullets.push(bullet4);
