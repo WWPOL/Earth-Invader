@@ -375,7 +375,7 @@ Enemy.prototype.draw = function(ctx, array) {
 		ctx.translate(this.x, this.y);
 		ctx.rotate(this.rotation);
 		if (this.isboss) {
-			ctx.drawImage(enemyTraits[this.type].img,-6,-6,36,36);
+			ctx.drawImage(enemyTraits[this.type].img,-18,-18,36,36);
 		} else {
 			ctx.drawImage(enemyTraits[this.type].img,-6,-6);
 		}
@@ -385,9 +385,9 @@ Enemy.prototype.draw = function(ctx, array) {
 		ctx.translate(this.x, this.y);
 		ctx.rotate(this.rotation);
 		if (this.isboss) {
-			ctx.drawImage(enemyTraits[this.type].boom,-6,-6,48,48);
+			ctx.drawImage(enemyTraits[this.type].boom,-24,-24,48,48);
 		} else {
-			ctx.drawImage(enemyTraits[this.type].boom,-6,-6,28,28);	
+			ctx.drawImage(enemyTraits[this.type].boom,-14,-14,28,28);	
 		}
 		ctx.restore();
 		this.explode = (this.explode+1)%7; //add a count, when this.explode hits 4 (or 0) it will go false
