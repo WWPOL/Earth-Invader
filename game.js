@@ -226,7 +226,7 @@ Enemy.prototype.assignplayer = function(player) {
 };
 
 //Update the enemy's position
-Enemy.prototype.update = function(planet) {
+Enemy.prototype.update = function(planet, ctx) {
 	if(! (this.player === undefined) && this.alive){ //only update if alive
 		this.count = (this.count+1) % this.rof; //update counter
 
@@ -297,7 +297,7 @@ Enemy.prototype.update = function(planet) {
 					this.damagemult = 0.5;
 				} else if (this.pBullets[i].type === "rock") {
 					this.damagemult = 1;
-				};
+				}
 			} else if (this.type === "air") {
 				if (this.pBullets[i].type === "fire") {
 					this.damagemult = 0.5;
@@ -307,7 +307,7 @@ Enemy.prototype.update = function(planet) {
 					this.damagemult = 1;
 				} else if (this.pBullets[i].type === "rock") {
 					this.damagemult = 1.5;
-				};
+				}
 			} else if (this.type === "water") {
 				if (this.pBullets[i].type === "fire") {
 					this.damagemult = 1.5;
@@ -328,9 +328,19 @@ Enemy.prototype.update = function(planet) {
 				} else if (this.pBullets[i].type === "rock") {
 					this.damagemult = 1;
 				};
-			};
+			}
 			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
 				this.health -= wepTraits[Options.wepType].damage * this.damagemult;
+
+				if(Options.wepType === "water"){
+					enemies.forEach(function(enemy){
+						if(!(enemy === this)){
+							if(distance(this.x, this.y, enemy.x, enemy.y) <= 200){
+								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
+							}
+						}
+					});
+				}
 
 				if (Options.wepType === "air") {
 					this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
@@ -1416,7 +1426,7 @@ function initGame() {
 	var shootcount = 0; //and how frequently to shoot
 	var pBullets = [];
 	var eBullets = [];
-	var enemies = [];
+	enemies = [];
 	var defenders = [];
 	var bossbars = [];
 
@@ -1546,10 +1556,10 @@ function initGame() {
 		}
 
 		enemies.forEach(function(enemy){
-			enemy.update(planet);
+			enemy.update(planet, gamectx);
 		});
 		defenders.forEach(function(enemy){
-			enemy.update(planet);
+			enemy.update(planet, gamectx);
 		});	
 		pBullets.forEach(function(bullet){
 			bullet.update(pBullets);
