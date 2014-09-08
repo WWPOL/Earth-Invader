@@ -187,11 +187,13 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 	this.y = y;
 	this.width = width;
 	this.height = height;
+	this.isboss = isboss;
 
 	this.type = type;
 	this.speed = enemyTraits[this.type].speed;
 	this.orbit = orbit; //property determining distance of orbit
 	this.health = enemyTraits[this.type].health;
+
 	this.damagemult = 1;
 
 	this.rof = enemyTraits[this.type].rof; //rate of fire
@@ -208,6 +210,12 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 
 	//This allows for the enemy to rotate to face the player
 	this.rotation = 0;
+
+	if (this.isboss) {
+		this.shield = this.health;
+		this.health *= 5;
+		this.speed = 3;
+	}
 };
 
 //Tells the enemy object which object to follow, in the actual game, it will be the player
@@ -360,13 +368,21 @@ Enemy.prototype.draw = function(ctx, array) {
 		ctx.save();
 		ctx.translate(this.x, this.y);
 		ctx.rotate(this.rotation);
-		ctx.drawImage(enemyTraits[this.type].img,-6,-6);
+		if (this.isboss) {
+			ctx.drawImage(enemyTraits[this.type].img,-6,-6,36,36);
+		} else {
+			ctx.drawImage(enemyTraits[this.type].img,-6,-6);
+		}
 		ctx.restore();
 	} else if (this.explode) {
 		ctx.save();
 		ctx.translate(this.x, this.y);
 		ctx.rotate(this.rotation);
-		ctx.drawImage(enemyTraits[this.type].boom,-6,-6,28,28);
+		if (this.isboss) {
+			ctx.drawImage(enemyTraits[this.type].boom,-6,-6,48,48);
+		} else {
+			ctx.drawImage(enemyTraits[this.type].boom,-6,-6,28,28);	
+		}
 		ctx.restore();
 		this.explode = (this.explode+1)%7; //add a count, when this.explode hits 4 (or 0) it will go false
 	} else if (!this.alive && !this.boom) {
@@ -694,14 +710,17 @@ Star.prototype.draw = function(ctx) {
 	ctx.fill();
 }
 
-Healthbar = function(x, y, owner) {
+Healthbar = function(x, y, owner, mini) {
 	this.x = x;
 	this.y = y;
+	this.owner = owner;
 	this.maxhealth = owner.health;
 	this.health = owner.health;
 	this.healthpercent = 1;
 	this.name = owner.name;
 	this.playsound = true;
+	this.ismini = mini;
+	this.alive = true;
 	if (owner.shield) {
 		this.maxshield = owner.shield;
 		this.shield = owner.shield;
@@ -709,56 +728,76 @@ Healthbar = function(x, y, owner) {
 	}
 }
 
-Healthbar.prototype.update = function(owner) {
-	this.health = owner.health;
+Healthbar.prototype.update = function() {
+	this.health = this.owner.health;
 	this.healthpercent = this.health / this.maxhealth;
-	if (this.shield !== false && owner.shield !== false) { //use triple equality, b/c 0 == false, and updates will stop at 0 and not draw correctly
-		this.shield = owner.shield;
+	this.alive = this.owner.alive;
+	if (this.shield !== false && this.owner.shield !== false) { //use triple equality, b/c 0 == false, and updates will stop at 0 and not draw correctly
+		this.shield = this.owner.shield;
 		this.shieldpercent = this.shield / this.maxshield;
+	}
+	if (!this.alive) {
+		delete this;
 	}
 
 }
 
 Healthbar.prototype.draw = function(ctx) {
-	ctx.beginPath()
-	ctx.fillStyle = "red";
-	ctx.fillRect(this.x, this.y, 300 * this.healthpercent, 20);
-	ctx.font = "12pt Arial";
-	ctx.fillStyle = "white";
-	ctx.textAlign = "center";
-	ctx.fillText(this.name, this.x + 150, this.y + 15);
-
-	if (this.shield > 0) {
-		ctx.fillStyle = "blue";
-		ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
-		ctx.font = "12pt Arial";
-		ctx.fillStyle = "white";
-		ctx.textAlign = "center";
-		ctx.fillText("Shields", this.x + 150, this.y + 45);
-		this.playsound = true;
-	} else if (this.shield === 0) {
-		if (this.playsound) {
-			var shielddown = new Audio();
-			shielddown.src = jsfxr(sounds.player.shielddown);
-			shielddown.play();
-			shielddown.addEventListener('ended', function() {
-			    delete shielddown;
-			}, false);
-			this.playsound = false;
+	if (this.alive) {
+		ctx.beginPath()
+		ctx.fillStyle = "red";
+		if (this.ismini) {
+			ctx.fillRect(this.owner.x - 55, this.owner.y - 45, 100 * this.healthpercent, 5);
+		} else {
+			ctx.fillRect(this.x, this.y, 300 * this.healthpercent, 20);
 		}
-		ctx.fillStyle = "white";
 		ctx.font = "12pt Arial";
-		ctx.textAlign = "center";
-		ctx.fillText("Shields down!", this.x + 150, this.y + 45);
-	} else if (this.shield <= 0) {
 		ctx.fillStyle = "white";
-		ctx.font = "12pt Arial";
 		ctx.textAlign = "center";
-		ctx.fillText("Shields down!", this.x + 150, this.y + 45);
+		if (!this.ismini) {
+			ctx.fillText(this.name, this.x + 150, this.y + 15);
+		}
+
+		if (this.shield > 0) {
+			ctx.fillStyle = "blue";
+			if (this.ismini) {
+				ctx.fillRect(this.owner.x - 55, this.owner.y - 35, 100 * this.shieldpercent, 5);
+			} else {
+				ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
+			}
+			ctx.font = "12pt Arial";
+			ctx.fillStyle = "white";
+			ctx.textAlign = "center";
+			if (!this.ismini) {
+				ctx.fillText("Shields", this.x + 150, this.y + 45);
+			}
+			this.playsound = true;
+		} else if (this.shield === 0) {
+			if (this.playsound) {
+				var shielddown = new Audio();
+				shielddown.src = jsfxr(sounds.player.shielddown);
+				shielddown.play();
+				shielddown.addEventListener('ended', function() {
+				    delete shielddown;
+				}, false);
+				this.playsound = false;
+			}
+			ctx.fillStyle = "white";
+			ctx.font = "12pt Arial";
+			ctx.textAlign = "center";
+			if (!this.ismini) {
+				ctx.fillText("Shields down!", this.x + 150, this.y + 45);
+			}
+		} else if (this.shield <= 0) {
+			ctx.fillStyle = "white";
+			ctx.font = "12pt Arial";
+			ctx.textAlign = "center";
+			if (!this.ismini) {
+				ctx.fillText("Shields down!", this.x + 150, this.y + 45);
+			}
+		}
+		ctx.closePath();
 	}
-
-
-	ctx.closePath();
 }
 
 Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot) {
@@ -1365,13 +1404,14 @@ function initGame() {
 	var eBullets = [];
 	var enemies = [];
 	var defenders = [];
+	var bossbars = [];
 
 	var planet = new Planet(halfwidth, halfheight, "Planet", planTraits[Options.planType].plancolor, planTraits[Options.planType].planstroke, pBullets);
-	var planethealth = new Healthbar(clientWidth - 310, 10, planet);
+	var planethealth = new Healthbar(clientWidth - 310, 10, planet, false);
 
 	//Create a player, an enemy, and assign the player to enemy so that it will follow it
 	var player = new Turret(halfwidth, 45, "Player", [enemies,defenders], eBullets);
-	var playerhealth = new Healthbar(10, 10, player);
+	var playerhealth = new Healthbar(10, 10, player, false);
 
 	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
 	var enemytypes = ["fire", "air", "water", "rock"];
@@ -1390,6 +1430,14 @@ function initGame() {
 			enemycount += 1;
 		}
 	};
+	var makeBoss = function(x,y, type) {
+		var randOrbit = Math.round(Math.random()*20) + 60; //30 to 80
+		var boss = new Enemy(x, y, 30, 30, randOrbit, type, pBullets, eBullets, true);
+		boss.assignplayer(player);
+		var bosshealth = new Healthbar(x, y, boss, true);
+		bossbars.push(bosshealth);
+		enemies.push(boss);
+	};
 	var makeDefenders = function(x,y, type) {
 		var randOrbit = Math.round(Math.random()*20) + 80; //40 to 90
 		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, false);
@@ -1404,6 +1452,7 @@ function initGame() {
 	};
 	makeEnemies(halfwidth, halfheight + 100, Options.planType);
 	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, Options.planType);
+
 
 ////////////////////////////////////////
 /// Handlers
@@ -1494,10 +1543,13 @@ function initGame() {
 		eBullets.forEach(function(bullet){
 			bullet.update(eBullets);
 		});
+		bossbars.forEach(function(bar){
+			bar.update();
+		});
 
 		player.update(delta, gamecanvas);
-		playerhealth.update(player);
-		planethealth.update(planet);
+		playerhealth.update();
+		planethealth.update();
 		planet.update();
 
 		if (((Date.now() - wave) / 1000) > 15) {
@@ -1511,6 +1563,11 @@ function initGame() {
 				defendercount = 15 - defenders.length; //15 as 14 + 1, to make sure that it spawns in case there are 0 defenders
 				makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, Options.planType);
 			}
+		};
+		if (((Date.now() - boss) / 1000) > 60) {
+			boss = Date.now();
+			var randomint = Math.floor(Math.random() * 8);
+			makeBoss(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
 		};
 
 		if (planet.health <= 0) {
@@ -1540,6 +1597,9 @@ function initGame() {
 		});
 		defenders.forEach(function(enemy){
 			enemy.draw(gamectx, defenders);
+		});
+		bossbars.forEach(function(bar){
+			bar.draw(gamectx);
 		});
 		playerhealth.draw(gamectx);
 		planethealth.draw(gamectx);
@@ -1619,10 +1679,19 @@ function initGame() {
 			gameOver = false;
 			winGame = false;
 			for (x in enemies) {
-				enemies[x].alive = false;
+				delete enemies[x];
+			}
+			for (x in defenders) {
+				delete defenders[x];
 			}
 			for (x in pBullets) {
-				pBullets[x].alive = false;
+				delete pBullets[x];
+			}
+			for (x in eBullets) {
+				delete eBullets[x];
+			}
+			for (x in bossbars) {
+				delete bossbars[x];
 			}
 			planet.alive = false;
 			player.alive = false;
@@ -1636,6 +1705,7 @@ function initGame() {
 	var then = Date.now();
 	var start = Date.now();
 	var wave = Date.now();
+	var boss = Date.now();
 	main();
 }
 /////////////////----------------\\\\\\\\\\\\\\\\\\\
