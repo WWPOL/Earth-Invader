@@ -442,7 +442,7 @@ Enemy.prototype.draw = function(ctx, array) {
 };
 
 //Init the player/turret
-Turret = function (x,y,name, eArrays, eBullets) {
+Turret = function (x,y,name, eArrays, eBullets, powerups) {
 	this.x = x; 
 	this.y = y;
 	this.speed = 200;
@@ -451,6 +451,7 @@ Turret = function (x,y,name, eArrays, eBullets) {
 	this.direction = 0; //radians
 	this.name = name;
 	this.dmgcount = 0; //count for timing since last damaged, will be used for regenerating shield
+	this.powerups = powerups;
 
 	this.radius = 40;
 	this.eArrays = eArrays; //array of enemy arrays 
@@ -460,49 +461,59 @@ Turret = function (x,y,name, eArrays, eBullets) {
 
 };
 
-Turret.prototype.checkCollision = function (enemyArray, isbullet) {
+Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) {
 	for (var i = 0; i < enemyArray.length; i++) {
-		if (enemyArray[i].alive && collision(this,enemyArray[i])) {
-			if (this.shield > 0) {
-				if (isbullet) {
-					this.shield -= 20;
-				} else {
-					this.shield -= enemyArray[i].damage;
+		if (ispowerup) {
+			var pickup = new Audio();
+			pickup.src = jsfxr(sounds.powerup.trishot);
+			pickup.volume = Options.volume;
+			pickup.play();
+			pickup.addEventListener('ended', function() {
+			    delete pickup;
+			}, false);
+		} else {
+			if (enemyArray[i].alive && collision(this,enemyArray[i])) {
+				if (this.shield > 0) {
+					if (isbullet) {
+						this.shield -= 20;
+					} else {
+						this.shield -= enemyArray[i].damage;
+					}
+					if (!this.regen) {
+						this.dmgcount = 120;
+					}
+					var hit = new Audio();
+					hit.src = jsfxr(sounds.player.hit);
+					hit.volume = Options.volume;
+					hit.play();
+					hit.addEventListener('ended', function() {
+					    delete hit;
+					}, false);
+				} else if (this.shield <= 0 && this.health > 0) {
+					if (isbullet) {
+						this.health -= 20;
+					} else {
+						this.health -= enemyArray[i].damage;
+					}
+					var hit = new Audio();
+					hit.src = jsfxr(sounds.player.hit);
+					hit.volume = Options.volume;
+					hit.play();
+					hit.addEventListener('ended', function() {
+					    delete hit;
+					}, false);
+				} else if (this.shield <= 0 && this.health <= 0) {
+					var death = new Audio();
+					death.src = jsfxr(sounds.player.death);
+					death.volume = Options.volume;
+					death.play();
+					death.addEventListener('ended', function() {
+					    delete death;
+					}, false);
 				}
-				if (!this.regen) {
-					this.dmgcount = 120;
+				if (enemyArray[i].name === "bullet") {
+					enemyArray[i].alive = false;
 				}
-				var hit = new Audio();
-				hit.src = jsfxr(sounds.player.hit);
-				hit.volume = Options.volume;
-				hit.play();
-				hit.addEventListener('ended', function() {
-				    delete hit;
-				}, false);
-			} else if (this.shield <= 0 && this.health > 0) {
-				if (isbullet) {
-					this.health -= 20;
-				} else {
-					this.health -= enemyArray[i].damage;
-				}
-				var hit = new Audio();
-				hit.src = jsfxr(sounds.player.hit);
-				hit.volume = Options.volume;
-				hit.play();
-				hit.addEventListener('ended', function() {
-				    delete hit;
-				}, false);
-			} else if (this.shield <= 0 && this.health <= 0) {
-				var death = new Audio();
-				death.src = jsfxr(sounds.player.death);
-				death.volume = Options.volume;
-				death.play();
-				death.addEventListener('ended', function() {
-				    delete death;
-				}, false);
-			}
-			if (enemyArray[i].name === "bullet") {
-				enemyArray[i].alive = false;
 			}
 		}
 	}
@@ -542,10 +553,11 @@ Turret.prototype.update = function (delta, gc) { //call this to update propertie
 
 	//collision
 	for (var i = 0; i < this.eArrays.length; i++) {
-		this.checkCollision(this.eArrays[i], false);
+		this.checkCollision(this.eArrays[i], false, false);
 	}
+	this.checkCollision(this.eBullets, true, false);
+	this.checkCollision(this.powerups, false, true);
 
-	this.checkCollision(this.eBullets, true);
 
 	//damage-related stuff
 
@@ -888,7 +900,7 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot
 	this.offset = offset;
 
 	this.type = type;
-	if (this.type === "rock" && this.playershot) {
+	if ((this.type === "rock" || powerups.penetrate) && this.playershot) {
 		this.penetrate = true;
 		this.radius = 4;
 	}
@@ -941,7 +953,7 @@ Bullet.prototype.draw = function(ctx) {
 	}
 };
 
-Powerup = function(x,y,type,player) {
+Powerup = function(x,y,type,array) {
 	this.x = x;
 	this.y = y;
 	this.type = type;
@@ -967,14 +979,17 @@ Powerup = function(x,y,type,player) {
 		this.color = "gold";
 	}
 	this.radius = 30;
-	this.player = player;
 	this.alive = true;
+	this.powerups = array;
 };
 
 Powerup.prototype.update = function() {
 	if (this.alive) {	
 		this.x += 5;
 		this.y += 6;
+	} else {
+		var index = this.powerups.indexOf(this);
+		this.powerups.splice(index, 1);
 	}
 }
 
@@ -1489,12 +1504,15 @@ function initGame() {
 	var enemies = [];
 	var defenders = [];
 	var bossbars = [];
+	var poweruparray = [];
+	var poweruptimer = Math.floor(Math.random() * 30) + 30;
+	var poweruptypes = ["tri", "fast", "splash", "penetrate", "health", "invincibility"];
 
 	var planet = new Planet(halfwidth, halfheight, "Planet", planTraits[Options.planType].plancolor, planTraits[Options.planType].planstroke, pBullets);
 	var planethealth = new Healthbar(clientWidth - 310, 10, planet, false);
 
 	//Create a player, an enemy, and assign the player to enemy so that it will follow it
-	var player = new Turret(halfwidth, 45, "Player", [enemies,defenders], eBullets);
+	var player = new Turret(halfwidth, 45, "Player", [enemies,defenders], eBullets, powerups);
 	var playerhealth = new Healthbar(10, 10, player, false);
 
 	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
@@ -1640,11 +1658,13 @@ function initGame() {
 						var dy = mouseY - player.y ;
 						var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 						var angle = Math.atan2(dy, dx);
+						var pangle = Math.atan2(mouseY, mouseX);
 
 						var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, 0);
 						if (Options.wepType === "air" || powerups.trishot) {
 							for (var i = 0; i < 3; i++) {
-								var test = angle + -0.5 + (i * 0.25);
+								var test = angle + pangle + -0.5 + (i * 0.25);
+								console.log("Angle: " + test);
 								var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, test);
 								pBullets.push(bullet);
 							}
@@ -1708,6 +1728,11 @@ function initGame() {
 					player.alive = false;
 					gameOver = true;
 				};
+				if (Date.now() - lastpowerup > poweruptimer) {
+					var int = Math.floor(Math.random() * 5);
+					var powerup = new Powerup(Math.floor(Math.random() * winwidth)+1,Math.floor(Math.random() * winheight)+1,poweruptypes[int],poweruparray);
+					poweruparray.push(powerup);
+				}
 				time = Math.floor((Date.now() - start) / 1000);
 				score = Math.round((((enemiesKilled * planet.totaldamage) / time) * 10) * scoremult);
 			}
@@ -1872,6 +1897,7 @@ function initGame() {
 	var start = Date.now();
 	var wave = Date.now();
 	var boss = Date.now();
+	var lastpowerup = Date.now();
 	main();
 }
 /////////////////----------------\\\\\\\\\\\\\\\\\\\
