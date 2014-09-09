@@ -361,7 +361,7 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 				}
 				if(Options.wepType === "water" || powerups.splash){
 					enemies.forEach(function(enemy){
-						if(!(enemy === this)){
+						if(enemy !== this){
 							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250){
 								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
 								var splashnoise = new Audio();
