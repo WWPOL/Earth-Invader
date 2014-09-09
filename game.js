@@ -52,7 +52,7 @@ var renderops = {
 var Options = {
 	planType: "fire",
 	wepType: "fire",
-	volume: 0.75
+	volume: 0.5
 };
 
 var powerups = {
