@@ -1735,10 +1735,6 @@ function initGame() {
 				}
 				time = Math.floor((Date.now() - start) / 1000);
 				score = Math.round((((enemiesKilled * planet.totaldamage) / time) * 10) * scoremult);
-				if (score > highscore) {
-					highscore = score;
-					localStorage.setItem("highscore", JSON.stringify(highscore));
-				}
 			}
 		}
 		if (muted) {
@@ -1812,6 +1808,10 @@ function initGame() {
 
 	var gameoverscreen = function(didwin){
 		clearScreen();
+		if (score > highscore) {
+			highscore = score;
+			localStorage.setItem("highscore", JSON.stringify(highscore));
+		}
 
 		gamectx.font = "100pt Impact";
 		if (didwin) {
