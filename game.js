@@ -351,8 +351,14 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 				};
 			}
 			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
-				this.health -= wepTraits[Options.wepType].damage * this.damagemult;
-
+				if (!this.pBullets[i].penetrate) {
+					this.pBullets[i].alive = false;
+					this.health -= wepTraits[Options.wepType].damage * this.damagemult;
+				} else if (this.pBullets[i].penetrate && this !== this.pBullets[i].currentenemy) {
+					this.pBullets[i].currentenemy = this;
+					this.pBullets[i].penetratecount += 1;
+					this.health -= wepTraits[Options.wepType].damage * this.damagemult;
+				}
 				if(Options.wepType === "water" || powerups.splash){
 					enemies.forEach(function(enemy){
 						if(!(enemy === this)){
@@ -374,21 +380,11 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 						}
 					});
 				}
-
 				if (Options.wepType === "air") {
 					this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
 					this.x -= toPlayerX * this.speed * 30;
 					this.y -= toPlayerY * this.speed * 30;
 				}
-
-				/*Collision with penetration, needs work
-				if (!this.pBullets[i].penetrate) {
-					this.pBullets[i].alive = false;
-				} else if (this.pBullets[i].penetrate && !this.pBullets[i].currentenemy === this) {
-					this.pBullets[i].currentenemy = this;
-					this.pBullets[i].penetratecount += 1;
-				}*/
-				this.pBullets[i].alive = false;
 				var hit = new Audio();
 				hit.src = jsfxr(sounds[this.type].hit);
 				hit.volume = Options.volume;
@@ -926,6 +922,9 @@ Bullet.prototype.update = function(array){
 			array.splice(index, 1);
 		}
 
+	} else {
+		var index = array.indexOf(this);
+		array.splice(index, 1);
 	}
 };
 
