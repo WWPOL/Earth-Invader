@@ -15,7 +15,7 @@ var paused = false;
 var muted = false;
 var starting = true;
 var timer = 3;
-
+var highscore = localStorage.getItem('highscore');
 
 ////////////////// LOAD IN SPRITES \\\\\\\\\\\\\\\\\\
 var sprite_player = new Image();
@@ -1735,6 +1735,10 @@ function initGame() {
 				}
 				time = Math.floor((Date.now() - start) / 1000);
 				score = Math.round((((enemiesKilled * planet.totaldamage) / time) * 10) * scoremult);
+				if (score > highscore) {
+					highscore = score;
+					localStorage.setItem("highscore", JSON.stringify(highscore));
+				}
 			}
 		}
 		if (muted) {
@@ -1824,8 +1828,9 @@ function initGame() {
 		gamectx.fillText("Score: " + score, winwidth / 2, (winheight / 2) + 110);
 
 		gamectx.font = "30pt Impact";
-		gamectx.fillText("Time: " + time + " seconds", winwidth / 2, (winheight / 2) + 150);
-		gamectx.fillText("Enemies Killed: " + enemiesKilled, winwidth / 2, (winheight / 2) + 185);
+		gamectx.fillText("Highscore: " + highscore, winwidth / 2, (winheight / 2) + 150);
+		gamectx.fillText("Time: " + time + " seconds", winwidth / 2, (winheight / 2) + 185);
+		gamectx.fillText("Enemies Killed: " + enemiesKilled, winwidth / 2, (winheight / 2) + 220);
 
 		gamectx.font = "30pt Arial";
 		gamectx.fillStyle = "green";
