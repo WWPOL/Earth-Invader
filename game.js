@@ -915,7 +915,7 @@ Bullet.prototype.update = function(array){
 				this.y += this.speed * this.dy;
 			}
 		}
-		if ((this.type === "fire") && (distance(this.x,this.y,this.owner.x,this.owner.y) > 150) && (this.playershot)) {
+		if ((this.type === "fire") && (distance(this.x,this.y,this.owner.x,this.owner.y) > 250) && (this.playershot)) {
 			this.alive = false;
 			var index = array.indexOf(this);
 			array.splice(index, 1);
@@ -1640,18 +1640,13 @@ function initGame() {
 		 				var dx = mouseX - player.x; //use the global variables!
 						var dy = mouseY - player.y ;
 						var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
+						var angle = Math.atan2(dy, dx);
 
 						var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, 0);
 						if (Options.wepType === "air" || powerups.trishot) {
 							for (var i = 0; i < 3; i++) {
-								if (i === 0) {
-									var offset = 120;
-								} else if (i === 1) {
-									var offset = 150;
-								} else if (i === 2) {
-									var offset = 240;
-								}
-								var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, offset);
+								var test = angle + -0.5 + (i * 0.25);
+								var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, test);
 								pBullets.push(bullet);
 							}
 						}
