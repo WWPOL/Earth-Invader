@@ -1,3 +1,10 @@
+Controls
+=======
+* WASD to move
+* Hold to shoot
+* P to pause
+* M to mute
+
 Todo
 =====
 - [X] Make Player fire shoot like a flamethrower, insane RoF, but bullets die at short distance. 
