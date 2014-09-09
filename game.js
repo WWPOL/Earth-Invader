@@ -47,7 +47,8 @@ var renderops = {
 
 var Options = {
 	planType: "fire",
-	wepType: "fire"
+	wepType: "fire",
+	volume: 0.75
 };
 
 var sounds = {
@@ -255,6 +256,7 @@ Enemy.prototype.update = function(planet, ctx) {
 			}
 			var shoot = new Audio();
 			shoot.src = jsfxr(sounds[this.type].shoot);
+			shoot.volume = Options.volume;
 			shoot.play();
 			shoot.addEventListener('ended', function() {
 			    delete shoot;
@@ -365,6 +367,7 @@ Enemy.prototype.update = function(planet, ctx) {
 				this.pBullets[i].alive = false;
 				var hit = new Audio();
 				hit.src = jsfxr(sounds[this.type].hit);
+				hit.volume = Options.volume;
 				hit.play();
 				hit.addEventListener('ended', function() {
 				    delete hit;
@@ -375,6 +378,7 @@ Enemy.prototype.update = function(planet, ctx) {
 				this.explode = 1; //draw explosion sprite
 				var eDeath = new Audio();
 				eDeath.src = jsfxr(sounds[this.type].death);
+				eDeath.volume = Options.volume;
 				eDeath.play();
 				eDeath.addEventListener('ended', function() {
 				    delete eDeath;
@@ -450,6 +454,7 @@ Turret.prototype.checkCollision = function (enemyArray, isbullet) {
 				}
 				var hit = new Audio();
 				hit.src = jsfxr(sounds.player.hit);
+				hit.volume = Options.volume;
 				hit.play();
 				hit.addEventListener('ended', function() {
 				    delete hit;
@@ -462,6 +467,7 @@ Turret.prototype.checkCollision = function (enemyArray, isbullet) {
 				}
 				var hit = new Audio();
 				hit.src = jsfxr(sounds.player.hit);
+				hit.volume = Options.volume;
 				hit.play();
 				hit.addEventListener('ended', function() {
 				    delete hit;
@@ -469,6 +475,7 @@ Turret.prototype.checkCollision = function (enemyArray, isbullet) {
 			} else if (this.shield <= 0 && this.health <= 0) {
 				var death = new Audio();
 				death.src = jsfxr(sounds.player.death);
+				death.volume = Options.volume;
 				death.play();
 				death.addEventListener('ended', function() {
 				    delete death;
@@ -653,6 +660,7 @@ Planet.prototype.update = function() {
 			this.bullets[i].alive = false;
 			var hit = new Audio();
 			hit.src = jsfxr(sounds.planet.hit);
+			hit.volume = Options.volume;
 			hit.play();
 			hit.addEventListener('ended', function() {
 			    delete hit;
@@ -664,6 +672,7 @@ Planet.prototype.update = function() {
 			this.bullets[i].alive = false;
 			var hit = new Audio();
 			hit.src = jsfxr(sounds.planet.hit);
+			hit.volume = Options.volume;
 			hit.play();
 			hit.addEventListener('ended', function() {
 			    delete hit;
@@ -673,6 +682,7 @@ Planet.prototype.update = function() {
 			this.alive = false;
 			var death = new Audio();
 			death.src = jsfxr(sounds.planet.death);
+			death.volume = Options.volume;
 			death.play();
 			death.addEventListener('ended', function() {
 			    delete death;
@@ -809,6 +819,7 @@ Healthbar.prototype.draw = function(ctx) {
 			if (this.playsound) {
 				var shielddown = new Audio();
 				shielddown.src = jsfxr(sounds.player.shielddown);
+				shielddown.volume = Options.volume;
 				shielddown.play();
 				shielddown.addEventListener('ended', function() {
 				    delete shielddown;
@@ -1021,6 +1032,7 @@ function initMainMenu() {
 				clearScreen();
 				var clicksnd = new Audio();
 				clicksnd.src = jsfxr(sounds.click);
+				clicksnd.volume = Options.volume;
 				clicksnd.play();
 				clicksnd.addEventListener('ended', function() {
 				    delete clicksnd;
@@ -1101,6 +1113,7 @@ function initLevelSelect() {
 			clearScreen();
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.volume = Options.volume;
 			clicksnd.play();
 			clicksnd.addEventListener('ended', function() {
 			    delete clicksnd;
@@ -1112,6 +1125,7 @@ function initLevelSelect() {
 			Options.planType = "fire";
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.volume = Options.volume;
 			clicksnd.play();
 			clicksnd.addEventListener('ended', function() {
 			    delete clicksnd;
@@ -1121,6 +1135,7 @@ function initLevelSelect() {
 			Options.planType = "air";
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.volume = Options.volume;
 			clicksnd.play();
 			clicksnd.addEventListener('ended', function() {
 			    delete clicksnd;
@@ -1130,6 +1145,7 @@ function initLevelSelect() {
 			Options.planType = "water";
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.volume = Options.volume;
 			clicksnd.play();
 
 		}
@@ -1137,6 +1153,7 @@ function initLevelSelect() {
 			Options.planType = "rock";
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.volume = Options.volume;
 			clicksnd.play();
 			clicksnd.addEventListener('ended', function() {
 			    delete clicksnd;
@@ -1148,6 +1165,7 @@ function initLevelSelect() {
 			Options.wepType = "fire";
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.volume = Options.volume;
 			clicksnd.play();
 			clicksnd.addEventListener('ended', function() {
 			    delete clicksnd;
@@ -1157,6 +1175,7 @@ function initLevelSelect() {
 			Options.wepType = "air";
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.volume = Options.volume;
 			clicksnd.play();
 			clicksnd.addEventListener('ended', function() {
 			    delete clicksnd;
@@ -1166,6 +1185,7 @@ function initLevelSelect() {
 			Options.wepType = "water";
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.volume = Options.volume;
 			clicksnd.play();
 			clicksnd.addEventListener('ended', function() {
 			    delete clicksnd;
@@ -1175,6 +1195,7 @@ function initLevelSelect() {
 			Options.wepType = "rock";
 			var clicksnd = new Audio();
 			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.volume = Options.volume;
 			clicksnd.play();
 			clicksnd.addEventListener('ended', function() {
 			    delete clicksnd;
@@ -1556,6 +1577,7 @@ function initGame() {
 				}
 				var lasersnd = new Audio();
 				lasersnd.src = jsfxr(sounds.player[Options.wepType]);
+				lasersnd.volume = Options.volume;
 				lasersnd.play();
 				lasersnd.addEventListener('ended', function() {
 				    delete lasersnd;
