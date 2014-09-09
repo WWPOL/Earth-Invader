@@ -189,6 +189,8 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 	this.height = height;
 	this.isboss = isboss;
 
+	this.splash = false;
+
 	this.type = type;
 	this.speed = enemyTraits[this.type].speed;
 	this.orbit = orbit; //property determining distance of orbit
@@ -335,8 +337,10 @@ Enemy.prototype.update = function(planet, ctx) {
 				if(Options.wepType === "water"){
 					enemies.forEach(function(enemy){
 						if(!(enemy === this)){
-							if(distance(this.x, this.y, enemy.x, enemy.y) <= 200){
+							if(distance(this.x, this.y, enemy.x, enemy.y) <= 500){
 								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
+								this.splash = true;
+								console.log("Splash!")
 							}
 						}
 					});
@@ -384,6 +388,9 @@ Enemy.prototype.draw = function(ctx, array) {
 		ctx.save();
 		ctx.translate(this.x, this.y);
 		ctx.rotate(this.rotation);
+		if(this.splash){
+			
+		}
 		if (this.isboss) {
 			ctx.drawImage(enemyTraits[this.type].img,-18,-18,36,36);
 		} else {
