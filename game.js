@@ -215,8 +215,7 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 	this.rotation = 0;
 
 	if (this.isboss) {
-		this.shield = this.health;
-		this.health *= 5;
+		this.health *= 10;
 		this.speed = 3;
 		this.damage *= 3;
 	}
@@ -231,6 +230,7 @@ Enemy.prototype.assignplayer = function(player) {
 Enemy.prototype.update = function(planet, ctx) {
 	if(! (this.player === undefined) && this.alive){ //only update if alive
 		this.count = (this.count+1) % this.rof; //update counter
+		ctx = ctx;
 
 		this.playerX = this.player.x;
 		this.playerY = this.player.y;
@@ -337,10 +337,13 @@ Enemy.prototype.update = function(planet, ctx) {
 				if(Options.wepType === "water"){
 					enemies.forEach(function(enemy){
 						if(!(enemy === this)){
-							if(distance(this.x, this.y, enemy.x, enemy.y) <= 500){
+							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250){
 								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
-								this.splash = true;
-								console.log("Splash!")
+								ctx.save();
+								ctx.translate(this.x, this.y);
+								ctx.rotate(this.rotation);
+								ctx.drawImage(enemyTraits.water.boom,-24,-24,48,48);
+								ctx.restore();
 							}
 						}
 					});
