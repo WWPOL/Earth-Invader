@@ -13,6 +13,8 @@ var time = 0;
 var scoremult = 1;
 var paused = false;
 var muted = false;
+var starting = true;
+var timer = 3;
 
 
 ////////////////// LOAD IN SPRITES \\\\\\\\\\\\\\\\\\
@@ -1509,9 +1511,6 @@ function initGame() {
 			defendercount += 1;
 		}
 	};
-	makeEnemies(halfwidth, halfheight + 100, Options.planType);
-	makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, Options.planType);
-
 
 ////////////////////////////////////////
 /// Handlers
@@ -1547,6 +1546,40 @@ function initGame() {
 
 /////////////////////////////////////////
 
+	timer = 3;
+	setTimeout(function(){
+		timer = 2;
+		var clicksnd = new Audio();
+		clicksnd.src = jsfxr(sounds.click);
+		clicksnd.volume = Options.volume;
+		clicksnd.play();
+		clicksnd.addEventListener('ended', function() {
+		    delete clicksnd;
+		}, false);
+		setTimeout(function(){
+			timer = 1;
+			var clicksnd = new Audio();
+			clicksnd.src = jsfxr(sounds.click);
+			clicksnd.volume = Options.volume;
+			clicksnd.play();
+			clicksnd.addEventListener('ended', function() {
+			    delete clicksnd;
+			}, false);
+			setTimeout(function(){
+				starting = false;
+				var clicksnd = new Audio();
+				clicksnd.src = jsfxr(sounds.click);
+				clicksnd.volume = Options.volume;
+				clicksnd.play();
+				clicksnd.addEventListener('ended', function() {
+				    delete clicksnd;
+				}, false);
+				makeEnemies(halfwidth, halfheight + 100, Options.planType);
+				makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, Options.planType);
+			}, 1000);
+		}, 1000);
+	}, 1000);
+
 	//main game loop, updates and renders the game
 	var main = function(){
 		var now = Date.now();
@@ -1568,89 +1601,91 @@ function initGame() {
 
 	//updates the positions of the player and enemy
 	var update = function(delta){
-		if (!paused) {
-			//first, decide if new bullet should be added
-			if (mousedown) {
-				shootcount++;
-	 			
-	 			if (shootcount % wepTraits[Options.wepType].rof == 1) { //use rate of fire property as modulo, fire every <rof> frames
-	 				var dx = mouseX - player.x; //use the global variables!
-					var dy = mouseY - player.y ;
-					var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
+		if (!starting) {
+			if (!paused) {
+				//first, decide if new bullet should be added
+				if (mousedown) {
+					shootcount++;
+		 			
+		 			if (shootcount % wepTraits[Options.wepType].rof == 1) { //use rate of fire property as modulo, fire every <rof> frames
+		 				var dx = mouseX - player.x; //use the global variables!
+						var dy = mouseY - player.y ;
+						var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 
 
-					var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
-					if (Options.wepType === "air") {
-						var bullet2 = new Bullet(player.x, player.y, 3, (dx - 150)/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
-						var bullet3 = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, (dy - 150)/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
-						var bullet4 = new Bullet(player.x, player.y, 3, (dx - 100)/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
-						var bullet5 = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, (dy - 100)/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
-						pBullets.push(bullet2);
-						pBullets.push(bullet3);
-						pBullets.push(bullet4);
-						pBullets.push(bullet5);
+						var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
+						if (Options.wepType === "air") {
+							var bullet2 = new Bullet(player.x, player.y, 3, (dx - 150)/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
+							var bullet3 = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, (dy - 150)/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
+							var bullet4 = new Bullet(player.x, player.y, 3, (dx - 100)/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
+							var bullet5 = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, (dy - 100)/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
+							pBullets.push(bullet2);
+							pBullets.push(bullet3);
+							pBullets.push(bullet4);
+							pBullets.push(bullet5);
+						}
+						var lasersnd = new Audio();
+						lasersnd.src = jsfxr(sounds.player[Options.wepType]);
+						lasersnd.volume = Options.volume;
+						lasersnd.play();
+						lasersnd.addEventListener('ended', function() {
+						    delete lasersnd;
+						}, false);
+						pBullets.push(bullet);
+
+		 			} 
+				}
+
+				enemies.forEach(function(enemy){
+					enemy.update(planet, gamectx);
+				});
+				defenders.forEach(function(enemy){
+					enemy.update(planet, gamectx);
+				});	
+				pBullets.forEach(function(bullet){
+					bullet.update(pBullets);
+				});
+				eBullets.forEach(function(bullet){
+					bullet.update(eBullets);
+				});
+				bossbars.forEach(function(bar){
+					bar.update();
+				});
+
+				player.update(delta, gamecanvas);
+				playerhealth.update();
+				planethealth.update();
+				planet.update();
+
+				if (((Date.now() - wave) / 1000) > 15) {
+					wave = Date.now();
+					if (enemies.length < 100) {
+						enemycount = 1;
+						var randomint = Math.floor(Math.random() * 8);
+						makeEnemies(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
 					}
-					var lasersnd = new Audio();
-					lasersnd.src = jsfxr(sounds.player[Options.wepType]);
-					lasersnd.volume = Options.volume;
-					lasersnd.play();
-					lasersnd.addEventListener('ended', function() {
-					    delete lasersnd;
-					}, false);
-					pBullets.push(bullet);
-
-	 			} 
-			}
-
-			enemies.forEach(function(enemy){
-				enemy.update(planet, gamectx);
-			});
-			defenders.forEach(function(enemy){
-				enemy.update(planet, gamectx);
-			});	
-			pBullets.forEach(function(bullet){
-				bullet.update(pBullets);
-			});
-			eBullets.forEach(function(bullet){
-				bullet.update(eBullets);
-			});
-			bossbars.forEach(function(bar){
-				bar.update();
-			});
-
-			player.update(delta, gamecanvas);
-			playerhealth.update();
-			planethealth.update();
-			planet.update();
-
-			if (((Date.now() - wave) / 1000) > 15) {
-				wave = Date.now();
-				if (enemies.length < 100) {
-					enemycount = 1;
+					if (defenders.length < 14) {
+						defendercount = 15 - defenders.length; //15 as 14 + 1, to make sure that it spawns in case there are 0 defenders
+						makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, Options.planType);
+					}
+				};
+				if (((Date.now() - boss) / 1000) > 60) {
+					boss = Date.now();
 					var randomint = Math.floor(Math.random() * 8);
-					makeEnemies(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
-				}
-				if (defenders.length < 14) {
-					defendercount = 15 - defenders.length; //15 as 14 + 1, to make sure that it spawns in case there are 0 defenders
-					makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, Options.planType);
-				}
-			};
-			if (((Date.now() - boss) / 1000) > 60) {
-				boss = Date.now();
-				var randomint = Math.floor(Math.random() * 8);
-				makeBoss(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
-			};
+					makeBoss(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
+				};
 
-			if (planet.health <= 0) {
-				gameOver = true;
-				winGame = true;
+				if (planet.health <= 0) {
+					gameOver = true;
+					winGame = true;
+				}
+				if (player.health <= 0) {
+					player.alive = false;
+					gameOver = true;
+				};
+				time = Math.floor((Date.now() - start) / 1000);
+				score = Math.round((((enemiesKilled * planet.totaldamage) / time) * 10) * scoremult);
 			}
-			if (player.health <= 0) {
-				player.alive = false;
-				gameOver = true;
-			};
-			time = Math.floor((Date.now() - start) / 1000);
-			score = Math.round((((enemiesKilled * planet.totaldamage) / time) * 10) * scoremult);
 		}
 		if (muted) {
 			Options.volume = 0;
@@ -1706,6 +1741,12 @@ function initGame() {
 			gamectx.fillStyle = "green";
 			gamectx.textAlign = "center";
 			gamectx.fillText("Paused", winwidth / 2, winheight / 2);
+		}
+		if (starting) {
+			gamectx.font = "100pt Impact";
+			gamectx.fillStyle = "white";
+			gamectx.textAlign = "center";
+			gamectx.fillText(timer, winwidth / 2, winheight / 2);
 		}
 		if (muted) {
 			gamectx.font = "20pt Impact";
@@ -1765,24 +1806,38 @@ function initGame() {
 			gameOver = false;
 			winGame = false;
 			for (x in enemies) {
-				delete enemies[x];
+				//delete enemies[x];
+				var index = enemies.indexOf(x);
+				enemies.splice(index,1);
 			}
 			for (x in defenders) {
-				delete defenders[x];
+				//delete defenders[x];
+				var index = defenders.indexOf(x);
+				enemies.splice(index,1);
 			}
 			for (x in pBullets) {
-				delete pBullets[x];
+				//delete pBullets[x];
+				var index = pBullets.indexOf(x);
+				enemies.splice(index,1);
 			}
 			for (x in eBullets) {
-				delete eBullets[x];
+				//delete eBullets[x];
+				var index = eBullets.indexOf(x);
+				enemies.splice(index,1);
 			}
 			for (x in bossbars) {
-				delete bossbars[x];
+				//delete bossbars[x];
+				var index = bossbars.indexOf(x);
+				enemies.splice(index,1);
 			}
 			planet.alive = false;
 			player.alive = false;
+			delete player;
+			delete planet;
 			renderops.game = false;
 			document.body.removeChild(igc);
+			starting = true;
+			time = 0;
 			initLevelSelect();
 		}
 	}, false);
