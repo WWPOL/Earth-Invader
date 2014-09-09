@@ -55,6 +55,17 @@ var Options = {
 	volume: 0.75
 };
 
+var powerups = {
+	trishot: false,
+	fastshot: {
+		toggle: false,
+		nrof: 15,
+		frof: 7
+	},
+	penetrate: false,
+	splash: false
+};
+
 var normvol = Options.volume;
 
 var sounds = {
@@ -234,11 +245,11 @@ Enemy.prototype.assignplayer = function(player) {
 };
 
 //Update the enemy's position
-Enemy.prototype.update = function(planet, ctx) {
+Enemy.prototype.update = function(planet, ctx, earray) {
 	if(! (this.player === undefined) && this.alive){ //only update if alive
 		this.count = (this.count+1) % this.rof; //update counter
 		ctx = ctx;
-
+		var enemies = earray;
 		this.playerX = this.player.x;
 		this.playerY = this.player.y;
 
@@ -256,9 +267,9 @@ Enemy.prototype.update = function(planet, ctx) {
 		////////SHOOTING////////
 		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
 			if (this.isboss) {
-				var bullet = new Bullet(this.x, this.y, 6, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType, this, false, this.damage);
+				var bullet = new Bullet(this.x, this.y, 6, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType, this, false, this.damage, 0);
 			} else {
-				var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType, this, false, this.damage);
+				var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType, this, false, this.damage, 0);
 			}
 			var shoot = new Audio();
 			shoot.src = jsfxr(sounds[this.type].shoot);
@@ -342,11 +353,18 @@ Enemy.prototype.update = function(planet, ctx) {
 			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
 				this.health -= wepTraits[Options.wepType].damage * this.damagemult;
 
-				if(Options.wepType === "water"){
+				if(Options.wepType === "water" || powerups.splash){
 					enemies.forEach(function(enemy){
 						if(!(enemy === this)){
 							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250){
 								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
+								var splashnoise = new Audio();
+								splashnoise.src = jsfxr(sounds.water.death);
+								splashnoise.volume = Options.volume;
+								splashnoise.play();
+								splashnoise.addEventListener('ended', function() {
+								    delete splashnoise;
+								}, false);
 								ctx.save();
 								ctx.translate(this.x, this.y);
 								ctx.rotate(this.rotation);
@@ -850,7 +868,7 @@ Healthbar.prototype.draw = function(ctx) {
 	}
 }
 
-Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot, damage) {
+Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot, damage, offset) {
 	this.x = x;
 	this.y = y;
 	this.radius = r;
@@ -871,6 +889,7 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot
 	this.penetratecount = 0;
 	this.currentenemy = 0;
 	this.penetrate = false;
+	this.offset = offset;
 
 	this.type = type;
 	if (this.type === "rock" && this.playershot) {
@@ -888,8 +907,13 @@ Bullet.prototype.update = function(array){
 			array.splice(index, 1);
 		}
 		else {
-			this.x += this.speed * this.dx;
-			this.y += this.speed * this.dy;
+			if (this.offset > 0) {
+				this.x += Math.cos(this.offset) * this.speed * this.dx;
+				this.y += Math.sin(this.offset) * this.speed * this.dy;
+			} else {
+				this.x += this.speed * this.dx;
+				this.y += this.speed * this.dy;
+			}
 		}
 		if ((this.type === "fire") && (distance(this.x,this.y,this.owner.x,this.owner.y) > 150) && (this.playershot)) {
 			this.alive = false;
@@ -1232,7 +1256,7 @@ function initLevelSelect() {
 		} else if(y > 400 && y < 475 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
 			infoBox = "Effective against Air, less effective against Water.";
 		} else {
-			infoBox = "";
+			infoBox = "Planet type: " + Options.planType + ". Weapon type: " + Options.wepType + ".";
 		}
 	}); 
 
@@ -1463,7 +1487,7 @@ function initGame() {
 	var shootcount = 0; //and how frequently to shoot
 	var pBullets = [];
 	var eBullets = [];
-	enemies = [];
+	var enemies = [];
 	var defenders = [];
 	var bossbars = [];
 
@@ -1580,6 +1604,8 @@ function initGame() {
 		}, 1000);
 	}, 1000);
 
+	powerups.fastshot.nrof = wepTraits[Options.wepType].rof;
+
 	//main game loop, updates and renders the game
 	var main = function(){
 		var now = Date.now();
@@ -1603,6 +1629,9 @@ function initGame() {
 	var update = function(delta){
 		if (!starting) {
 			if (!paused) {
+				if (powerups.fastshot.toggle) {
+					wepTraits[Options.wepType].rof = powerups.fastshot.frof;
+				}
 				//first, decide if new bullet should be added
 				if (mousedown) {
 					shootcount++;
@@ -1612,17 +1641,19 @@ function initGame() {
 						var dy = mouseY - player.y ;
 						var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 
-
-						var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
-						if (Options.wepType === "air") {
-							var bullet2 = new Bullet(player.x, player.y, 3, (dx - 150)/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
-							var bullet3 = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, (dy - 150)/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
-							var bullet4 = new Bullet(player.x, player.y, 3, (dx - 100)/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
-							var bullet5 = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, (dy - 100)/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage);
-							pBullets.push(bullet2);
-							pBullets.push(bullet3);
-							pBullets.push(bullet4);
-							pBullets.push(bullet5);
+						var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, 0);
+						if (Options.wepType === "air" || powerups.trishot) {
+							for (var i = 0; i < 3; i++) {
+								if (i === 0) {
+									var offset = 120;
+								} else if (i === 1) {
+									var offset = 150;
+								} else if (i === 2) {
+									var offset = 240;
+								}
+								var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, offset);
+								pBullets.push(bullet);
+							}
 						}
 						var lasersnd = new Audio();
 						lasersnd.src = jsfxr(sounds.player[Options.wepType]);
@@ -1637,10 +1668,10 @@ function initGame() {
 				}
 
 				enemies.forEach(function(enemy){
-					enemy.update(planet, gamectx);
+					enemy.update(planet, gamectx, enemies);
 				});
 				defenders.forEach(function(enemy){
-					enemy.update(planet, gamectx);
+					enemy.update(planet, gamectx, defenders);
 				});	
 				pBullets.forEach(function(bullet){
 					bullet.update(pBullets);
