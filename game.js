@@ -58,25 +58,25 @@ var Options = {
 var powerups = {
 	trishot: {
 		toggle: false,
-		timer: 10000
+		timer: 1000
 	},
 	fastshot: {
 		toggle: false,
 		nrof: 15,
 		frof: 7,
-		timer: 10000
+		timer: 1000
 	},
 	penetrate: {
 		toggle: false,
-		timer: 10000
+		timer: 1000
 	},
 	splash: {
 		toggle: false,
-		timer: 10000
+		timer: 1000
 	},
 	invincibility: {
 		toggle: false,
-		timer: 10000
+		timer: 1000
 	}
 };
 
@@ -1802,31 +1802,31 @@ function initGame() {
 					powerups.trishot.timer -= 1;
 				} else if ((powerups.trishot.timer <= 0) && (powerups.trishot.toggle)) {
 					powerups.trishot.toggle = false;
-					powerups.trishot.timer = 10000;
+					powerups.trishot.timer = 1000;
 				}
 				if ((powerups.fastshot.timer > 0) && (powerups.fastshot.toggle)) {
 					powerups.fastshot.timer -= 1;
 				} else if ((powerups.fastshot.timer <= 0) && (powerups.fastshot.toggle)) {
 					powerups.fastshot.toggle = false;
-					powerups.fastshot.timer = 10000;
+					powerups.fastshot.timer = 1000;
 				}
 				if ((powerups.splash.timer > 0) && (powerups.splash.toggle)) {
 					powerups.splash.timer -= 1;
 				} else if ((powerups.splash.timer <= 0) && (powerups.splash.toggle)) {
 					powerups.splash.toggle = false;
-					powerups.splash.timer = 10000;
+					powerups.splash.timer = 1000;
 				}
 				if ((powerups.penetrate.timer > 0) && (powerups.penetrate.toggle)) {
 					powerups.penetrate.timer -= 1;
 				} else if ((powerups.penetrate.timer <= 0) && (powerups.penetrate.toggle)) {
 					powerups.penetrate.toggle = false;
-					powerups.penetrate.timer = 10000;
+					powerups.penetrate.timer = 1000;
 				}
 				if ((powerups.invincibility.timer > 0) && (powerups.invincibility.toggle)) {
 					powerups.invincibility.timer -= 1;
 				} else if ((powerups.invincibility.timer <= 0) && (powerups.invincibility.toggle)) {
 					powerups.invincibility.toggle = false;
-					powerups.invincibility.timer = 10000;
+					powerups.invincibility.timer = 1000;
 				}
 			}
 		}
@@ -1905,35 +1905,35 @@ function initGame() {
 			gamectx.fillStyle = "white";
 			gamectx.textAlign = "left";
 			gamectx.fillText("MULTISHOT",5,winheight - 5);
-			gamectx.fillRect(200, winheight - 5, 200 * (powerups.trishot.timer / 10000), 20);
+			gamectx.fillRect(150, winheight - 5, 200 * (powerups.trishot.timer / 1000), 20);
 		}
 		if (powerups.fastshot.toggle) {
 			gamectx.font = "20pt Impact";
 			gamectx.fillStyle = "red";
 			gamectx.textAlign = "left";
 			gamectx.fillText("FASTSHOT",5,winheight - 30);
-			gamectx.fillRect(200, winheight - 30, 200 * (powerups.fastshot.timer / 10000), 20);
+			gamectx.fillRect(150, winheight - 50, 200 * (powerups.fastshot.timer / 1000), 20);
 		}
 		if (powerups.splash.toggle) {
 			gamectx.font = "20pt Impact";
 			gamectx.fillStyle = "blue";
 			gamectx.textAlign = "left";
 			gamectx.fillText("SPLASH",5,winheight - 55);
-			gamectx.fillRect(200, winheight - 55, 200 * (powerups.splash.timer / 10000), 20);
+			gamectx.fillRect(150, winheight - 75, 200 * (powerups.splash.timer / 1000), 20);
 		}
 		if (powerups.penetrate.toggle) {
 			gamectx.font = "20pt Impact";
 			gamectx.fillStyle = "brown";
 			gamectx.textAlign = "left";
 			gamectx.fillText("PENETRATE",5,winheight - 80);
-			gamectx.fillRect(200, winheight - 80, 200 * (powerups.penetrate.timer / 10000), 20);
+			gamectx.fillRect(150, winheight - 100, 200 * (powerups.penetrate.timer / 1000), 20);
 		}
 		if (powerups.invincibility.toggle) {
 			gamectx.font = "20pt Impact";
 			gamectx.fillStyle = "gold";
 			gamectx.textAlign = "left";
 			gamectx.fillText("INVINCIBLE",5,winheight - 105);
-			gamectx.fillRect(200, winheight - 105, 200 * (powerups.invincibility.timer / 10000), 20);
+			gamectx.fillRect(150, winheight - 125, 200 * (powerups.invincibility.timer / 1000), 20);
 		}
 	};
 
