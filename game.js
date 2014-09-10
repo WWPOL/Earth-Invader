@@ -1662,7 +1662,7 @@ function initGame() {
 
 						var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, 0);
 						if (Options.wepType === "air" || powerups.trishot) {
-							for (var i = 0; i < 3; i++) {
+							for (var i = 0; i < 5; i++) {
 								var test = angle + pangle + -0.5 + (i * 0.25);
 								console.log("Angle: " + test);
 								var bullet = new Bullet(player.x, player.y, 3, dx/distanceToPlayer, dy/distanceToPlayer, wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, test);
