@@ -942,6 +942,7 @@ Bullet.prototype.update = function(array){
 		else {
 			this.x += this.speed * this.dx;
 			this.y += this.speed * this.dy;
+			console.log(this.type + " " + this.speed);
 		}
 		if ((this.type === "fire") && (distance(this.x,this.y,this.owner.x,this.owner.y) > 250) && (this.playershot)) {
 			this.alive = false;
@@ -1717,10 +1718,12 @@ function initGame() {
 						var angle = Math.atan2(dy, dx);
 
 						if (Options.wepType === "air" || powerups.trishot.toggle) {
-							for (var i = 0; i < 5; i++) {
-								//console.log(i + " Angle: " + test*180/Math.PI);
-								var bullet = new Bullet(player.x, player.y, 3, Math.cos(angle+(i-2)*0.3), Math.sin(angle+(i-2)*0.3), wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
-								pBullets.push(bullet);
+							for (var i = -2; i <= 2; i++) {
+								//console.log(i + " Angle: " + angle*180/Math.PI);
+								var bullet = new Bullet(player.x, player.y, 3, Math.cos(angle+(0.3*i)), Math.sin(angle+(0.3*i)), wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
+								if (i != 2) {
+									pBullets.push(bullet);
+								}
 							}
 						} else {
 							var bullet = new Bullet(player.x, player.y, 3, Math.cos(angle), Math.sin(angle), wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
