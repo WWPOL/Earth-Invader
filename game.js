@@ -56,14 +56,28 @@ var Options = {
 };
 
 var powerups = {
-	trishot: false,
+	trishot: {
+		toggle: false,
+		timer: 10000
+	},
 	fastshot: {
 		toggle: false,
 		nrof: 15,
-		frof: 7
+		frof: 7,
+		timer: 10000
 	},
-	penetrate: false,
-	splash: false
+	penetrate: {
+		toggle: false,
+		timer: 10000
+	},
+	splash: {
+		toggle: false,
+		timer: 10000
+	},
+	invincibility: {
+		toggle: false,
+		timer: 10000
+	}
 };
 
 var normvol = Options.volume;
@@ -267,9 +281,9 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 		////////SHOOTING////////
 		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
 			if (this.isboss) {
-				var bullet = new Bullet(this.x, this.y, 6, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType, this, false, this.damage, 0);
+				var bullet = new Bullet(this.x, this.y, 6, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, false);
 			} else {
-				var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, 10, enemyTraits[this.type].bulletColor, Options.planType, this, false, this.damage, 0);
+				var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, false);
 			}
 			var shoot = new Audio();
 			shoot.src = jsfxr(sounds[this.type].shoot);
@@ -359,7 +373,7 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 					this.pBullets[i].penetratecount += 1;
 					this.health -= wepTraits[Options.wepType].damage * this.damagemult;
 				}
-				if(Options.wepType === "water" || powerups.splash){
+				if(Options.wepType === "water" || powerups.splash.toggle){
 					enemies.forEach(function(enemy){
 						if(enemy !== this){
 							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250){
@@ -447,7 +461,7 @@ Turret = function (x,y,name, eArrays, eBullets, powerups) {
 	this.y = y;
 	this.speed = 200;
 	this.health = 500; //balance parameter
-	this.shield = 200;
+	this.shield = 2000000000;//200;
 	this.direction = 0; //radians
 	this.name = name;
 	this.dmgcount = 0; //count for timing since last damaged, will be used for regenerating shield
@@ -464,6 +478,7 @@ Turret = function (x,y,name, eArrays, eBullets, powerups) {
 Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) {
 	for (var i = 0; i < enemyArray.length; i++) {
 		if (ispowerup) {
+			console.log("powerup");
 			var pickup = new Audio();
 			pickup.src = jsfxr(sounds.powerup.trishot);
 			pickup.volume = Options.volume;
@@ -471,13 +486,28 @@ Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) {
 			pickup.addEventListener('ended', function() {
 			    delete pickup;
 			}, false);
+			if (enemyArray[i].type === "tri") {
+				powerups.trishot.toggle = true;
+			} else if (enemyArray[i].type === "fast") {
+				powerups.fastshot.toggle = true;
+			} else if (enemyArray[i].type === "splash") {
+				powerups.splash.toggle = true;
+			} else if (enemyArray[i].type === "penetrate") {
+				powerups.penetrate.toggle = true;
+			} else if (enemyArray[i].type === "health") {
+				this.health = 500;
+				this.shield = 200;
+			} else if (enemyArray[i].type === "invincibility") {
+				powerups.invincibility.toggle = true;
+			}
+			enemyArray[i].alive = false;
 		} else {
 			if (enemyArray[i].alive && collision(this,enemyArray[i])) {
-				if (this.shield > 0) {
+				if (this.shield > 0 && !powerups.invincibility.toggle) {
 					if (isbullet) {
-						this.shield -= 20;
-					} else {
 						this.shield -= enemyArray[i].damage;
+					} else {
+						this.shield -= 20;
 					}
 					if (!this.regen) {
 						this.dmgcount = 120;
@@ -489,7 +519,7 @@ Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) {
 					hit.addEventListener('ended', function() {
 					    delete hit;
 					}, false);
-				} else if (this.shield <= 0 && this.health > 0) {
+				} else if (this.shield <= 0 && this.health > 0 && !powerups.invincibility.toggle) {
 					if (isbullet) {
 						this.health -= 20;
 					} else {
@@ -876,7 +906,7 @@ Healthbar.prototype.draw = function(ctx) {
 	}
 }
 
-Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot, damage, offset) {
+Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot) {
 	this.x = x;
 	this.y = y;
 	this.radius = r;
@@ -887,7 +917,6 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot
 	this.name = "bullet";
 	this.color = color;
 	this.birth = Date.now();
-	this.damage = damage;
 
 	this.alive = true; //Used for determining damage and whether to draw
 	this.owner = owner;
@@ -897,10 +926,9 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot
 	this.penetratecount = 0;
 	this.currentenemy = 0;
 	this.penetrate = false;
-	this.offset = offset;
 
 	this.type = type;
-	if ((this.type === "rock" || powerups.penetrate) && this.playershot) {
+	if ((this.type === "rock" || powerups.penetrate.toggle) && this.playershot) {
 		this.penetrate = true;
 		this.radius = 4;
 	}
@@ -915,7 +943,9 @@ Bullet.prototype.update = function(array){
 			array.splice(index, 1);
 		}
 		else {
-			if (this.offset > 0) {
+			this.x += this.speed * this.dx;
+			this.y += this.speed * this.dy;
+			/*if (this.offset > 0) {
 				// this.x += Math.cos(this.offset) * this.speed * this.dx;
 				// this.y += Math.sin(this.offset) * this.speed * this.dy;
 				this.x += this.speed * this.dx;
@@ -923,7 +953,7 @@ Bullet.prototype.update = function(array){
 			} else {
 				this.x += this.speed * this.dx;
 				this.y += this.speed * this.dy;
-			}
+			}*/
 		}
 		if ((this.type === "fire") && (distance(this.x,this.y,this.owner.x,this.owner.y) > 250) && (this.playershot)) {
 			this.alive = false;
@@ -955,14 +985,14 @@ Bullet.prototype.draw = function(ctx) {
 	}
 };
 
-Powerup = function(x,y,type,array) {
+Powerup = function(x,y,type,array,player) {
 	this.x = x;
 	this.y = y;
 	this.type = type;
 	this.name = "powerup";
 	this.color = "white";
 	if (this.type === "tri") {
-		this.name = "TRISHOT";
+		this.name = "MULTISHOT";
 		this.color = "white";
 	} else if (this.type === "fast") {
 		this.name = "FASTSHOT";
@@ -980,15 +1010,42 @@ Powerup = function(x,y,type,array) {
 		this.name = "INVINCIBILITY";
 		this.color = "gold";
 	}
-	this.radius = 30;
+	this.radius = 5;
 	this.alive = true;
 	this.powerups = array;
+	this.player = player;
+	this.targetx = Math.floor((Math.random() * (winwidth - 20) + 10));
+	this.targety = Math.floor((Math.random() * (winwidth - 20) + 10));
 };
 
 Powerup.prototype.update = function() {
 	if (this.alive) {	
-		this.x += 5;
-		this.y += 6;
+		this.playerX = this.player.x;
+		this.playerY = this.player.y;
+
+		// Calculate direction towards player
+		var toPlayerX = this.playerX - this.x;
+		var toPlayerY = this.playerY - this.y;
+
+		// Normalize
+		var toPlayerLength = Math.sqrt(toPlayerX * toPlayerX + toPlayerY * toPlayerY);
+		toPlayerX = toPlayerX / toPlayerLength;
+		toPlayerY = toPlayerY / toPlayerLength;
+		if (toPlayerLength < 20) {
+			this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
+			this.x -= toPlayerX;
+			this.y -= toPlayerY;
+		} else {
+			var dx = this.targetx - this.x; //use the global variables!
+			var dy = this.targety - this.y;
+			var distance = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
+			this.x += dx/distance;
+			this.y += dy/distance;
+		}
+		if ((Math.abs(this.x + this.targetx) < 20) || (Math.abs(this.y + this.targety) < 20)) {
+			this.targetx = Math.floor((Math.random() * (winwidth - 20) + 10));
+			this.targety = Math.floor((Math.random() * (winwidth - 20) + 10));
+		}
 	} else {
 		var index = this.powerups.indexOf(this);
 		this.powerups.splice(index, 1);
@@ -1005,7 +1062,7 @@ Powerup.prototype.draw = function(ctx) {
 		ctx.fill();
 		ctx.font = "12pt Arial";
 		ctx.textAlign = "center";
-		ctx.fillText(this.name, this.x, this.y + 15);
+		ctx.fillText(this.name, this.x, this.y - 15);
 		ctx.restore();
 	}
 }
@@ -1507,14 +1564,14 @@ function initGame() {
 	var defenders = [];
 	var bossbars = [];
 	var poweruparray = [];
-	var poweruptimer = Math.floor(Math.random() * 30) + 30;
+	var poweruptimer = 10;//Math.floor(Math.random() * 30) + 30;
 	var poweruptypes = ["tri", "fast", "splash", "penetrate", "health", "invincibility"];
 
 	var planet = new Planet(halfwidth, halfheight, "Planet", planTraits[Options.planType].plancolor, planTraits[Options.planType].planstroke, pBullets);
 	var planethealth = new Healthbar(clientWidth - 310, 10, planet, false);
 
 	//Create a player, an enemy, and assign the player to enemy so that it will follow it
-	var player = new Turret(halfwidth, 45, "Player", [enemies,defenders], eBullets, powerups);
+	var player = new Turret(halfwidth, 45, "Player", [enemies,defenders], eBullets, poweruparray);
 	var playerhealth = new Healthbar(10, 10, player, false);
 
 	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
@@ -1650,6 +1707,8 @@ function initGame() {
 			if (!paused) {
 				if (powerups.fastshot.toggle) {
 					wepTraits[Options.wepType].rof = powerups.fastshot.frof;
+				} else {
+					wepTraits[Options.wepType].rof = powerups.fastshot.nrof;
 				}
 				//first, decide if new bullet should be added
 				if (mousedown) {
@@ -1660,17 +1719,15 @@ function initGame() {
 						var dy = mouseY - player.y ;
 						var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 						var angle = Math.atan2(dy, dx);
-						var pangle = Math.atan2(mouseY, mouseX);
 
-						if (Options.wepType === "air" || powerups.trishot) {
-							for (var i = 0; i < 6; i++) {
-								var test = angle + pangle + -0.6 + (i * 0.3);
+						if (Options.wepType === "air" || powerups.trishot.toggle) {
+							for (var i = 0; i < 5; i++) {
 								//console.log(i + " Angle: " + test*180/Math.PI);
-								var bullet = new Bullet(player.x, player.y, 3, Math.cos(angle+(i-2)*0.3), Math.sin(angle+(i-2)*0.3), wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, test);
+								var bullet = new Bullet(player.x, player.y, 3, Math.cos(angle+(i-2)*0.3), Math.sin(angle+(i-2)*0.3), wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
 								pBullets.push(bullet);
 							}
 						} else {
-							var bullet = new Bullet(player.x, player.y, 3, Math.cos(angle), Math.sin(angle), wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, 0);
+							var bullet = new Bullet(player.x, player.y, 3, Math.cos(angle), Math.sin(angle), wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
 						}
 						var lasersnd = new Audio();
 						lasersnd.src = jsfxr(sounds.player[Options.wepType]);
@@ -1699,6 +1756,9 @@ function initGame() {
 				bossbars.forEach(function(bar){
 					bar.update();
 				});
+				poweruparray.forEach(function(powerup){
+					powerup.update();
+				});
 
 				player.update(delta, gamecanvas);
 				playerhealth.update();
@@ -1723,6 +1783,37 @@ function initGame() {
 					makeBoss(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
 				};
 
+			if ((powerups.trishot.timer > 0) && (powerups.trishot.toggle)) {
+				powerups.trishot.timer -= 1;
+			} else if ((powerups.trishot.timer <= 0) && (powerups.trishot.toggle)) {
+				powerups.trishot.toggle = false;
+				powerups.trishot.timer = 10000;
+			}
+			if ((powerups.fastshot.timer > 0) && (powerups.fastshot.toggle)) {
+				powerups.fastshot.timer -= 1;
+			} else if ((powerups.fastshot.timer <= 0) && (powerups.fastshot.toggle)) {
+				powerups.fastshot.toggle = false;
+				powerups.fastshot.timer = 10000;
+			}
+			if ((powerups.splash.timer > 0) && (powerups.splash.toggle)) {
+				powerups.splash.timer -= 1;
+			} else if ((powerups.splash.timer <= 0) && (powerups.splash.toggle)) {
+				powerups.splash.toggle = false;
+				powerups.splash.timer = 10000;
+			}
+			if ((powerups.penetrate.timer > 0) && (powerups.penetrate.toggle)) {
+				powerups.penetrate.timer -= 1;
+			} else if ((powerups.penetrate.timer <= 0) && (powerups.penetrate.toggle)) {
+				powerups.penetrate.toggle = false;
+				powerups.penetrate.timer = 10000;
+			}
+			if ((powerups.invincibility.timer > 0) && (powerups.invincibility.toggle)) {
+				powerups.invincibility.timer -= 1;
+			} else if ((powerups.invincibility.timer <= 0) && (powerups.invincibility.toggle)) {
+				powerups.invincibility.toggle = false;
+				powerups.invincibility.timer = 10000;
+			}
+
 				if (planet.health <= 0) {
 					gameOver = true;
 					winGame = true;
@@ -1731,10 +1822,12 @@ function initGame() {
 					player.alive = false;
 					gameOver = true;
 				};
-				if (Date.now() - lastpowerup > poweruptimer) {
+				if ((Date.now() - lastpowerup) / 1000 > poweruptimer) {
 					var int = Math.floor(Math.random() * 5);
-					var powerup = new Powerup(Math.floor(Math.random() * winwidth)+1,Math.floor(Math.random() * winheight)+1,poweruptypes[int],poweruparray);
+					var powerup = new Powerup(Math.floor(Math.random() * (winwidth) - 20)+10,Math.floor(Math.random() * (winheight) - 20)+10,poweruptypes[int],poweruparray,player);
 					poweruparray.push(powerup);
+					lastpowerup = Date.now();
+					poweruptimer = 10;//Math.floor(Math.random() * 30) + 30;
 				}
 				time = Math.floor((Date.now() - start) / 1000);
 				score = Math.round((((enemiesKilled * planet.totaldamage) / time) * 10) * scoremult);
@@ -1765,6 +1858,9 @@ function initGame() {
 		});
 		bossbars.forEach(function(bar){
 			bar.draw(gamectx);
+		});
+		poweruparray.forEach(function(powerup){
+			powerup.draw(gamectx);
 		});
 		playerhealth.draw(gamectx);
 		planethealth.draw(gamectx);
@@ -1806,6 +1902,36 @@ function initGame() {
 			gamectx.fillStyle = "red";
 			gamectx.textAlign = "right";
 			gamectx.fillText("Muted", winwidth - 5, winheight - 5);
+		}
+		if (powerups.trishot.toggle) {
+			gamectx.font = "20pt Impact";
+			gamectx.fillStyle = "white";
+			gamectx.textAlign = "left";
+			gamectx.fillText("MULTISHOT",5,winheight - 5);
+		}
+		if (powerups.fastshot.toggle) {
+			gamectx.font = "20pt Impact";
+			gamectx.fillStyle = "red";
+			gamectx.textAlign = "left";
+			gamectx.fillText("FASTSHOT",5,winheight - 30);
+		}
+		if (powerups.splash.toggle) {
+			gamectx.font = "20pt Impact";
+			gamectx.fillStyle = "blue";
+			gamectx.textAlign = "left";
+			gamectx.fillText("SPLASH",5,winheight - 55);
+		}
+		if (powerups.penetrate.toggle) {
+			gamectx.font = "20pt Impact";
+			gamectx.fillStyle = "brown";
+			gamectx.textAlign = "left";
+			gamectx.fillText("PENETRATE",5,winheight - 80);
+		}
+		if (powerups.invincibility.toggle) {
+			gamectx.font = "20pt Impact";
+			gamectx.fillStyle = "gold";
+			gamectx.textAlign = "left";
+			gamectx.fillText("INVINCIBLE",5,winheight - 105);
 		}
 	};
 
