@@ -459,7 +459,7 @@ Turret = function (x,y,name, eArrays, eBullets, powerups) {
 	this.y = y;
 	this.speed = 200;
 	this.health = 500; //balance parameter
-	this.shield = 2000000000;//200;
+	this.shield = 200;
 	this.direction = 0; //radians
 	this.name = name;
 	this.dmgcount = 0; //count for timing since last damaged, will be used for regenerating shield
@@ -475,7 +475,7 @@ Turret = function (x,y,name, eArrays, eBullets, powerups) {
 
 Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) {
 	for (var i = 0; i < enemyArray.length; i++) {
-		if (ispowerup) {
+		if (ispowerup && collision(this,enemyArray[i])) {
 			var pickup = new Audio();
 			pickup.src = sounds.powerup.trishot;
 			pickup.volume = Options.volume;
@@ -1552,7 +1552,7 @@ function initGame() {
 	var defenders = [];
 	var bossbars = [];
 	var poweruparray = [];
-	var poweruptimer = 10;//Math.floor(Math.random() * 30) + 30;
+	var poweruptimer = Math.floor(Math.random() * 30) + 30;
 	var poweruptypes = ["tri", "fast", "splash", "penetrate", "health", "invincibility"];
 
 	var planet = new Planet(halfwidth, halfheight, "Planet", planTraits[Options.planType].plancolor, planTraits[Options.planType].planstroke, pBullets);
@@ -1815,7 +1815,7 @@ function initGame() {
 					var powerup = new Powerup(Math.floor(Math.random() * (winwidth) - 20)+10,Math.floor(Math.random() * (winheight) - 20)+10,poweruptypes[int],poweruparray,player);
 					poweruparray.push(powerup);
 					lastpowerup = Date.now();
-					poweruptimer = 10;//Math.floor(Math.random() * 30) + 30;
+					poweruptimer = Math.floor(Math.random() * 30) + 30;
 				}
 				if (!gameOver) {
 					time = Math.floor((Date.now() - start) / 1000);
@@ -1898,30 +1898,35 @@ function initGame() {
 			gamectx.fillStyle = "white";
 			gamectx.textAlign = "left";
 			gamectx.fillText("MULTISHOT",5,winheight - 5);
+			gamectx.fillRect(50, winheight - 5, 50, 20);
 		}
 		if (powerups.fastshot.toggle) {
 			gamectx.font = "20pt Impact";
 			gamectx.fillStyle = "red";
 			gamectx.textAlign = "left";
 			gamectx.fillText("FASTSHOT",5,winheight - 30);
+			gamectx.fillRect(50, winheight - 30, 50, 20);
 		}
 		if (powerups.splash.toggle) {
 			gamectx.font = "20pt Impact";
 			gamectx.fillStyle = "blue";
 			gamectx.textAlign = "left";
 			gamectx.fillText("SPLASH",5,winheight - 55);
+			gamectx.fillRect(50, winheight - 55, 50, 20);
 		}
 		if (powerups.penetrate.toggle) {
 			gamectx.font = "20pt Impact";
 			gamectx.fillStyle = "brown";
 			gamectx.textAlign = "left";
 			gamectx.fillText("PENETRATE",5,winheight - 80);
+			gamectx.fillRect(50, winheight - 80, 50, 20);
 		}
 		if (powerups.invincibility.toggle) {
 			gamectx.font = "20pt Impact";
 			gamectx.fillStyle = "gold";
 			gamectx.textAlign = "left";
 			gamectx.fillText("INVINCIBLE",5,winheight - 105);
+			gamectx.fillRect(50, winheight - 105, 50, 20);
 		}
 	};
 
