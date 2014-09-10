@@ -1662,14 +1662,15 @@ function initGame() {
 						var angle = Math.atan2(dy, dx);
 						var pangle = Math.atan2(mouseY, mouseX);
 
-						var bullet = new Bullet(player.x, player.y, 3, Math.cos(angle), Math.sin(angle), wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, 0);
 						if (Options.wepType === "air" || powerups.trishot) {
-							for (var i = 0; i < 5; i++) {
-								var test = angle + pangle + -0.5 + (i * 0.25);
+							for (var i = 0; i < 6; i++) {
+								var test = angle + pangle + -0.6 + (i * 0.3);
 								//console.log(i + " Angle: " + test*180/Math.PI);
 								var bullet = new Bullet(player.x, player.y, 3, Math.cos(angle+(i-2)*0.3), Math.sin(angle+(i-2)*0.3), wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, test);
 								pBullets.push(bullet);
 							}
+						} else {
+							var bullet = new Bullet(player.x, player.y, 3, Math.cos(angle), Math.sin(angle), wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true, wepTraits[Options.wepType].damage, 0);
 						}
 						var lasersnd = new Audio();
 						lasersnd.src = jsfxr(sounds.player[Options.wepType]);
