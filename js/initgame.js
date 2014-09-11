@@ -27,7 +27,8 @@ function initGame() {
 	var defenders = [];
 	var bossbars = [];
 	var poweruparray = [];
-	var poweruptimer = Math.floor(Math.random() * 30) + 30;
+	var poweruptimer = Math.floor(Math.random() * 16) + 15;
+	var powerupamount = Math.floor(Math.random() * 3) + 1;
 	var poweruptypes = ["air", "fire", "water", "rock", "health", "invincibility"];
 	var powerupnames = [["multishot", winheight - 5, "white"], ["fastshot", winheight - 30, "red"], ["splash", winheight - 55, "blue"], ["penetrate", winheight - 80, "brown"], ["invincibility", winheight - 105, "gold"]];
 	var removethis = poweruptypes.indexOf(Options.wepType);
@@ -230,11 +231,14 @@ function initGame() {
 					makeBoss(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
 				};
 				if ((Date.now() - lastpowerup) / 1000 > poweruptimer) {
-					var int = Math.floor(Math.random() * 5);
-					var powerup = new Powerup(Math.floor(Math.random() * (winwidth) - 20)+10,Math.floor(Math.random() * (winheight) - 20)+10,poweruptypes[int],poweruparray,player);
-					poweruparray.push(powerup);
+					for (var i = 0; i < powerupamount, i++) {
+						var int = Math.floor(Math.random() * 5);
+						var powerup = new Powerup(Math.floor(Math.random() * (winwidth) - 20)+10,Math.floor(Math.random() * (winheight) - 20)+10,poweruptypes[int],poweruparray,player);
+						poweruparray.push(powerup);
+					}
 					lastpowerup = Date.now();
-					poweruptimer = Math.floor(Math.random() * 30) + 30;
+					var poweruptimer = Math.floor(Math.random() * 16) + 15;
+					var powerupamount = Math.floor(Math.random() * 3) + 1;
 				}
 
 				if (planet.health <= 0) {
