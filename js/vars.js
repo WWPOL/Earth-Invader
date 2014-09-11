@@ -41,15 +41,15 @@ boom_rock.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAol
 boom_water.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAAxlBMVEUAAABCltg6iNIzhdAfXcIiXcM0dcw3jtNCftBDkdYvb8k5ktQqeswkascwiNAvhc8tgM04mtc7jNMphM4sf809ktVBodpDnNgqfcwziNAugs43jtMldskyhdA6l9YofMswjdExfc4aY8Myd8w4idEjbsg6jtM4hdBHsd9MsuArbsk7pNk4htAaY8Mvd8s0l9QibscfZsQ1k9QwcMkxg881i9I5jtMqectIoNpJlddGg9MzjNI8ltZRvuRKtuBOseBHsN9Eqtxc7/LmAAAAO3RSTlMADwkDEAgC/R0VBf37Hv7+/v39/Pbz/v39+fn28/Lw8O7t7amki2VUJh8a/v349vX18O/s4c20oYhIMg6F3XkAAACuSURBVAgdBcEFAsIwAASwq8vccBju7tBh//8UCWADIe2lRyFBOWh6WgrW9wQwLzjoSI2NPFZA0Cs0pL63ZmanKO/Xxwyckau/Sdw0q20NoINgEkerMPutnxBoN1uNKH5/v+mMMII8i8Kk9np9lAvzMyhbDOPf+1NXfl52IcAPlXNVWk2l5YAYeo2b70ZeV4MDE883pHTkkQyIhGnvKZYdZdmiGAgwArB5p6khCbV/ugkQqCbu2aMAAAAASUVORK5CYII=';
 boom_air.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAAq1BMVEUAAADp4+Px7e3t5ubo4eHa09PVysrv7Ozu5+fm39/z8PDw6enf2dno4+PZ0tLVycnj29vq5OT08/Ps5ubr5ubs6ur+/PzAsLD8+/vAtrb28/PLvr7SysrEtbXPyMjQycnz8fHi3Nzazs7f2tr29PTs6eni39/n4+PNwMC7s7PDsrLr5eXRw8Pq4+PLvr7s6urFtrbp5ubFtLT////18vLr4+Ph2Njq39/d09Mjzk5BAAAANHRSTlMA/v7++vn49AL+/f317u0H+vn19PDeSy0QDwn78fHw6ebk4uHUv7+glIiDZ1RJRzw1Ix8cfDwE3AAAAItJREFUCB0FwQVig0AAALAc7tRt7u5A+/+XLQG+1o9w2PjoC37yG/x1revuc1fs8znbJtl4ytv3w3YZ+85q6PLVbRqit9MAdmkZx2OUDOegf8nKcQynYwavF2fZNEXHKa6i2ZWH1TIJZRhDjF9IQxQPQw3QhEhVV+jxPJsjXbQUXCYNuFsAKOxZ3/MP1sYKW7vFUKgAAAAASUVORK5CYII=';
 */
-sprite_player.src = "assets/Shooter.png;"
-sprite_fire.src = "assets/Fire-Sprite.png;"
-sprite_rock.src = "assets/Rock-Sprite.png;"
-sprite_water.src = "assets/Water-Sprite.png;"
-sprite_air.src = "assets/Air-Sprite.png;"
-boom_fire.src = "assets/Fire-Boom.png;"
-boom_rock.src = "assets/Rock-Boom.png;"
-boom_water.src = "assets/Water-Boom.png;"
-boom_air.src = "assets/Air-Boom.png;"
+sprite_player.src = "../assets/Shooter.png";
+sprite_fire.src = "../assets/Fire-Sprite.png";
+sprite_rock.src = "../assets/Rock-Sprite.png";
+sprite_water.src = "../assets/Water-Sprite.png";
+sprite_air.src = "../assets/Air-Sprite.png";
+boom_fire.src = "../assets/Fire-Boom.png";
+boom_rock.src = "../assets/Rock-Boom.png";
+boom_water.src = "../assets/Water-Boom.png";
+boom_air.src = "../assets/Air-Boom.png";
 /////////////////------------------\\\\\\\\\\\\\\\\\
 
 var renderops = {
