@@ -21,71 +21,44 @@ function initLevelSelect() {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			renderops.levelselect = false;
 			clearScreen();
-			var clicksnd = new Audio();
-			clicksnd.src = sounds.click;
-			clicksnd.volume = Options.volume;
-			clicksnd.play();
+			clicksound()
 			initGame();
 		}
 
 		if(y > 200 && y < 275 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
 			Options.planType = "fire";
-			var clicksnd = new Audio();
-			clicksnd.src = sounds.click;
-			clicksnd.volume = Options.volume;
-			clicksnd.play();
+			clicksound()
 		}
 		if(y > 200 && y < 275 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
 			Options.planType = "air";
-			var clicksnd = new Audio();
-			clicksnd.src = sounds.click;
-			clicksnd.volume = Options.volume;
-			clicksnd.play();
+			clicksound()
 		}
 		if(y > 200 && y < 275 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
 			Options.planType = "water";
-			var clicksnd = new Audio();
-			clicksnd.src = sounds.click;
-			clicksnd.volume = Options.volume;
-			clicksnd.play();
+			clicksound()
 
 		}
 		if(y > 200 && y < 275 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
 			Options.planType = "rock";
-			var clicksnd = new Audio();
-			clicksnd.src = sounds.click;
-			clicksnd.volume = Options.volume;
-			clicksnd.play();
+			clicksound()
 		}
 
 
 		if(y > 400 && y < 475 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
 			Options.wepType = "fire";
-			var clicksnd = new Audio();
-			clicksnd.src = sounds.click;
-			clicksnd.volume = Options.volume;
-			clicksnd.play();
+			clicksound()
 		}
 		if(y > 400 && y < 475 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
 			Options.wepType = "air";
-			var clicksnd = new Audio();
-			clicksnd.src = sounds.click;
-			clicksnd.volume = Options.volume;
-			clicksnd.play();
+			clicksound()
 		}
 		if(y > 400 && y < 475 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
 			Options.wepType = "water";
-			var clicksnd = new Audio();
-			clicksnd.src = sounds.click;
-			clicksnd.volume = Options.volume;
-			clicksnd.play();
+			clicksound()
 		}
 		if(y > 400 && y < 475 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
 			Options.wepType = "rock";
-			var clicksnd = new Audio();
-			clicksnd.src = sounds.click;
-			clicksnd.volume = Options.volume;
-			clicksnd.play();
+			clicksound()
 		}
 	}, false);
 	canvas.addEventListener("mousemove", function (e) {
@@ -122,6 +95,13 @@ function initLevelSelect() {
 			requestAnimationFrame(main);
 		}
 	};
+
+	var clicksound = function(){
+		var clicksnd = new Audio();
+		clicksnd.src = sounds.click;
+		clicksnd.volume = Options.volume;
+		clicksnd.play();
+	}
 
 	//clears the screen
 	var clearScreen = function(){
