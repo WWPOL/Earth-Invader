@@ -75,9 +75,10 @@ Powerup.prototype.draw = function(ctx) {
 		ctx.fillStyle = this.color;
 		ctx.arc(0, 0, this.radius, 0, 2*Math.PI);
 		ctx.fill();
+		ctx.restore();
 		ctx.font = "12pt Arial";
 		ctx.textAlign = "center";
 		ctx.fillText(this.name, this.x, this.y - 15);
-		ctx.restore();
+		
 	}
 }
