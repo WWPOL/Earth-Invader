@@ -52,7 +52,7 @@ var renderops = {
 var Options = {
 	planType: "fire",
 	wepType: "fire",
-	volume: 0.5
+	volume: 0.1
 };
 
 var powerups = {
@@ -264,7 +264,7 @@ Enemy.prototype.assignplayer = function(player) {
 Enemy.prototype.update = function(planet, ctx, earray) {
 	if(! (this.player === undefined) && this.alive){ //only update if alive
 		this.count = (this.count+1) % this.rof; //update counter
-		ctx = ctx;
+		var ctx = ctx;
 		var enemies = earray;
 		this.playerX = this.player.x;
 		this.playerY = this.player.y;
