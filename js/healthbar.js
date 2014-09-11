@@ -62,10 +62,10 @@ Healthbar.prototype.draw = function(ctx) {
 			this.playsound = true;
 		} else if (this.shield === 0) {
 			if (this.playsound) {
-				var shielddown = new Audio();
+				/*var shielddown = new Audio();
 				shielddown.src = sounds.player.shielddown;
 				shielddown.volume = Options.volume;
-				shielddown.play();
+				shielddown.play();*/
 				this.playsound = false;
 			}
 			ctx.fillStyle = "white";

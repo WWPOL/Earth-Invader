@@ -85,10 +85,10 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 			} else {
 				var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, false);
 			}
-			var shoot = new Audio();
+			/*var shoot = new Audio();
 			shoot.src = sounds[this.type].shoot;
 			shoot.volume = Options.volume;
-			shoot.play();
+			shoot.play();*/
 			this.eBullets.push(bullet);
 		}
 
@@ -136,10 +136,10 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250){
 								enemy.slowcount = 100;
 								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
-								var splashnoise = new Audio();
+								/*var splashnoise = new Audio();
 								splashnoise.src = sounds.water.death;
 								splashnoise.volume = Options.volume;
-								splashnoise.play();
+								splashnoise.play();*/
 								ctx.save();
 								ctx.translate(this.x, this.y);
 								ctx.rotate(this.rotation);
@@ -158,18 +158,18 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 					this.x -= toPlayerX * this.speed * 30;
 					this.y -= toPlayerY * this.speed * 30;
 				}
-				var hit = new Audio();
+				/*var hit = new Audio();
 				hit.src = sounds[this.type].hit;
 				hit.volume = Options.volume;
-				hit.play();
+				hit.play();*/
 			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
 				this.alive = false;
 				enemiesKilled += 1;
 				this.explode = 1; //draw explosion sprite
-				var eDeath = new Audio();
+				/*var eDeath = new Audio();
 				eDeath.src = sounds[this.type].death;
 				eDeath.volume = Options.volume;
-				eDeath.play();
+				eDeath.play();*/
 			}
 		}
 	}

@@ -87,13 +87,6 @@ function initLevelSelect() {
 		}
 	};
 
-	var clicksound = function(){
-		var clicksnd = new Audio();
-		clicksnd.src = sounds.click;
-		clicksnd.volume = Options.volume;
-		clicksnd.play();
-	}
-
 	//clears the screen
 	var clearScreen = function(){
 		ctx.clearRect(0,0,canvas.width, canvas.height);

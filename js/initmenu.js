@@ -39,11 +39,7 @@ function initMainMenu() {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				renderops.main = false;
 				clearScreen();
-				var clicksnd = new Audio();
-				clicksnd.src = sounds.click;
-				clicksnd.volume = Options.volume;
-				clicksnd.play();
-				initLevelSelect();
+				clicksound();
 			}
 		});
 	}, false);

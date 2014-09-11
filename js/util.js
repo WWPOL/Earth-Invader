@@ -24,3 +24,10 @@ function resize() {
 		initGame();
 	}
 }
+
+var clicksound = function(){
+	var clicksnd = new Audio();
+	clicksnd.src = 'assets/click.wav';
+	clicksnd.volume = Options.volume;
+	clicksnd.play();
+}
