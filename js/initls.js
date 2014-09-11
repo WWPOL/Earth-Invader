@@ -21,35 +21,35 @@ function initLevelSelect() {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			renderops.levelselect = false;
 			clearScreen();
-			clicksound()
+			clicksound();
 			initGame();
 		}
 
 		if(y > 200 && y < 275 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
 			Options.planType = "fire";
-			clicksound()
+			clicksound();
 		} else if(y > 200 && y < 275 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
 			Options.planType = "air";
-			clicksound()
+			clicksound();
 		} else if(y > 200 && y < 275 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
 			Options.planType = "water";
-			clicksound()
+			clicksound();
 
 		} else if(y > 200 && y < 275 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
 			Options.planType = "rock";
-			clicksound()
+			clicksound();
 		} else if(y > 400 && y < 475 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
 			Options.wepType = "fire";
-			clicksound()
+			clicksound();
 		} else if(y > 400 && y < 475 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
 			Options.wepType = "air";
-			clicksound()
+			clicksound();
 		} else if(y > 400 && y < 475 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
 			Options.wepType = "water";
-			clicksound()
+			clicksound();
 		} else if(y > 400 && y < 475 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
 			Options.wepType = "rock";
-			clicksound()
+			clicksound();
 		}
 	}, false);
 	canvas.addEventListener("mousemove", function (e) {
