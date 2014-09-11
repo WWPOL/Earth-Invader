@@ -22,25 +22,42 @@ Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) {
 	for (var i = 0; i < enemyArray.length; i++) {
 		if (ispowerup && collision(this,enemyArray[i])) {
 			var pickup = new Audio();
-			pickup.src = sounds.powerup.trishot;
+			pickup.src = sounds.powerup;
 			pickup.volume = Options.volume;
 			pickup.play();
-			pickup.addEventListener('ended', function() {
-			    delete pickup;
-			}, false);
-			if (enemyArray[i].type === "tri") {
-				powerups.trishot.toggle = true;
-			} else if (enemyArray[i].type === "fast") {
-				powerups.fastshot.toggle = true;
-			} else if (enemyArray[i].type === "splash") {
-				powerups.splash.toggle = true;
-			} else if (enemyArray[i].type === "penetrate") {
-				powerups.penetrate.toggle = true;
+			if (enemyArray[i].type === "air") {
+				if (!powerups.multishot.toggle) {
+					powerups.multishot.toggle = true;
+				} else {
+					powerups.multishot.timer = 1000;
+				}
+			} else if (enemyArray[i].type === "fire") {
+				if (!powerups.fastshot.toggle) {
+					powerups.fastshot.toggle = true;
+				} else {
+					powerups.fastshot.timer = 1000;
+				}
+			} else if (enemyArray[i].type === "water") {
+				if (!powerups.splash.toggle) {
+					powerups.splash.toggle = true;
+				} else {
+					powerups.splash.timer = 1000;
+				}
+			} else if (enemyArray[i].type === "rock") {
+				if (!powerups.penetrate.toggle) {
+					powerups.penetrate.toggle = true;
+				} else {
+					powerups.penetrate.timer = 1000;
+				}
 			} else if (enemyArray[i].type === "health") {
 				this.health = 500;
 				this.shield = 200;
 			} else if (enemyArray[i].type === "invincibility") {
-				powerups.invincibility.toggle = true;
+				if (!powerups.invincibility.toggle) {
+					powerups.invincibility.toggle = true;
+				} else {
+					powerups.invincibility.timer = 1000;
+				}
 			}
 			enemyArray[i].alive = false;
 		} else {
@@ -58,9 +75,6 @@ Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) {
 					hit.src = sounds.player.hit;
 					hit.volume = Options.volume;
 					hit.play();
-					hit.addEventListener('ended', function() {
-					    delete hit;
-					}, false);
 				} else if (this.shield <= 0 && this.health > 0 && !powerups.invincibility.toggle) {
 					if (isbullet) {
 						this.health -= 20;
@@ -71,17 +85,11 @@ Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) {
 					hit.src = sounds.player.hit;
 					hit.volume = Options.volume;
 					hit.play();
-					hit.addEventListener('ended', function() {
-					    delete hit;
-					}, false);
 				} else if (this.shield <= 0 && this.health <= 0) {
 					var death = new Audio();
 					death.src = sounds.player.death;
 					death.volume = Options.volume;
 					death.play();
-					death.addEventListener('ended', function() {
-					    delete death;
-					}, false);
 				}
 				if (enemyArray[i].name === "bullet") {
 					enemyArray[i].alive = false;

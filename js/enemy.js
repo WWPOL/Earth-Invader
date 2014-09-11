@@ -89,9 +89,6 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 			shoot.src = sounds[this.type].shoot;
 			shoot.volume = Options.volume;
 			shoot.play();
-			shoot.addEventListener('ended', function() {
-			    delete shoot;
-			}, false);
 			this.eBullets.push(bullet);
 		}
 
@@ -123,47 +120,7 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 
 		//check for collision with bullet
 		for (var i = 0; i < this.pBullets.length; i++) {
-			if (this.type === "fire") {
-				if (this.pBullets[i].type === "fire") {
-					this.damagemult = 1;
-				} else if (this.pBullets[i].type === "air") {
-					this.damagemult = 1.5;
-				} else if (this.pBullets[i].type === "water") {
-					this.damagemult = 0.5;
-				} else if (this.pBullets[i].type === "rock") {
-					this.damagemult = 1;
-				}
-			} else if (this.type === "air") {
-				if (this.pBullets[i].type === "fire") {
-					this.damagemult = 0.5;
-				} else if (this.pBullets[i].type === "air") {
-					this.damagemult = 1;
-				} else if (this.pBullets[i].type === "water") {
-					this.damagemult = 1;
-				} else if (this.pBullets[i].type === "rock") {
-					this.damagemult = 1.5;
-				}
-			} else if (this.type === "water") {
-				if (this.pBullets[i].type === "fire") {
-					this.damagemult = 1.5;
-				} else if (this.pBullets[i].type === "air") {
-					this.damagemult = 1;
-				} else if (this.pBullets[i].type === "water") {
-					this.damagemult = 1;
-				} else if (this.pBullets[i].type === "rock") {
-					this.damagemult = 0.5;
-				};
-			} else if (this.type === "rock") {
-				if (this.pBullets[i].type === "fire") {
-					this.damagemult = 1;
-				} else if (this.pBullets[i].type === "air") {
-					this.damagemult = 0.5;
-				} else if (this.pBullets[i].type === "water") {
-					this.damagemult = 1.5;
-				} else if (this.pBullets[i].type === "rock") {
-					this.damagemult = 1;
-				};
-			}
+			this.damagemult = mults[Options.wepType][this.type + "dmg"];
 			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
 				if (!this.pBullets[i].penetrate) {
 					this.pBullets[i].alive = false;
@@ -183,9 +140,6 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 								splashnoise.src = sounds.water.death;
 								splashnoise.volume = Options.volume;
 								splashnoise.play();
-								splashnoise.addEventListener('ended', function() {
-								    delete splashnoise;
-								}, false);
 								ctx.save();
 								ctx.translate(this.x, this.y);
 								ctx.rotate(this.rotation);
@@ -208,9 +162,6 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 				hit.src = sounds[this.type].hit;
 				hit.volume = Options.volume;
 				hit.play();
-				hit.addEventListener('ended', function() {
-				    delete hit;
-				}, false);
 			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
 				this.alive = false;
 				enemiesKilled += 1;
@@ -219,9 +170,6 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 				eDeath.src = sounds[this.type].death;
 				eDeath.volume = Options.volume;
 				eDeath.play();
-				eDeath.addEventListener('ended', function() {
-				    delete eDeath;
-				}, false);
 			}
 		}
 	}

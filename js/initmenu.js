@@ -43,9 +43,6 @@ function initMainMenu() {
 				clicksnd.src = sounds.click;
 				clicksnd.volume = Options.volume;
 				clicksnd.play();
-				clicksnd.addEventListener('ended', function() {
-				    delete clicksnd;
-				}, false);
 				initLevelSelect();
 			}
 		});

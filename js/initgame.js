@@ -15,47 +15,7 @@ function initGame() {
 	var gameOver = false;
 	var winGame = false;
 
-	if (Options.planType === "fire") {
-		if (Options.wepType === "fire") {
-			scoremult = 1;
-		} else if (Options.wepType === "air") {
-			scoremult = 0.5;
-		} else if (Options.wepType === "water") {
-			scoremult = 1.5;
-		} else if (Options.wepType === "rock") {
-			scoremult = 1;
-		};
-	} else if (Options.planType === "air") {
-		if (Options.wepType === "fire") {
-			scoremult = 1.5;
-		} else if (Options.wepType === "air") {
-			scoremult = 1;
-		} else if (Options.wepType === "water") {
-			scoremult = 1;
-		} else if (Options.wepType === "rock") {
-			scoremult = 0.5;
-		};
-	} else if (Options.planType === "water") {
-		if (Options.wepType === "fire") {
-			scoremult = 0.5;
-		} else if (Options.wepType === "air") {
-			scoremult = 1;
-		} else if (Options.wepType === "water") {
-			scoremult = 1;
-		} else if (Options.wepType === "rock") {
-			scoremult = 1.5;
-		};
-	} else if (Options.planType === "rock") {
-		if (Options.wepType === "fire") {
-			scoremult = 1;
-		} else if (Options.wepType === "air") {
-			scoremult = 1.5;
-		} else if (Options.wepType === "water") {
-			scoremult = 0.5;
-		} else if (Options.wepType === "rock") {
-			scoremult = 1;
-		};
-	};
+	scoremult = mults[Options.wepType][Options.planType + "score"];
 
 	//Variable to track if mouse is held down
 	var mousedown = false;
@@ -68,15 +28,10 @@ function initGame() {
 	var bossbars = [];
 	var poweruparray = [];
 	var poweruptimer = Math.floor(Math.random() * 30) + 30;
-	if (Options.wepType === "fire") {
-		var poweruptypes = ["tri", "splash", "penetrate", "health", "invincibility"];
-	} else if (Options.wepType === "air") {
-		var poweruptypes = ["fast", "splash", "penetrate", "health", "invincibility"];
-	} else if (Options.wepType === "water") {
-		var poweruptypes = ["tri", "fast", "penetrate", "health", "invincibility"];
-	} else if (Options.wepType === "rock") {
-		var poweruptypes = ["tri", "fast", "splash", "health", "invincibility"];
-	}
+	var poweruptypes = ["air", "fire", "water", "rock", "health", "invincibility"];
+	var powerupnames = [["multishot", winheight - 5, "white"], ["fastshot", winheight - 30, "red"], ["splash", winheight - 55, "blue"], ["penetrate", winheight - 80, "brown"], ["invincibility", winheight - 105, "gold"]];
+	var removethis = poweruptypes.indexOf(Options.wepType);
+	poweruptypes.splice(removethis, 1);
 
 	var planet = new Planet(halfwidth, halfheight, "Planet", planTraits[Options.planType].plancolor, planTraits[Options.planType].planstroke, pBullets);
 	var planethealth = new Healthbar(clientWidth - 310, 10, planet, false);
@@ -164,27 +119,18 @@ function initGame() {
 		clicksnd.src = sounds.click;
 		clicksnd.volume = Options.volume;
 		clicksnd.play();
-		clicksnd.addEventListener('ended', function() {
-		    delete clicksnd;
-		}, false);
 		setTimeout(function(){
 			timer = 1;
 			var clicksnd = new Audio();
 			clicksnd.src = sounds.click;
 			clicksnd.volume = Options.volume;
 			clicksnd.play();
-			clicksnd.addEventListener('ended', function() {
-			    delete clicksnd;
-			}, false);
 			setTimeout(function(){
 				starting = false;
 				var clicksnd = new Audio();
 				clicksnd.src = sounds.click;
 				clicksnd.volume = Options.volume;
 				clicksnd.play();
-				clicksnd.addEventListener('ended', function() {
-				    delete clicksnd;
-				}, false);
 				makeEnemies(halfwidth, halfheight + 100, Options.planType);
 				makeDefenders(clientWidth / 2 - 40, clientHeight / 2 - 40, Options.planType);
 			}, 1000);
@@ -231,7 +177,7 @@ function initGame() {
 						var distanceToPlayer = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 						var angle = Math.atan2(dy, dx);
 
-						if (Options.wepType === "air" || powerups.trishot.toggle) {
+						if (Options.wepType === "air" || powerups.multishot.toggle) {
 							for (var i = -2; i <= 2; i++) {
 								//console.log(i + " Angle: " + angle*180/Math.PI);
 								var bullet = new Bullet(player.x, player.y, 3, Math.cos(angle+(0.3*i)), Math.sin(angle+(0.3*i)), wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
@@ -246,9 +192,6 @@ function initGame() {
 						lasersnd.src = sounds.player[Options.wepType];
 						lasersnd.volume = Options.volume;
 						lasersnd.play();
-						lasersnd.addEventListener('ended', function() {
-						    delete lasersnd;
-						}, false);
 						pBullets.push(bullet);
 
 		 			} 
@@ -270,7 +213,7 @@ function initGame() {
 					bar.update();
 				});
 				poweruparray.forEach(function(powerup){
-					powerup.update();
+					powerup.update(gamecanvas);
 				});
 
 				player.update(delta, gamecanvas);
@@ -306,8 +249,7 @@ function initGame() {
 				if (planet.health <= 0) {
 					gameOver = true;
 					winGame = true;
-				}
-				if (player.health <= 0) {
+				} else if (player.health <= 0) {
 					player.alive = false;
 					gameOver = true;
 				};
@@ -315,41 +257,19 @@ function initGame() {
 					time = Math.floor((Date.now() - start) / 1000);
 					score = Math.round((((enemiesKilled * planet.totaldamage) / time) * 10) * scoremult);
 				}
-				if ((powerups.trishot.timer > 0) && (powerups.trishot.toggle)) {
-					powerups.trishot.timer -= 1;
-				} else if ((powerups.trishot.timer <= 0) && (powerups.trishot.toggle)) {
-					powerups.trishot.toggle = false;
-					powerups.trishot.timer = 1000;
-				}
-				if ((powerups.fastshot.timer > 0) && (powerups.fastshot.toggle)) {
-					powerups.fastshot.timer -= 1;
-				} else if ((powerups.fastshot.timer <= 0) && (powerups.fastshot.toggle)) {
-					powerups.fastshot.toggle = false;
-					powerups.fastshot.timer = 1000;
-				}
-				if ((powerups.splash.timer > 0) && (powerups.splash.toggle)) {
-					powerups.splash.timer -= 1;
-				} else if ((powerups.splash.timer <= 0) && (powerups.splash.toggle)) {
-					powerups.splash.toggle = false;
-					powerups.splash.timer = 1000;
-				}
-				if ((powerups.penetrate.timer > 0) && (powerups.penetrate.toggle)) {
-					powerups.penetrate.timer -= 1;
-				} else if ((powerups.penetrate.timer <= 0) && (powerups.penetrate.toggle)) {
-					powerups.penetrate.toggle = false;
-					powerups.penetrate.timer = 1000;
-				}
-				if ((powerups.invincibility.timer > 0) && (powerups.invincibility.toggle)) {
-					powerups.invincibility.timer -= 1;
-				} else if ((powerups.invincibility.timer <= 0) && (powerups.invincibility.toggle)) {
-					powerups.invincibility.toggle = false;
-					powerups.invincibility.timer = 1000;
+				for (i = 0; i < powerupnames.length; i++) {
+					if ((powerups[powerupnames[i][0]].timer > 0) && (powerups[powerupnames[i][0]].toggle)) {
+						powerups[powerupnames[i][0]].timer -= 1;
+					} else if ((powerups[powerupnames[i][0]].timer <= 0) && (powerups[powerupnames[i][0]].toggle)) {
+						powerups[powerupnames[i][0]].toggle = false;
+						powerups[powerupnames[i][0]].timer = 1000;
+					}
 				}
 			}
 		}
 		if (muted) {
 			Options.volume = 0;
-		} else if (!muted) {
+		} else {
 			Options.volume = normvol;
 		}
 	};
@@ -399,59 +319,31 @@ function initGame() {
 		gamectx.fillRect(mouseX + 4,mouseY + 1,8,2);
 		gamectx.fillRect(mouseX + 1,mouseY - 10,2,8);
 		gamectx.fillRect(mouseX - 10,mouseY + 1,8,2);
+		gamectx.font = "100pt Impact";
 		if (paused) {
-			gamectx.font = "100pt Impact";
 			gamectx.fillStyle = "green";
 			gamectx.textAlign = "center";
 			gamectx.fillText("Paused", winwidth / 2, winheight / 2);
 		}
 		if (starting) {
-			gamectx.font = "100pt Impact";
 			gamectx.fillStyle = "white";
 			gamectx.textAlign = "center";
 			gamectx.fillText(timer, winwidth / 2, winheight / 2);
 		}
+		gamectx.font = "20pt Impact";
 		if (muted) {
-			gamectx.font = "20pt Impact";
 			gamectx.fillStyle = "red";
 			gamectx.textAlign = "right";
 			gamectx.fillText("Muted", winwidth - 5, winheight - 5);
 		}
-		if (powerups.trishot.toggle) {
-			gamectx.font = "20pt Impact";
-			gamectx.fillStyle = "white";
-			gamectx.textAlign = "left";
-			gamectx.fillText("MULTISHOT",5,winheight - 5);
-			gamectx.fillRect(150, winheight - 25, 200 * (powerups.trishot.timer / 1000), 20);
-		}
-		if (powerups.fastshot.toggle) {
-			gamectx.font = "20pt Impact";
-			gamectx.fillStyle = "red";
-			gamectx.textAlign = "left";
-			gamectx.fillText("FASTSHOT",5,winheight - 30);
-			gamectx.fillRect(150, winheight - 50, 200 * (powerups.fastshot.timer / 1000), 20);
-		}
-		if (powerups.splash.toggle) {
-			gamectx.font = "20pt Impact";
-			gamectx.fillStyle = "blue";
-			gamectx.textAlign = "left";
-			gamectx.fillText("SPLASH",5,winheight - 55);
-			gamectx.fillRect(150, winheight - 75, 200 * (powerups.splash.timer / 1000), 20);
-		}
-		if (powerups.penetrate.toggle) {
-			gamectx.font = "20pt Impact";
-			gamectx.fillStyle = "brown";
-			gamectx.textAlign = "left";
-			gamectx.fillText("PENETRATE",5,winheight - 80);
-			gamectx.fillRect(150, winheight - 100, 200 * (powerups.penetrate.timer / 1000), 20);
-		}
-		if (powerups.invincibility.toggle) {
-			gamectx.font = "20pt Impact";
-			gamectx.fillStyle = "gold";
-			gamectx.textAlign = "left";
-			gamectx.fillText("INVINCIBLE",5,winheight - 105);
-			gamectx.fillRect(150, winheight - 125, 200 * (powerups.invincibility.timer / 1000), 20);
-		}
+		for (i = 0; i < powerupnames.length; i++) {
+			if (powerups[powerupnames[i][0]].toggle) {
+				gamectx.fillStyle = powerupnames[i][2];
+				gamectx.textAlign = "left";
+				gamectx.fillText(powerupnames[i][0].toUpperCase(),5,powerupnames[i][1]);
+				gamectx.fillRect(160, powerupnames[i][1] - 20, 200 * (powerups[powerupnames[i][0]].timer / 1000), 20);
+			}
+		};
 	};
 
 	var gameoverscreen = function(didwin){

@@ -17,47 +17,7 @@ Planet = function(x, y, name, color, stroke, bullets) {
 
 Planet.prototype.update = function() {
 	for (var i = 0; i < this.bullets.length; i++) {
-		if (this.type === "fire") {
-			if (this.pBullets[i].type === "fire") {
-				this.damagemult = 1;
-			} else if (this.pBullets[i].type === "air") {
-				this.damagemult = 1.5;
-			} else if (this.pBullets[i].type === "water") {
-				this.damagemult = 0.5;
-			} else if (this.pBullets[i].type === "rock") {
-				this.damagemult = 1;
-			};
-		} else if (this.type === "air") {
-			if (this.pBullets[i].type === "fire") {
-				this.damagemult = 0.5;
-			} else if (this.pBullets[i].type === "air") {
-				this.damagemult = 1;
-			} else if (this.pBullets[i].type === "water") {
-				this.damagemult = 1;
-			} else if (this.pBullets[i].type === "rock") {
-				this.damagemult = 1.5;
-			};
-		} else if (this.type === "water") {
-			if (this.pBullets[i].type === "fire") {
-				this.damagemult = 1.5;
-			} else if (this.pBullets[i].type === "air") {
-				this.damagemult = 1;
-			} else if (this.pBullets[i].type === "water") {
-				this.damagemult = 1;
-			} else if (this.pBullets[i].type === "rock") {
-				this.damagemult = 0.5;
-			};
-		} else if (this.type === "rock") {
-			if (this.pBullets[i].type === "fire") {
-				this.damagemult = 1;
-			} else if (this.pBullets[i].type === "air") {
-				this.damagemult = 0.5;
-			} else if (this.pBullets[i].type === "water") {
-				this.damagemult = 1.5;
-			} else if (this.pBullets[i].type === "rock") {
-				this.damagemult = 1;
-			};
-		};
+		this.damagemult = mults[Options.wepType][Options.planType + "dmg"];
 		if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.shield > 0) {
 			this.shield -= wepTraits[Options.wepType].damage * this.damagemult;
 			this.totaldamage += wepTraits[Options.wepType].damage * this.damagemult;
@@ -69,9 +29,6 @@ Planet.prototype.update = function() {
 			hit.src = sounds.planet.hit;
 			hit.volume = Options.volume;
 			hit.play();
-			hit.addEventListener('ended', function() {
-			    delete hit;
-			}, false);
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.health > 0) {
 			this.radius = 70;
 			this.health -= wepTraits[Options.wepType].damage * this.damagemult;
@@ -81,9 +38,6 @@ Planet.prototype.update = function() {
 			hit.src = sounds.planet.hit;
 			hit.volume = Options.volume;
 			hit.play();
-			hit.addEventListener('ended', function() {
-			    delete hit;
-			}, false);
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i])) { //if it collides with a bullet, kill itself and the bullet
 			this.bullets[i].alive = false;
 			this.alive = false;
@@ -91,9 +45,6 @@ Planet.prototype.update = function() {
 			death.src = sounds.planet.death;
 			death.volume = Options.volume;
 			death.play();
-			death.addEventListener('ended', function() {
-			    delete death;
-			}, false);
 		}
 	}
 	if (this.dmgcount > 0) {

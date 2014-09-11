@@ -37,7 +37,6 @@ Bullet.prototype.update = function(array){
 		else {
 			this.x += this.speed * this.dx;
 			this.y += this.speed * this.dy;
-			console.log(this.type + " " + this.speed);
 		}
 		if ((this.type === "fire") && (distance(this.x,this.y,this.owner.x,this.owner.y) > 250) && (this.playershot)) {
 			this.alive = false;

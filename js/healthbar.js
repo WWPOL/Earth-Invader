@@ -35,7 +35,7 @@ Healthbar.prototype.draw = function(ctx) {
 		ctx.beginPath()
 		ctx.fillStyle = "red";
 		if (this.ismini) {
-			ctx.fillRect(this.owner.x - 55, this.owner.y - 45, 100 * this.healthpercent, 5);
+			ctx.fillRect(this.owner.x - 50, this.owner.y - 45, 100 * this.healthpercent, 5);
 		} else {
 			ctx.fillRect(this.x, this.y, 300 * this.healthpercent, 20);
 		}
@@ -49,7 +49,7 @@ Healthbar.prototype.draw = function(ctx) {
 		if (this.shield > 0) {
 			ctx.fillStyle = "blue";
 			if (this.ismini) {
-				ctx.fillRect(this.owner.x - 55, this.owner.y - 35, 100 * this.shieldpercent, 5);
+				ctx.fillRect(this.owner.x - 50, this.owner.y - 35, 100 * this.shieldpercent, 5);
 			} else {
 				ctx.fillRect(this.x, this.y + 30, 300 * this.shieldpercent, 20);
 			}
@@ -66,9 +66,6 @@ Healthbar.prototype.draw = function(ctx) {
 				shielddown.src = sounds.player.shielddown;
 				shielddown.volume = Options.volume;
 				shielddown.play();
-				shielddown.addEventListener('ended', function() {
-				    delete shielddown;
-				}, false);
 				this.playsound = false;
 			}
 			ctx.fillStyle = "white";

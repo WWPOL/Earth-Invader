@@ -3,6 +3,7 @@ var currentcanvas;
 var keysDown = {};
 var mouseX = 0; //global mouse coords
 var mouseY = 0;
+var soundarray = [];
 
 var winheight = 0; //window width & height
 var winwidth = 0;
@@ -56,7 +57,7 @@ var Options = {
 };
 
 var powerups = {
-	trishot: {
+	multishot: {
 		toggle: false,
 		timer: 1000
 	},
@@ -206,5 +207,48 @@ var enemyTraits = {
 		bulletColor: "saddlebrown"
 	}
 
+}
+
+var mults = {
+	fire: {
+		waterdmg: 1.5,
+		waterscore: 0.5,
+		airdmg: 0.5,
+		airscore: 1.5,
+		firedmg: 1.0,
+		firescore: 1.0,
+		rockdmg: 1.0,
+		rockscore: 1.0
+	},
+	air: {
+		waterdmg: 1.0,
+		waterscore: 1.0,
+		airdmg: 1.0,
+		airscore: 1.0,
+		firedmg: 1.5,
+		firescore: 0.5,
+		rockdmg: 0.5,
+		rockscore: 1.5
+	},
+	water: {
+		waterdmg: 1.0,
+		waterscore: 1.0,
+		airdmg: 1.0,
+		airscore: 1.0,
+		firedmg: 0.5,
+		firescore: 1.5,
+		rockdmg: 1.5,
+		rockscore: 0.5
+	},
+	rock: {
+		waterdmg: 0.5,
+		waterscore: 1.5,
+		airdmg: 1.5,
+		airscore: 0.5,
+		firedmg: 1.0,
+		firescore: 1.0,
+		rockdmg: 1.0,
+		rockscore: 1.0
+	}
 }
 /////////////////------------------\\\\\\\\\\\\\\\\\

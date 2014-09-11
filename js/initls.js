@@ -25,9 +25,6 @@ function initLevelSelect() {
 			clicksnd.src = sounds.click;
 			clicksnd.volume = Options.volume;
 			clicksnd.play();
-			clicksnd.addEventListener('ended', function() {
-			    delete clicksnd;
-			}, false);
 			initGame();
 		}
 
@@ -37,9 +34,6 @@ function initLevelSelect() {
 			clicksnd.src = sounds.click;
 			clicksnd.volume = Options.volume;
 			clicksnd.play();
-			clicksnd.addEventListener('ended', function() {
-			    delete clicksnd;
-			}, false);
 		}
 		if(y > 200 && y < 275 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
 			Options.planType = "air";
@@ -47,9 +41,6 @@ function initLevelSelect() {
 			clicksnd.src = sounds.click;
 			clicksnd.volume = Options.volume;
 			clicksnd.play();
-			clicksnd.addEventListener('ended', function() {
-			    delete clicksnd;
-			}, false);
 		}
 		if(y > 200 && y < 275 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
 			Options.planType = "water";
@@ -65,9 +56,6 @@ function initLevelSelect() {
 			clicksnd.src = sounds.click;
 			clicksnd.volume = Options.volume;
 			clicksnd.play();
-			clicksnd.addEventListener('ended', function() {
-			    delete clicksnd;
-			}, false);
 		}
 
 
@@ -77,9 +65,6 @@ function initLevelSelect() {
 			clicksnd.src = sounds.click;
 			clicksnd.volume = Options.volume;
 			clicksnd.play();
-			clicksnd.addEventListener('ended', function() {
-			    delete clicksnd;
-			}, false);
 		}
 		if(y > 400 && y < 475 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
 			Options.wepType = "air";
@@ -87,9 +72,6 @@ function initLevelSelect() {
 			clicksnd.src = sounds.click;
 			clicksnd.volume = Options.volume;
 			clicksnd.play();
-			clicksnd.addEventListener('ended', function() {
-			    delete clicksnd;
-			}, false);
 		}
 		if(y > 400 && y < 475 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
 			Options.wepType = "water";
@@ -97,9 +79,6 @@ function initLevelSelect() {
 			clicksnd.src = sounds.click;
 			clicksnd.volume = Options.volume;
 			clicksnd.play();
-			clicksnd.addEventListener('ended', function() {
-			    delete clicksnd;
-			}, false);
 		}
 		if(y > 400 && y < 475 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
 			Options.wepType = "rock";
@@ -107,9 +86,6 @@ function initLevelSelect() {
 			clicksnd.src = sounds.click;
 			clicksnd.volume = Options.volume;
 			clicksnd.play();
-			clicksnd.addEventListener('ended', function() {
-			    delete clicksnd;
-			}, false);
 		}
 	}, false);
 	canvas.addEventListener("mousemove", function (e) {
