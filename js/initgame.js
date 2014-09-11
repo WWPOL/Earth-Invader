@@ -258,11 +258,11 @@ function initGame() {
 				}
 			}
 		}
-		if (muted) {
+		/*if (muted) {
 			Options.volume = 0;
 		} else {
 			Options.volume = normvol;
-		}
+		}*/
 	};
 
 	//clears the screen
@@ -322,11 +322,11 @@ function initGame() {
 			gamectx.fillText(timer, winwidth / 2, winheight / 2);
 		}
 		gamectx.font = "20pt Impact";
-		if (muted) {
+		/*if (muted) {
 			gamectx.fillStyle = "red";
 			gamectx.textAlign = "right";
 			gamectx.fillText("Muted", winwidth - 5, winheight - 5);
-		}
+		}*/
 		for (i = 0; i < powerupnames.length; i++) {
 			if (powerups[powerupnames[i][0]].toggle) {
 				gamectx.fillStyle = powerupnames[i][2];

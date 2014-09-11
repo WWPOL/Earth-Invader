@@ -39,6 +39,7 @@ function initMainMenu() {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				renderops.main = false;
 				clearScreen();
+				initLevelSelect();
 				clicksound();
 			}
 		});
