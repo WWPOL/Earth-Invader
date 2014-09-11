@@ -231,7 +231,7 @@ function initGame() {
 					makeBoss(spawns[randomint][0], spawns[randomint][1], enemytypes[Math.floor(Math.random() * 4)]);
 				};
 				if ((Date.now() - lastpowerup) / 1000 > poweruptimer) {
-					for (var i = 0; i < powerupamount, i++) {
+					for (var i = 0; i < powerupamount; i++) {
 						var int = Math.floor(Math.random() * 5);
 						var powerup = new Powerup(Math.floor(Math.random() * (winwidth) - 20)+10,Math.floor(Math.random() * (winheight) - 20)+10,poweruptypes[int],poweruparray,player);
 						poweruparray.push(powerup);
