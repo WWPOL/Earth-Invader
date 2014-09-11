@@ -9,14 +9,6 @@ How to Play
 
 Todo
 =====
-- [X] Make Player fire shoot like a flamethrower, insane RoF, but bullets die at short distance. 
-- [X] Convert sounds to code with [this](https://github.com/mneubrand/jsfxr)
-- [X] Different enemy types do and take different damage.
-- [X] Air should be like a blast wave and pushes targets back. 
-- [X] Rock penetrates. 
-- [X] Tinker with sounds to make better ones. To do so, go [here](http://www.superflashbros.net/as3sfxr/), get a sound you want, hit CTRL+C, and paste that over whatever sound you want to replace in sounds.
-- [X] Fire should burn for a few seconds. 
-- [X] Water does splash damage, slows targets.  
 - [ ] Powerup text needs to be fixed.  
 - [ ] Sprites for Burn and splash need to work
 
