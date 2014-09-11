@@ -1175,6 +1175,10 @@ function initMainMenu() {
 		ctx.textAlign = "center";
 		ctx.fillText("Earth Invader", winwidth / 2, 50);
 
+		ctx.font = "20pt Arial";
+		ctx.fillText("WASD to move", winwidth / 2, winheight - 55);
+		ctx.fillText("Click and hold to shoot", winwidth / 2, winheight - 30);
+		ctx.fillText("M to mute, P to pause", winwidth / 2, winheight - 5);
 		//render each object in elements as per parameters
 		elements.forEach(function(element) {
 			ctx.fillStyle = element.color;
@@ -1329,13 +1333,13 @@ function initLevelSelect() {
 		} else if(y > 200 && y < 275 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
 			infoBox = "Weak against Water, resistant to Air.";
 		} else if(y > 400 && y < 475 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
-			infoBox = "Effective against Water, less effective against Air.";
+			infoBox = "Effective against Water, less effective against Air. High RoF, does burn damage over time.";
 		} else if(y > 400 && y < 475 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
-			infoBox = "Effective against Fire, less effective against Rock.";
+			infoBox = "Effective against Fire, less effective against Rock. Fires in a spread, pushes enemies back.";
 		} else if(y > 400 && y < 475 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
-			infoBox = "Effective against Rock, less effective against Fire.";
+			infoBox = "Effective against Rock, less effective against Fire. Slows down enemies, does splash damage.";
 		} else if(y > 400 && y < 475 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
-			infoBox = "Effective against Air, less effective against Water.";
+			infoBox = "Effective against Air, less effective against Water. High damage per shot, penetrates through enemies.";
 		} else {
 			infoBox = "Planet type: " + Options.planType + ". Weapon type: " + Options.wepType + ".";
 		}
@@ -1927,7 +1931,7 @@ function initGame() {
 			gamectx.fillStyle = "white";
 			gamectx.textAlign = "left";
 			gamectx.fillText("MULTISHOT",5,winheight - 5);
-			gamectx.fillRect(150, winheight - 5, 200 * (powerups.trishot.timer / 1000), 20);
+			gamectx.fillRect(150, winheight - 25, 200 * (powerups.trishot.timer / 1000), 20);
 		}
 		if (powerups.fastshot.toggle) {
 			gamectx.font = "20pt Impact";
