@@ -235,6 +235,8 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 
 	this.pBullets = pBullets; //player bullets, object will check for collision with these
 	this.eBullets = eBullets; //enemy bullets, object will push a new Bullet to these every time it shoots
+	this.burncount = 0;
+	this.slowcount = 0;
 
 	this.radius = this.width * 1.2; //have collision circle cover corners better at expense of overcoverage on middle of sides
 
@@ -249,6 +251,8 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 		this.speed = 3;
 		this.damage *= 3;
 	}
+	this.slowspeed = this.speed / 2;
+	this.normspeed = this.speed;
 };
 
 //Tells the enemy object which object to follow, in the actual game, it will be the player
@@ -275,6 +279,17 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 		toPlayerY = toPlayerY / toPlayerLength;
 
 		this.rotation = Math.atan2(toPlayerY, toPlayerX);
+
+		if (this.slowcount > 0) {
+			this.slowcount--;
+			this.speed = this.slowspeed;
+		} else {
+			this.speed = this.normspeed;
+		}
+		if (this.burncount > 0) {
+			this.burncount--;
+			this.health--;
+		}
 
 		////////SHOOTING////////
 		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
@@ -375,6 +390,7 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 					enemies.forEach(function(enemy){
 						if(enemy !== this){
 							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250){
+								enemy.slowcount = 100;
 								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
 								var splashnoise = new Audio();
 								splashnoise.src = sounds.water.death;
@@ -391,6 +407,10 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 							}
 						}
 					});
+					this.slowcount = 100;
+				}
+				if (Options.wepType === "fire") {
+					this.burncount = 100;
 				}
 				if (Options.wepType === "air") {
 					this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
@@ -417,7 +437,6 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 				}, false);
 			}
 		}
-
 	}
 };
 
