@@ -18,11 +18,12 @@ Todo
 - [X] Fire should burn for a few seconds. 
 - [X] Water does splash damage, slows targets.  
 - [ ] Powerup text needs to be fixed.  
+- [ ] Sprites for Burn and splash need to work
 
 Earth Invader
 =====
 
-Years ago, a terrible invasion by unknown entities was staved off by a lone Earth ship. Now, in the year 2048, humankind has discovered the planets of the coalition that nearly wiped them out, and has elected to send their most skilled pilot to destroy them: you.
+Years ago, a terrible invasion by unknown entities was staved off by a lone Earth ship. Now, in the year 2048, humankind has discovered the planets of the coalition that nearly wiped them out, and has elected to send their most skilled pilot to destroy them: You.
 
 Mockup
 =====
