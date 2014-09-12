@@ -196,10 +196,10 @@ function initGame() {
 				}
 
 				enemies.forEach(function(enemy){
-					enemy.update(planet, gamectx, enemies);
+					enemy.update(planet, enemies);
 				});
 				defenders.forEach(function(enemy){
-					enemy.update(planet, gamectx, defenders);
+					enemy.update(planet, defenders);
 				});	
 				pBullets.forEach(function(bullet){
 					bullet.update(pBullets);

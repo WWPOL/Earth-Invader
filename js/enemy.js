@@ -1,42 +1,42 @@
-//Init the enemy class
+//////////////////////////////////////////////////////
+///   Enemy Class - Standard enemies and minibosses
+//////////////////////////////////////////////////////
+
 Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 	this.x = x;
 	this.y = y;
 	this.width = width;
 	this.height = height;
+
 	this.isboss = isboss;
-
-	this.splash = false;
-
 	this.type = type;
 	this.speed = enemyTraits[this.type].speed;
-	this.orbit = orbit; //property determining distance of orbit
+	this.orbit = orbit; // Property determining distance of orbit
 	this.health = enemyTraits[this.type].health;
 	this.damage = enemyTraits[this.type].damage;
 
 	this.damagemult = 1;
 
-	this.rof = enemyTraits[this.type].rof; //rate of fire
+	this.rof = enemyTraits[this.type].rof; // Rate of fire
 	this.count = 0; //counter for shooting
-	this.trigger = Math.floor(Math.random()*this.rof); //number 0 to rof-1 that will be used as signal to fire
+	this.trigger = Math.floor(Math.random() * this.rof); // Number 0 to rof-1 that will be used as signal to fire
 
-	this.pBullets = pBullets; //player bullets, object will check for collision with these
-	this.eBullets = eBullets; //enemy bullets, object will push a new Bullet to these every time it shoots
-	this.burncount = 0;
-	this.slowcount = 0;
-	this.dmgcount = 0;
-	this.splashcount = 0;
+	this.pBullets = pBullets; // Player bullets, object will check for collision with these
+	this.eBullets = eBullets; // Enemy bullets, object will push a new Bullet to these every time it shoots
+	this.burncount = 0; // Determines how long to take burn damage if hit by flamethrower
+	this.slowcount = 0; // Determines how long to move slowly if hit by water weapon
+	this.dmgcount = 0; // Used in shield regenerating
+	this.splashcount = 0; // Used to draw the water boom sprite for splash
 
-	this.radius = this.width * 1.2; //have collision circle cover corners better at expense of overcoverage on middle of sides
+	this.radius = this.width * 1.2; // Have collision circle cover corners better at expense of overcoverage on middle of sides
 
-	this.alive = true; //used for determining damage and whether to draw
-	this.explode = false;
-	this.shield = 0;
+	this.alive = true; // Used for determining damage and whether to draw
+	this.explode = false; // Draws the boom sprite if true
+	this.shield = 0; // For minibosses only
 
-	//This allows for the enemy to rotate to face the player
-	this.rotation = 0;
+	this.rotation = 0; //This allows for the enemy to rotate to face the player
 
-	if (this.isboss) {
+	if (this.isboss) { // Set the neccessary buffs if the enemy is a boss
 		this.shield = this.health * 2;
 		this.health *= 10;
 		this.speed = 3;
@@ -44,19 +44,18 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 		this.dmgcount = 0;
 		this.maxshield = this.shield;
 	}
-	this.slowspeed = this.speed / 2;
-	this.normspeed = this.speed;
+	this.slowspeed = this.speed / 2; // Used to adjust speed when hit by water weapon
+	this.normspeed = this.speed; // Used to adjust speed when hit by water weapon
+	this.regen = false; // Var used to make the shields take longer to start regenerating after hitting 0
 };
 
-//Tells the enemy object which object to follow, in the actual game, it will be the player
-Enemy.prototype.assignplayer = function(player) {
+Enemy.prototype.assignplayer = function(player) { // Tells the enemy object which object to follow, in the actual game, it will be the player
 	this.player = player;
 };
 
-//Update the enemy's position
-Enemy.prototype.update = function(planet, ctx, earray) {
-	if(! (this.player === undefined) && this.alive){ //only update if alive
-		this.count = (this.count+1) % this.rof; //update counter
+Enemy.prototype.update = function(planet, earray) { // Update the enemy's position and variables
+	if(! (this.player === undefined) && this.alive) { // Only update if alive
+		this.count = (this.count+1) % this.rof; // Update counter
 		var ctx = ctx;
 		var enemies = earray;
 		this.playerX = this.player.x;
@@ -71,116 +70,117 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 		toPlayerX = toPlayerX / toPlayerLength;
 		toPlayerY = toPlayerY / toPlayerLength;
 
-		this.rotation = Math.atan2(toPlayerY, toPlayerX);
+		this.rotation = Math.atan2(toPlayerY, toPlayerX); // Face the player
 
-		if (this.slowcount > 0) {
+		if (this.slowcount > 0) { // If slowed, slow speed and reduce timer
 			this.slowcount--;
 			this.speed = this.slowspeed;
 		} else {
-			this.speed = this.normspeed;
+			this.speed = this.normspeed; // Else go back to normal speed
 		}
-		if (this.burncount > 0) {
+		if (this.burncount > 0) { // If burning, take damage and reduce timer
 			this.burncount--;
 			this.health--;
 		}
-		if (this.dmgcount > 0) {
+		if (this.dmgcount > 0) { // When dmgcount is 0, shields will start to regenerate
 			this.dmgcount--;
 		}
-		if (this.splashcount > 0) {
+		if (this.splashcount > 0) { // Same idea as burncount, used to draw the splash sprite
 			this.splashcount--;
 		}
 		if (this.shield < this.maxshield && this.shield >=0 && this.dmgcount == 0) {
-			this.shield += 0.25; //shield will regenerate very slowly
-			this.regen = false;
+			this.shield += 0.25; // Shield will regenerate very slowly
+			this.regen = false; 
 		}
-		if (this.shield > 0) {
+		if (this.shield > 0) { // Make radius the length of the shield radius for consistency
 			this.radius = 60;
 		}
 
 		if (this.shield <= 0) {
-			this.radius = this.width * 1.2; //collision detection radius set to 40 (shield), reduced when shield is 
+			this.radius = this.width * 1.2; // Set radius back to just above sprite size when shield is down
 		}
 		if (this.shield < 0) {
 			this.shield = 0;
-			this.dmgcount = 300;
+			this.dmgcount = 300; // Creates the longer shield regen
 			this.regen = true;
 		}
+		//////////////////////////
+		//////// SHOOTING ////////
+		//////////////////////////
 
-		////////SHOOTING////////
 		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
 			if (this.isboss) {
-				var bullet = new Bullet(this.x, this.y, 6, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, false);
+				if (this.type === "fire") {
+					var bullet = new Bullet(this.x, this.y, 6, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, true); // Create bullet/Has bigger bullets/has player flamethrower
+				} else {
+					var bullet = new Bullet(this.x, this.y, 6, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, false); // Create bullet/Has bigger bullets
+				}
 			} else {
-				var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, false);
+				var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, false); // Create bullet
 			}
-			this.eBullets.push(bullet);
+			this.eBullets.push(bullet); // Push bullet to enemy bullet array so player can collision check
 		}
+		
+		//////////////////////////
+		//////// MOVEMENT ////////
+		//////////////////////////
 
-		////////MOVEMENT////////
-
-		var approach = true; // tracks if enemy is currently approaching player
-		//Move towards the player
-		if ((toPlayerLength > this.orbit+5 || this.player.shield <= 0) && this.player !== planet){ //if shield is down enemy will continue to approach 
+		if ((toPlayerLength > this.orbit+5 || this.player.shield <= 0) && this.player !== planet) { // Move towards the player. If shield is down enemy will kamikaze 
 			this.angle = Math.atan2(toPlayerY,toPlayerX)+Math.PI;
 			this.x += toPlayerX * this.speed;
 			this.y += toPlayerY * this.speed;
 
-		}//Move away from player
-		else if (toPlayerLength < this.orbit-5){
+		} else if (toPlayerLength < this.orbit-5) { // Move away from player
 			this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
 			this.x -= toPlayerX * this.speed * 2;
 			this.y -= toPlayerY * this.speed * 2;
 
-		}//orbit
-		else{
+		} else { // Orbit player
 			this.angle -= 0.02;
 			this.x = ((toPlayerLength * Math.cos(this.angle)) + (this.player.x));
 			this.y = ((toPlayerLength * Math.sin(this.angle)) + (this.player.y));
 			
 		}
 
-
-		//check for collision with bullet
-		for (var i = 0; i < this.pBullets.length; i++) {
-			this.damagemult = mults[Options.wepType][this.type + "dmg"];
-			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.shield > 0) {
+		for (var i = 0; i < this.pBullets.length; i++) { // Check for collision with bullet
+			this.damagemult = mults[Options.wepType][this.type + "dmg"]; // Set damage multiplier based on the enemy type and the bullet type
+			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.shield > 0) { // If the enemy has a shield
 				if (!this.pBullets[i].penetrate) {
-					this.pBullets[i].alive = false;
-					this.shield -= wepTraits[Options.wepType].damage * this.damagemult;
-				} else if (this.pBullets[i].penetrate && this !== this.pBullets[i].currentenemy) {
+					this.pBullets[i].alive = false; // Normal bullet collision
+					this.shield -= wepTraits[Options.wepType].damage * this.damagemult; // Normal bullet collision
+				} else if (this.pBullets[i].penetrate && this !== this.pBullets[i].currentenemy) { // If bullet should penetrate, set this enemy to the bullets current enemy so it doesnt collide again
 					this.pBullets[i].currentenemy = this;
-					this.pBullets[i].penetratecount += 1;
+					this.pBullets[i].penetratecount += 1; // When the bullets penetrate count reaches 3, the bullet dies
 					this.shield -= wepTraits[Options.wepType].damage * this.damagemult;
 				}
-				if(Options.wepType === "water" || powerups.splash.toggle){
-					enemies.forEach(function(enemy){
-						if(enemy !== this){
-							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250){
-								this.splashcount = 10;
-								enemy.slowcount = 100;
-								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
-								ctx.save();
-								ctx.translate(this.x, this.y);
-								ctx.rotate(this.rotation);
-								ctx.drawImage(enemyTraits.water.boom,-24,-24,48,48);
-								ctx.restore();
+				if(Options.wepType === "water" || powerups.splash.toggle) { // If the bullet is water/splash powerup
+					enemies.forEach(function(enemy) {
+						if(enemy !== this) {
+							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250) { // Damage and slow all enemies in a 250 radius
+								this.splashcount = 10; // Set the timer to deal with the sprite
+								enemy.slowcount = 100; // Set the timer to deal with the slowdown
+								if (enemy.shield > 0) {
+									enemy.shield -= wepTraits[Options.wepType].damage * this.damagemult; // Accounts for minibosses caught in splash
+								} else () {
+									enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
+								}
 							}
 						}
 					});
 					this.slowcount = 100;
 				}
 				if (Options.wepType === "fire") {
-					this.burncount = 100;
+					this.burncount = 100; // Burn enemy
 				}
-				if (Options.wepType === "air") {
+				if (Options.wepType === "air") { // Pushes enemies back, special power of air
 					this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
 					this.x -= toPlayerX * this.speed * 30;
 					this.y -= toPlayerY * this.speed * 30;
 				}
 				if (!this.regen) {
-					this.dmgcount = 100;
+					this.dmgcount = 100; // Only set dmgcount, which makes the shields regen after some time after getting hit, if the shield isnt at regen, which means the shields were below 0
 				}
-			} if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
+			} if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) { // Same code as above, but does damage to health instead of shields
 				if (!this.pBullets[i].penetrate) {
 					this.pBullets[i].alive = false;
 					this.health -= wepTraits[Options.wepType].damage * this.damagemult;
@@ -195,12 +195,11 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250){
 								this.splashcount = 10;
 								enemy.slowcount = 100;
-								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
-								ctx.save();
-								ctx.translate(this.x, this.y);
-								ctx.rotate(this.rotation);
-								ctx.drawImage(enemyTraits.water.boom,-24,-24,48,48);
-								ctx.restore();
+								if (enemy.shield > 0) {
+									enemy.shield -= wepTraits[Options.wepType].damage * this.damagemult; // Accounts for minibosses caught in splash
+								} else () {
+									enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
+								}
 							}
 						}
 					});
@@ -214,50 +213,49 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 					this.x -= toPlayerX * this.speed * 30;
 					this.y -= toPlayerY * this.speed * 30;
 				}
-			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
+			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { // If the enemy has no health and shields, kill it
 				this.alive = false;
 				enemiesKilled += 1;
-				this.explode = 1; //draw explosion sprite
+				this.explode = 1; // Draw explosion sprite
 			}
 		}
 	}
 };
 
-//As it sounds, draw the enemy object
-Enemy.prototype.draw = function(ctx, array) {
-	if (this.alive) { //only draw if alive
+Enemy.prototype.draw = function(ctx, array) { // Draw the enemy
+	if (this.alive) { // only draw if alive
 		ctx.save();
 		ctx.translate(this.x, this.y);
 		ctx.rotate(this.rotation);
 		if (this.isboss) {
-			ctx.drawImage(enemyTraits[this.type].img,-18,-18,36,36);
+			ctx.drawImage(enemyTraits[this.type].img,-18,-18,36,36); // Draw sprite larger for bosses
 			var shieldColor = "#"; 
 			for (var i = 0; i < 3; i++) {
-				shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+				shieldColor += (Math.floor(Math.random()*200)+55).toString(16); // Keeping individual RGB values between 100 and 200, just b/c
 			}
 			ctx.beginPath();
 			ctx.arc(0, 0, 60, 0, 2 * Math.PI, false);
 			ctx.lineWidth = 4;
 			ctx.strokeStyle = shieldColor;
-			if (this.shield > 0) { //only draw if greater than 0
+			if (this.shield > 0) { // Only draw shield if greater than 0
 				ctx.stroke(); 
 			}
 			ctx.closePath();
 		} else {
-			ctx.drawImage(enemyTraits[this.type].img,-6,-6);
+			ctx.drawImage(enemyTraits[this.type].img,-6,-6); // Normal sprite
 		}
 		if (this.burncount > 0) {
 			ctx.globalAlpha = 0.75
 			if (this.isboss) {
-				ctx.drawImage(enemyTraits.fire.boom,-20,-20,40,40);
+				ctx.drawImage(enemyTraits.fire.boom,-20,-20,40,40); // Draw burn sprite, larger for bosses
 			} else {
-				ctx.drawImage(enemyTraits.fire.boom,-10,-10,20,20);
+				ctx.drawImage(enemyTraits.fire.boom,-10,-10,20,20); // Draw burn sprite
 			}
 			ctx.globalAlpha = 1.0
 		}
 		if(this.splashcount > 0){
 			ctx.globalAlpha = 0.75;
-			ctx.drawImage(enemyTraits.water.boom,-30,-30,60,60);
+			ctx.drawImage(enemyTraits.water.boom,-30,-30,60,60); // Draw splash sprite
 			ctx.globalAlpha = 1.0
 		}
 		ctx.restore();
@@ -266,14 +264,14 @@ Enemy.prototype.draw = function(ctx, array) {
 		ctx.translate(this.x, this.y);
 		ctx.rotate(this.rotation);
 		if (this.isboss) {
-			ctx.drawImage(enemyTraits[this.type].boom,-24,-24,48,48);
+			ctx.drawImage(enemyTraits[this.type].boom,-24,-24,48,48); // Draw boom sprite, larger for bosses
 		} else {
-			ctx.drawImage(enemyTraits[this.type].boom,-14,-14,28,28);	
+			ctx.drawImage(enemyTraits[this.type].boom,-14,-14,28,28); // Draw boom sprite
 		}
 		ctx.restore();
-		this.explode = (this.explode+1)%7; //add a count, when this.explode hits 4 (or 0) it will go false
-	} else if (!this.alive && !this.boom) {
+		this.explode = (this.explode+1)%7; // Add a count, when this.explode hits 4 (or 0) it will go false
+	} else if (!this.alive && !this.boom) { // Remove from array if not alive or exploding
 		var index = array.indexOf(this);
 		array.splice(index, 1);
 	}
-};
+}
