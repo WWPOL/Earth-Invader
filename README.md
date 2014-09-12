@@ -9,7 +9,6 @@ How to Play
 
 Todo
 =====
-- [ ] Powerup text needs to be fixed.  
 - [ ] Sprites for Burn and splash need to work
 
 Earth Invader
