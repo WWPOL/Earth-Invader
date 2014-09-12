@@ -27,39 +27,28 @@ Powerup = function(x,y,type,array,player) {
 	this.alive = true;
 	this.powerups = array;
 	this.player = player;
-	this.targetx = Math.floor((Math.random() * (winwidth - 20) + 10));
-	this.targety = Math.floor((Math.random() * (winwidth - 20) + 10));
+	this.timer = 750;
+	this.vx = Math.floor(Math.random() * 4) - 2;
+	this.vy = Math.floor(Math.random() * 4) - 2;
 };
 
 Powerup.prototype.update = function(gc) {
-	if (this.alive) {	
-		this.playerX = this.player.x;
-		this.playerY = this.player.y;
+	if (this.alive) {
+		this.x += this.vx;
+		this.y += this.vy;
 
-		// Calculate direction towards player
-		var toPlayerX = this.playerX - this.x;
-		var toPlayerY = this.playerY - this.y;
-
-		// Normalize
-		var toPlayerLength = Math.sqrt(toPlayerX * toPlayerX + toPlayerY * toPlayerY);
-		toPlayerX = toPlayerX / toPlayerLength;
-		toPlayerY = toPlayerY / toPlayerLength;
-		if (this.x > 0 && this.y > 0 && this.x < gc.width && this.y < gc.height) {
-			if (toPlayerLength < 20) {
-				this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
-				this.x -= toPlayerX;
-				this.y -= toPlayerY;
-			} else {
-				var dx = this.targetx - this.x; //use the global variables!
-				var dy = this.targety - this.y;
-				var distance = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
-				this.x += dx/distance;
-				this.y += dy/distance;
-			}
-			if ((Math.abs(this.x + this.targetx) < 20) && (Math.abs(this.y + this.targety) < 20)) {
-				this.targetx = Math.floor((Math.random() * (winwidth - 20) + 10));
-				this.targety = Math.floor((Math.random() * (winwidth - 20) + 10));
-			}
+		if (this.x < 0 || this.x > gc.width) {
+			this.vx *= -1;
+		}
+		if (this.y < 0 || this.y > gc.height) {
+			this.vy *= -1;
+		}
+		if (this.timer > 0) {
+			this.timer--;
+		} else {
+			this.alive = false;
+			var index = this.powerups.indexOf(this);
+			this.powerups.splice(index, 1);
 		}
 	} else {
 		var index = this.powerups.indexOf(this);
