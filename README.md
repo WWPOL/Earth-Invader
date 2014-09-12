@@ -6,11 +6,6 @@ How to Play
 * Kill the planet as quickly as possible, and try and kill a lot of enemies too
 * Recommended minimum window size: 1485 x 690
 
-Todo
-=====
-- [ ] Make powerups dissapear after 10 seconds of being
-- [ ] Fix powerup mapping
-
 Earth Invader
 =====
 
