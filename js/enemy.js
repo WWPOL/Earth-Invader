@@ -156,6 +156,7 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 					enemies.forEach(function(enemy){
 						if(enemy !== this){
 							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250){
+								this.splashcount = 10;
 								enemy.slowcount = 100;
 								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
 								ctx.save();
@@ -167,7 +168,6 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 						}
 					});
 					this.slowcount = 100;
-					this.splashcount = 10;
 				}
 				if (Options.wepType === "fire") {
 					this.burncount = 100;
@@ -193,6 +193,7 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 					enemies.forEach(function(enemy){
 						if(enemy !== this){
 							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250){
+								this.splashcount = 10;
 								enemy.slowcount = 100;
 								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
 								ctx.save();
@@ -204,7 +205,6 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 						}
 					});
 					this.slowcount = 100;
-					this.splashcount = 10;
 				}
 				if (Options.wepType === "fire") {
 					this.burncount = 100;

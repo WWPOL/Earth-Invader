@@ -102,7 +102,7 @@ var wepTraits = {
 		color: "orange",
 		rof: 5, //rate of fire
 		speed: 15,
-		damage: 5
+		damage: 3
 	},
 	air: {
 		color: "ghostwhite",
