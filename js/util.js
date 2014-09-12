@@ -25,6 +25,7 @@ function resize() { // Re-init's the menu/ls/game if screen size changes
 		initStars();
 		initLevelSelect();
 	} else if (currentcanvas === 'gc') {
+		starting = true;
 		initStars();
 		initGame();
 	}

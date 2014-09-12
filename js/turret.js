@@ -117,7 +117,9 @@ Turret.prototype.update = function (delta, gc) { // Update position and vars
 	var dDir = this.findDirection(mouseX,mouseY); // Delta in direction
 
 	// Collision
-	this.checkCollision(this.eArrays, false, false);
+	for (var i = 0; i < eArrays.length; i++) {
+		this.checkCollision(this.eArrays[i], false, false);
+	}
 	this.checkCollision(this.eBullets, true, false);
 	this.checkCollision(this.powerups, false, true);
 

@@ -1,35 +1,38 @@
 ///////////////// GLOBAL VARIABLES \\\\\\\\\\\\\\\\\
-var currentcanvas;
-var keysDown = {};
-var mouseX = 0; //global mouse coords
+var currentcanvas; // Used for resizing the screen
+var keysDown = {}; // Used for keyboard buttons
+var mouseX = 0; // global mouse coords
 var mouseY = 0;
 var soundarray = [];
 
-var winheight = 0; //window width & height
+var winheight = 0; // Window width & height
 var winwidth = 0;
 
 var score = 0;
-var enemiesKilled = 1;
+var enemiesKilled = 1; // Total enemies killed, used in score calculating, starts at 1 to prevent a score of 0
 var time = 0;
-var scoremult = 1;
+var scoremult = 1; // Score Multiplier, rewards using weaker weapons on certain planets
 var paused = false;
-var starting = true;
+var starting = true; // Used to draw start timer
 var timer = 3;
-var highscore = localStorage.getItem('highscore');
+var highscore = localStorage.getItem('highscore'); // Saves highscore
 
 ////////////////// LOAD IN SPRITES \\\\\\\\\\\\\\\\\\
-var sprite_player = new Image();
+var sprite_player = new Image(); // Player
 
+// Enemy sprites
 var sprite_fire = new Image();
 var sprite_rock = new Image();
 var sprite_water = new Image();
 var sprite_air = new Image();
 
+// Enemy death sprites
 var boom_fire = new Image();
 var boom_rock = new Image();
 var boom_water = new Image();
 var boom_air = new Image();
 
+// Sprite sources in base64
 sprite_player.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAMAAADzN3VRAAAA+VBMVEUAAAAaGRZBQDsiIRoyMS0REAxUT0pKSUM+OzYsKiUpJx/oPxFmYFgWFhLrNgd3dHF3aGBXVVHUy0egiVNbUEfHnDtoQDGvSiyEPyqFKBXAMBHyPA7SNQ769tqBfnzW0G5oZV9+XlJtUkV9d0OYTDmSSC5FQiBPTR85NxwiIBDeNAiJg4CDc2+Tg2LKxFt0YFlfWVTAl1CwllCPe1DIoE3Gt0hwajhWPTLKSSdgXCCyPR2VOBx1bhuSihqoNRpUJhTgPxMCAgL8+vLx77/587OEaVqWbFmubkysXEpeXEB8Uj3KkzrToTLisy6fmCdsLxyvlhe8sxH0Iw3AHj8YAAAAAXRSTlMAQObYZgAAAR9JREFUKM+l0WlXglAQBmDvwr2XC7ggASqm7Eilpqm5ZNm+b///xxQWUVSffD/Oc2bOmZnCpin+U5ekE0n6o75/eavrpu/ZeTjYkyljEFba27+AMBEzSPulnR+jhjLFCAGRMSp/p61hf6UAgFDSpcnl6y+palARQDQNowhPljrxUhhDzAEK3FbrMeRPljkx14s1hA5QgKJ0pq3mmXp0XKvP58s4kdcHVUiiuN3Tpvpcq8eWZcXFj56AcwDAzah5vu7xzVl6ppFLMUdo0VVfQrFWnDlGKoVBj0AR8fEiELFe9+zDbJ9qOSGAuMiI07tIJKMKBCsBQ1ppl3Yz+CSEaQK5k94PyppGCJFTyHJ3ZRiG79jZqCwN6f2r+WJqhQ3zBgiwHGmiI+BQAAAAAElFTkSuQmCC';
 sprite_fire.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMBAMAAACkW0HUAAAAJ1BMVEUAAAD/kwD/fwD/nQD/xgD/vgD/0wD/hwD/6AD/swD/qAD/3AD/dwDjrSRSAAAAAXRSTlMAQObYZgAAAFhJREFUCNdjYGAwzWAAAkH1sB0MDOxKxlOzGxiYziiudNvAYHSo0HhKBoO6sqDVEm+GQ4LCUqFuDEZKhZJAilGwfOqUBAZ2ReGV3g1A7VIhO0DGWHkwMAAAMMMS9FP4uwAAAAAASUVORK5CYII=';
 sprite_rock.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMBAMAAACkW0HUAAAAG1BMVEUAAACDQBFvNw+WTBeKRBN2OxBiMQ6QSBVIJQ0e7G3aAAAAAXRSTlMAQObYZgAAAFRJREFUCB0FwUEKgCAQQNEPdgAVxf2ArhO7QBS0no7gIlwWdIbO3XtAawBtdRuYGjXMmCjiLIcvXRPPOb4cqDI+CSy+XDkxeelqMS6q3rCsLgG8O/zaXAvNfQ96oAAAAABJRU5ErkJggg==';
@@ -41,27 +44,27 @@ boom_water.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAo
 boom_air.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAAY1BMVEUAAADo4eHx7e3u5+fUy8vi2tra09PVysrv7Ozs5ubc09Pf2dnPxsbo4+PZ0tLw7u7CsrLi2dn08/PVzMzh29vn5OS/s7P+/Pzz8vLEtbXz8fHn4+PNwMDr5eXr4+P18vLd09OP7aMuAAAAHnRSTlMA/P7+Cf35+PTyR/X17u3bLxX15uO/hksf8eaglGdMQRepAAAAe0lEQVQIHQXBh0EDMRAAMJ3t7z2dBPzZf0okYNzuUJ7Ggld/w2tdvNfxUPpgn+Lp0y9j2Yds7zKs/XBta/r7nuBoI+ea4pxBeXRRa/1GB4+fuWuaFE1Oqbm6D0PUqLVmHNDWlM8zA0w1STmh4LcJtJcFzDGB2wUAhW3jH7FEBefzYq9lAAAAAElFTkSuQmCC';
 /////////////////------------------\\\\\\\\\\\\\\\\\
 
-var renderops = {
+var renderops = { // Used to fix canvases being drawn when they shouldn't be
 	main: false,
 	levelselect: false,
 	game: false
 };
 
-var Options = {
+var Options = { // Keeps track of planet and weapon type
 	planType: "fire",
 	wepType: "fire",
 	volume: 0.1
 };
 
-var powerups = {
+var powerups = { // Toggles and timers for powerups
 	multishot: {
 		toggle: false,
 		timer: 1000
 	},
 	fastshot: {
 		toggle: false,
-		nrof: 15,
-		frof: 12,
+		nrof: 15, // Normal rate of fire, gets changed in game init
+		frof: 12, // Fastshot rate of fire
 		timer: 1000
 	},
 	penetrate: {
@@ -78,7 +81,7 @@ var powerups = {
 	}
 };
 
-var planTraits = {
+var planTraits = { // Color is the circle color, stroke is the outline
 	fire: {
 		plancolor: "#F72A0A",
 		planstroke: "#CF2308"
@@ -97,16 +100,16 @@ var planTraits = {
 	}
 }
 
-var wepTraits = {
+var wepTraits = { // Traits for the player weapons
 	fire: {
 		color: "orange",
-		rof: 5, //rate of fire
+		rof: 5, // Rate of fire
 		speed: 15,
 		damage: 3
 	},
 	air: {
 		color: "ghostwhite",
-		rof: 50,//12,
+		rof: 50,
 		speed: 15,
 		damage: 20
 	},
@@ -124,7 +127,6 @@ var wepTraits = {
 	}
 }
 
-//var enemycolors = ["#CF2308", "#BFBFBF", "#0658C4", "#593802"];
 var enemyTraits = {
 	fire: {
 		img: sprite_fire,
@@ -165,7 +167,7 @@ var enemyTraits = {
 
 }
 
-var mults = {
+var mults = { // Multipliers used for damage and score, kept key value style to save lines
 	fire: {
 		waterdmg: 1.5,
 		waterscore: 0.5,
