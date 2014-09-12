@@ -431,6 +431,16 @@ function initGame() {
 			document.body.removeChild(igc);
 			starting = true;
 			time = 0;
+			powerups.multishot.toggle = false;
+			powerups.multishot.timer = 1000;
+			powerups.fastshot.toggle = false;
+			powerups.fastshot.timer = 1000;
+			powerups.penetrate.toggle = false;
+			powerups.penetrate.timer = 1000;
+			powerups.splash.toggle = false;
+			powerups.splash.timer = 1000;
+			powerups.invincibility.toggle = false;
+			powerups.invincibility.timer = 1000;
 			initLevelSelect();
 		}
 	}, false);

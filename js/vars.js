@@ -74,7 +74,7 @@ var powerups = {
 	fastshot: {
 		toggle: false,
 		nrof: 15,
-		frof: 7,
+		frof: 12,
 		timer: 1000
 	},
 	penetrate: {
@@ -184,7 +184,7 @@ var enemyTraits = {
 		boom: boom_fire,
 		speed: 4,
 		rof: 20,
-		health: 50,
+		health: 100,
 		damage: 10,
 		bulletColor: "orange"
 	},
@@ -193,7 +193,7 @@ var enemyTraits = {
 		boom: boom_air,
 		speed: 5,
 		rof: 100,
-		health: 25,
+		health: 50,
 		damage: 5,
 		bulletColor: "ghostwhite"
 	},
@@ -202,7 +202,7 @@ var enemyTraits = {
 		boom: boom_water,
 		speed: 3,
 		rof: 100,
-		health: 75,
+		health: 150,
 		damage: 15,
 		bulletColor: "deepskyblue"
 	},
@@ -211,7 +211,7 @@ var enemyTraits = {
 		boom: boom_rock,
 		speed: 2,
 		rof: 100,
-		health: 100,
+		health: 200,
 		damage: 20,
 		bulletColor: "saddlebrown"
 	}

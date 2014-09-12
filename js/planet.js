@@ -1,8 +1,8 @@
 Planet = function(x, y, name, color, stroke, bullets) {
 	this.x = x;
 	this.y = y;
-	this.health = 5000;
-	this.shield = 3000;
+	this.health = 10000;
+	this.shield = 6000;
 	this.name = name;
 	this.radius = 100;
 	this.color = color;
