@@ -65,6 +65,11 @@ Enemy.prototype.update = function(planet, earray) { // Update the enemy's positi
 		this.count = (this.count+1) % this.rof; // Update counter
 		var ctx = ctx;
 		var enemies = earray;
+		if (Options.difficulty === 0 ) {
+			this.orbitcheck = this.orbitthis.name !== "Planet";
+		} else {
+			this.orbitcheck = true;
+		}
 
 		// Calculate Shooting Params
 		this.playerX = this.player.x;
@@ -148,7 +153,7 @@ Enemy.prototype.update = function(planet, earray) { // Update the enemy's positi
 		//////// SHOOTING ////////
 		//////////////////////////
 
-		if (this.count == this.trigger /*&& this.player.name !== "Planet"*/) {
+		if (this.count == this.trigger && this.orbitcheck) {
 			if (this.isboss) {
 				if (this.type === "fire") {
 					var bullet = new Bullet(this.x, this.y, 4, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, this.type, this, true); // Create bullet/Has bigger bullets/has player flamethrower

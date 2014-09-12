@@ -53,7 +53,8 @@ var renderops = { // Used to fix canvases being drawn when they shouldn't be
 var Options = { // Keeps track of planet and weapon type
 	planType: "fire",
 	wepType: "fire",
-	volume: 0.1
+	volume: 0.1,
+	difficulty: 0
 };
 
 var powerups = { // Toggles and timers for powerups
