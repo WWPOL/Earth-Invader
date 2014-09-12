@@ -190,10 +190,6 @@ function initGame() {
 						} else {
 							var bullet = new Bullet(player.x, player.y, 3, Math.cos(angle), Math.sin(angle), wepTraits[Options.wepType].speed, wepTraits[Options.wepType].damage, wepTraits[Options.wepType].color, Options.wepType, player, true);
 						}
-						/*var lasersnd = new Audio();
-						lasersnd.src = sounds.player[Options.wepType];
-						lasersnd.volume = Options.volume;
-						lasersnd.play();*/
 						pBullets.push(bullet);
 
 		 			} 

@@ -25,26 +25,14 @@ Planet.prototype.update = function() {
 				this.dmgcount = 180;
 			}
 			this.bullets[i].alive = false;
-			/*var hit = new Audio();
-			hit.src = sounds.planet.hit;
-			hit.volume = Options.volume;
-			hit.play();*/
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i]) && this.health > 0) {
 			this.radius = 70;
 			this.health -= wepTraits[Options.wepType].damage * this.damagemult;
 			this.totaldamage += wepTraits[Options.wepType].damage * this.damagemult;
 			this.bullets[i].alive = false;
-			/*var hit = new Audio();
-			hit.src = sounds.planet.hit;
-			hit.volume = Options.volume;
-			hit.play();*/
 		} else if (this.bullets[i].alive && collision(this,this.bullets[i])) { //if it collides with a bullet, kill itself and the bullet
 			this.bullets[i].alive = false;
 			this.alive = false;
-			/*var death = new Audio();
-			death.src = sounds.planet.death;
-			death.volume = Options.volume;
-			death.play();*/
 		}
 	}
 	if (this.dmgcount > 0) {

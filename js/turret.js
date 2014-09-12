@@ -21,10 +21,6 @@ Turret = function (x,y,name, eArrays, eBullets, powerups) {
 Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) {
 	for (var i = 0; i < enemyArray.length; i++) {
 		if (ispowerup && collision(this,enemyArray[i])) {
-			/*var pickup = new Audio();
-			pickup.src = sounds.powerup;
-			pickup.volume = Options.volume;
-			pickup.play();*/
 			if (enemyArray[i].type === "air") {
 				if (!powerups.multishot.toggle) {
 					powerups.multishot.toggle = true;
@@ -71,25 +67,12 @@ Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) {
 					if (!this.regen) {
 						this.dmgcount = 120;
 					}
-					/*var hit = new Audio();
-					hit.src = sounds.player.hit;
-					hit.volume = Options.volume;
-					hit.play();*/
 				} else if (this.shield <= 0 && this.health > 0 && !powerups.invincibility.toggle) {
 					if (isbullet) {
 						this.health -= 20;
 					} else {
 						this.health -= enemyArray[i].damage;
 					}
-					/*var hit = new Audio();
-					hit.src = sounds.player.hit;
-					hit.volume = Options.volume;
-					hit.play();*/
-				} else if (this.shield <= 0 && this.health <= 0) {
-					/*var death = new Audio();
-					death.src = sounds.player.death;
-					death.volume = Options.volume;
-					death.play();*/
 				}
 				if (enemyArray[i].name === "bullet") {
 					enemyArray[i].alive = false;

@@ -25,6 +25,7 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 	this.burncount = 0;
 	this.slowcount = 0;
 	this.dmgcount = 0;
+	this.splashcount = 0;
 
 	this.radius = this.width * 1.2; //have collision circle cover corners better at expense of overcoverage on middle of sides
 
@@ -85,7 +86,9 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 		if (this.dmgcount > 0) {
 			this.dmgcount--;
 		}
-
+		if (this.splashcount > 0) {
+			this.splashcount--;
+		}
 		if (this.shield < this.maxshield && this.shield >=0 && this.dmgcount == 0) {
 			this.shield += 0.25; //shield will regenerate very slowly
 			this.regen = false;
@@ -110,10 +113,6 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 			} else {
 				var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, false);
 			}
-			/*var shoot = new Audio();
-			shoot.src = sounds[this.type].shoot;
-			shoot.volume = Options.volume;
-			shoot.play();*/
 			this.eBullets.push(bullet);
 		}
 
@@ -125,18 +124,16 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 			this.angle = Math.atan2(toPlayerY,toPlayerX)+Math.PI;
 			this.x += toPlayerX * this.speed;
 			this.y += toPlayerY * this.speed;
-			//approach = true;
 
 		}//Move away from player
 		else if (toPlayerLength < this.orbit-5){
 			this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
 			this.x -= toPlayerX * this.speed * 2;
 			this.y -= toPlayerY * this.speed * 2;
-			//approach = true;
 
 		}//orbit
 		else{
-			this.angle -= 0.02;//Math.acos(1-Math.pow(3/toPlayerLength,2)/2);
+			this.angle -= 0.02;
 			this.x = ((toPlayerLength * Math.cos(this.angle)) + (this.player.x));
 			this.y = ((toPlayerLength * Math.sin(this.angle)) + (this.player.y));
 			
@@ -150,12 +147,10 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 				if (!this.pBullets[i].penetrate) {
 					this.pBullets[i].alive = false;
 					this.shield -= wepTraits[Options.wepType].damage * this.damagemult;
-					console.log("shield hit");
 				} else if (this.pBullets[i].penetrate && this !== this.pBullets[i].currentenemy) {
 					this.pBullets[i].currentenemy = this;
 					this.pBullets[i].penetratecount += 1;
 					this.shield -= wepTraits[Options.wepType].damage * this.damagemult;
-					console.log("shield hit");
 				}
 				if(Options.wepType === "water" || powerups.splash.toggle){
 					enemies.forEach(function(enemy){
@@ -163,10 +158,6 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250){
 								enemy.slowcount = 100;
 								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
-								/*var splashnoise = new Audio();
-								splashnoise.src = sounds.water.death;
-								splashnoise.volume = Options.volume;
-								splashnoise.play();*/
 								ctx.save();
 								ctx.translate(this.x, this.y);
 								ctx.rotate(this.rotation);
@@ -176,6 +167,7 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 						}
 					});
 					this.slowcount = 100;
+					this.splashcount = 10;
 				}
 				if (Options.wepType === "fire") {
 					this.burncount = 100;
@@ -185,10 +177,6 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 					this.x -= toPlayerX * this.speed * 30;
 					this.y -= toPlayerY * this.speed * 30;
 				}
-				/*var hit = new Audio();
-				hit.src = sounds[this.type].hit;
-				hit.volume = Options.volume;
-				hit.play();*/
 				if (!this.regen) {
 					this.dmgcount = 100;
 				}
@@ -196,12 +184,10 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 				if (!this.pBullets[i].penetrate) {
 					this.pBullets[i].alive = false;
 					this.health -= wepTraits[Options.wepType].damage * this.damagemult;
-					console.log("hit");
 				} else if (this.pBullets[i].penetrate && this !== this.pBullets[i].currentenemy) {
 					this.pBullets[i].currentenemy = this;
 					this.pBullets[i].penetratecount += 1;
 					this.health -= wepTraits[Options.wepType].damage * this.damagemult;
-					console.log("hit");
 				}
 				if(Options.wepType === "water" || powerups.splash.toggle){
 					enemies.forEach(function(enemy){
@@ -209,10 +195,6 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 							if(distance(this.x, this.y, enemy.x, enemy.y) <= 250){
 								enemy.slowcount = 100;
 								enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
-								/*var splashnoise = new Audio();
-								splashnoise.src = sounds.water.death;
-								splashnoise.volume = Options.volume;
-								splashnoise.play();*/
 								ctx.save();
 								ctx.translate(this.x, this.y);
 								ctx.rotate(this.rotation);
@@ -222,6 +204,7 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 						}
 					});
 					this.slowcount = 100;
+					this.splashcount = 10;
 				}
 				if (Options.wepType === "fire") {
 					this.burncount = 100;
@@ -231,19 +214,10 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 					this.x -= toPlayerX * this.speed * 30;
 					this.y -= toPlayerY * this.speed * 30;
 				}
-				/*var hit = new Audio();
-				hit.src = sounds[this.type].hit;
-				hit.volume = Options.volume;
-				hit.play();*/
 			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
 				this.alive = false;
-				console.log("dead");
 				enemiesKilled += 1;
 				this.explode = 1; //draw explosion sprite
-				/*var eDeath = new Audio();
-				eDeath.src = sounds[this.type].death;
-				eDeath.volume = Options.volume;
-				eDeath.play();*/
 			}
 		}
 	}
@@ -255,9 +229,6 @@ Enemy.prototype.draw = function(ctx, array) {
 		ctx.save();
 		ctx.translate(this.x, this.y);
 		ctx.rotate(this.rotation);
-		if(this.splash){
-			
-		}
 		if (this.isboss) {
 			ctx.drawImage(enemyTraits[this.type].img,-18,-18,36,36);
 			var shieldColor = "#"; 
@@ -274,6 +245,20 @@ Enemy.prototype.draw = function(ctx, array) {
 			ctx.closePath();
 		} else {
 			ctx.drawImage(enemyTraits[this.type].img,-6,-6);
+		}
+		if (this.burncount > 0) {
+			ctx.globalAlpha = 0.75
+			if (this.isboss) {
+				ctx.drawImage(enemyTraits.fire.boom,-20,-20,40,40);
+			} else {
+				ctx.drawImage(enemyTraits.fire.boom,-10,-10,20,20);
+			}
+			ctx.globalAlpha = 1.0
+		}
+		if(this.splashcount > 0){
+			ctx.globalAlpha = 0.75;
+			ctx.drawImage(enemyTraits.water.boom,-30,-30,60,60);
+			ctx.globalAlpha = 1.0
 		}
 		ctx.restore();
 	} else if (this.explode) {

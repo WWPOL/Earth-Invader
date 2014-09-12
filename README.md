@@ -8,8 +8,6 @@ How to Play
 
 Todo
 =====
-- [ ] Sprites for Burn and splash need to work
-- [ ] Add a simple particle system
 - [ ] Make powerups dissapear after 10 seconds of being
 - [ ] Fix powerup mapping
 
