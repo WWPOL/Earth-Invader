@@ -114,12 +114,12 @@ Enemy.prototype.update = function(planet, earray) { // Update the enemy's positi
 		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
 			if (this.isboss) {
 				if (this.type === "fire") {
-					var bullet = new Bullet(this.x, this.y, 4, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, true); // Create bullet/Has bigger bullets/has player flamethrower
+					var bullet = new Bullet(this.x, this.y, 4, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, this.type, this, true); // Create bullet/Has bigger bullets/has player flamethrower
 				} else {
-					var bullet = new Bullet(this.x, this.y, 6, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, false); // Create bullet/Has bigger bullets
+					var bullet = new Bullet(this.x, this.y, 6, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, this.type, this, false); // Create bullet/Has bigger bullets
 				}
 			} else {
-				var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, false); // Create bullet
+				var bullet = new Bullet(this.x, this.y, 3, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, this.type, this, false); // Create bullet
 			}
 			this.eBullets.push(bullet); // Push bullet to enemy bullet array so player can collision check
 		}
