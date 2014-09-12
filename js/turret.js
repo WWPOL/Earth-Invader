@@ -6,8 +6,8 @@ Turret = function (x,y, eArrays, eBullets, powerups) { // Takes position, name, 
 	this.x = x; 
 	this.y = y;
 	this.speed = 200;
-	this.health = 500; // Balance parameter
-	this.shield = 200;
+	this.health = 1000; // Balance parameter
+	this.shield = 400;
 	this.direction = 0; // In radians
 	this.dmgcount = 0; // Count for timing since last damaged, will be used for regenerating shield
 	this.powerups = powerups; // Powerup array
@@ -117,7 +117,7 @@ Turret.prototype.update = function (delta, gc) { // Update position and vars
 	var dDir = this.findDirection(mouseX,mouseY); // Delta in direction
 
 	// Collision
-	for (var i = 0; i < eArrays.length; i++) {
+	for (var i = 0; i < this.eArrays.length; i++) {
 		this.checkCollision(this.eArrays[i], false, false);
 	}
 	this.checkCollision(this.eBullets, true, false);
@@ -130,7 +130,7 @@ Turret.prototype.update = function (delta, gc) { // Update position and vars
 		this.dmgcount--; // Reduce shield regen delat
 	}
 
-	if (this.shield < 200 && this.shield >=0 && this.dmgcount == 0) { // When delay is 0, regen
+	if (this.shield < 400 && this.shield >=0 && this.dmgcount == 0) { // When delay is 0, regen
 		this.shield += 0.25; // Shield will regenerate very slowly
 		this.regen = false;
 	}

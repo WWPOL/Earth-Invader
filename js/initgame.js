@@ -49,7 +49,8 @@ function initGame() {
 	var makeEnemies = function(x,y, type) {
 		var randOrbit = Math.round(Math.random()*20) + 60; //30 to 80
 		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, false);
-		enemy.assignplayer(player);
+		enemy.assigntarget(player);
+		enemy.assignorbit(player);
 		enemies.push(enemy);
 		if (enemycount < 7) {
 			setTimeout(function(){
@@ -61,7 +62,8 @@ function initGame() {
 	var makeBoss = function(x,y, type) {
 		var randOrbit = Math.round(Math.random()*20) + 60; //30 to 80
 		var boss = new Enemy(x, y, 30, 30, randOrbit, type, pBullets, eBullets, true);
-		boss.assignplayer(player);
+		boss.assigntarget(player);
+		boss.assignorbit(player);
 		var bosshealth = new Healthbar(x, y, boss, true);
 		bossbars.push(bosshealth);
 		enemies.push(boss);
@@ -69,7 +71,8 @@ function initGame() {
 	var makeDefenders = function(x,y, type) {
 		var randOrbit = Math.round(Math.random()*20) + 80; //40 to 90
 		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, false);
-		enemy.assignplayer(planet);
+		enemy.assigntarget(player);
+		enemy.assignorbit(planet);
 		defenders.push(enemy);
 		if (defendercount > 0) {
 			setTimeout(function(){
@@ -354,7 +357,7 @@ function initGame() {
 		gamectx.font = "30pt Impact";
 		gamectx.fillText("Highscore: " + highscore, winwidth / 2, (winheight / 2) + 150);
 		gamectx.fillText("Time: " + time + " seconds", winwidth / 2, (winheight / 2) + 185);
-		gamectx.fillText("Enemies Killed: " + enemiesKilled, winwidth / 2, (winheight / 2) + 220);
+		gamectx.fillText("Enemies Killed: " + (enemiesKilled - 1), winwidth / 2, (winheight / 2) + 220);
 
 		gamectx.font = "30pt Arial";
 		gamectx.fillStyle = "green";

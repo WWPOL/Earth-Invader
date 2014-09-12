@@ -1,7 +1,10 @@
-//Inits the main menu, shows title and play button
+//////////////////////////////////////////////////////
+///   Inits the main menu
+//////////////////////////////////////////////////////
+
 function initMainMenu() {
-	initStars();
-	//This block initiliazes the mainmenu canvas, sets the context, and sets its width and height to that of the user's screen
+	initStars(); // Draw the star background
+	// This block initiliazes the mainmenu canvas, sets the context, and sets its width and height to that of the user's screen
 	var canvas = document.getElementById('mainmenu');
 	currentcanvas = 'mm';
 	var ctx = canvas.getContext('2d');
@@ -11,13 +14,13 @@ function initMainMenu() {
 	canvas.height = winheight;
 	renderops.main = true;
 
-	canvas.addEventListener("mousemove", function (e) {
-		var rect = canvas.getBoundingClientRect(); //get bounding rectangle
+	canvas.addEventListener("mousemove", function (e) { // Used for getting the position to draw the cursor
+		var rect = canvas.getBoundingClientRect(); // Get bounding rectangle
 		mouseX = e.clientX - rect.left;
-		mouseY = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
+		mouseY = e.clientY - rect.top; // ClientX & Y are for whole window, left and top are offsets
 	}, false);
 
-	//Initialize Array of clickable elements, and then push in the parameters that would make a rectangle ***Note, this may be innefficient for just one element, consider revision
+	// Initialize Array of clickable elements, and then push in the parameters that would make a rectangle
 	var elements = [];
 	elements.push({
 		color: "red",
@@ -27,7 +30,7 @@ function initMainMenu() {
 		left: winwidth / 2 - 100
 	});
 
-	//Initialize click handler for start button. It checks every click on the canvas if it is in the bounds of any of the elements, in this case, the start button
+	// Initialize click handler for start button. It checks every click on the canvas if it is in the bounds of any of the elements, in this case, the start button
 	canvas.addEventListener('click', function(event) {
 		var cLeft = canvas.offsetLeft;
 		var cTop = canvas.offsetTop;

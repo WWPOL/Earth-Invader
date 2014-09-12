@@ -52,8 +52,12 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 	this.regen = false; // Var used to make the shields take longer to start regenerating after hitting 0
 };
 
-Enemy.prototype.assignplayer = function(player) { // Tells the enemy object which object to follow, in the actual game, it will be the player
-	this.player = player;
+Enemy.prototype.assigntarget = function(target) { // Tells the enemy object which object to shoot
+	this.player = target;
+};
+
+Enemy.prototype.assignorbit = function(object) { // Tells the enemy object which object to orbit
+	this.orbitthis = object;
 };
 
 Enemy.prototype.update = function(planet, earray) { // Update the enemy's position and variables
@@ -61,19 +65,51 @@ Enemy.prototype.update = function(planet, earray) { // Update the enemy's positi
 		this.count = (this.count+1) % this.rof; // Update counter
 		var ctx = ctx;
 		var enemies = earray;
+
+		// Calculate Shooting Params
 		this.playerX = this.player.x;
 		this.playerY = this.player.y;
-
-		// Calculate direction towards player
+		// Calculate direction towards target
 		var toPlayerX = this.playerX - this.x;
 		var toPlayerY = this.playerY - this.y;
-
 		// Normalize
 		var toPlayerLength = Math.sqrt(toPlayerX * toPlayerX + toPlayerY * toPlayerY);
 		toPlayerX = toPlayerX / toPlayerLength;
 		toPlayerY = toPlayerY / toPlayerLength;
 
+		// Calculate Movement Params
+		this.orbitX = this.orbitthis.x;
+		this.orbitY = this.orbitthis.y;
+		// Calculate direction towards orbit
+		var toOrbitX = this.orbitX - this.x;
+		var toOrbitY = this.orbitY - this.y;
+		// Normalize
+		var toOrbitLength = Math.sqrt(toOrbitX * toOrbitX + toOrbitY * toOrbitY);
+		toOrbitX = toOrbitX / toPlayerLength;
+		toOrbitY = toOrbitY / toPlayerLength;
+
 		this.rotation = Math.atan2(toPlayerY, toPlayerX); // Face the player
+
+		//////////////////////////
+		//////// MOVEMENT ////////
+		//////////////////////////
+
+		if ((toOrbitLength > this.orbit+5 || this.player.shield <= 0)) { // Move towards the player. If shield is down enemy will kamikaze 
+			this.angle = Math.atan2(toOrbitY,toOrbitX)+Math.PI;
+			this.x += toOrbitX * this.speed;
+			this.y += toOrbitY * this.speed;
+
+		} else if (toOrbitLength < this.orbit-5) { // Move away from player
+			this.angle = Math.atan2(toOrbitY, toOrbitX)+Math.PI;
+			this.x -= toOrbitX * this.speed * 2;
+			this.y -= toOrbitY * this.speed * 2;
+
+		} else { // Orbit player
+			this.angle -= 0.02;
+			this.x = ((toOrbitLength * Math.cos(this.angle)) + (this.orbitthis.x));
+			this.y = ((toOrbitLength * Math.sin(this.angle)) + (this.orbitthis.y));
+			
+		}
 
 		if (this.slowcount > 0) { // If slowed, slow speed and reduce timer
 			this.slowcount--;
@@ -107,11 +143,12 @@ Enemy.prototype.update = function(planet, earray) { // Update the enemy's positi
 			this.dmgcount = 300; // Creates the longer shield regen
 			this.regen = true;
 		}
+
 		//////////////////////////
 		//////// SHOOTING ////////
 		//////////////////////////
 
-		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
+		if (this.count == this.trigger /*&& this.player.name !== "Planet"*/) {
 			if (this.isboss) {
 				if (this.type === "fire") {
 					var bullet = new Bullet(this.x, this.y, 4, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, this.type, this, true); // Create bullet/Has bigger bullets/has player flamethrower
@@ -123,27 +160,10 @@ Enemy.prototype.update = function(planet, earray) { // Update the enemy's positi
 			}
 			this.eBullets.push(bullet); // Push bullet to enemy bullet array so player can collision check
 		}
-		
+
 		//////////////////////////
-		//////// MOVEMENT ////////
+		//////// COLLISIONS //////
 		//////////////////////////
-
-		if ((toPlayerLength > this.orbit+5 || this.player.shield <= 0) && this.player !== planet) { // Move towards the player. If shield is down enemy will kamikaze 
-			this.angle = Math.atan2(toPlayerY,toPlayerX)+Math.PI;
-			this.x += toPlayerX * this.speed;
-			this.y += toPlayerY * this.speed;
-
-		} else if (toPlayerLength < this.orbit-5) { // Move away from player
-			this.angle = Math.atan2(toPlayerY, toPlayerX)+Math.PI;
-			this.x -= toPlayerX * this.speed * 2;
-			this.y -= toPlayerY * this.speed * 2;
-
-		} else { // Orbit player
-			this.angle -= 0.02;
-			this.x = ((toPlayerLength * Math.cos(this.angle)) + (this.player.x));
-			this.y = ((toPlayerLength * Math.sin(this.angle)) + (this.player.y));
-			
-		}
 
 		for (var i = 0; i < this.pBullets.length; i++) { // Check for collision with bullet
 			this.damagemult = mults[Options.wepType][this.type + "dmg"]; // Set damage multiplier based on the enemy type and the bullet type
