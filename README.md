@@ -3,7 +3,6 @@ How to Play
 * WASD to move
 * Hold to shoot
 * P to pause
-* M to mute
 * Kill the planet as quickly as possible, and try and kill a lot of enemies too
 * Recommended minimum window size: 1485 x 690
 
