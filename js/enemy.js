@@ -43,6 +43,9 @@ Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
 		this.damage *= 3;
 		this.dmgcount = 0;
 		this.maxshield = this.shield;
+		if (this.type === "fire") {
+			this.rof = wepTraits.fire.rof; // Rate of fire
+		}
 	}
 	this.slowspeed = this.speed / 2; // Used to adjust speed when hit by water weapon
 	this.normspeed = this.speed; // Used to adjust speed when hit by water weapon
@@ -111,7 +114,7 @@ Enemy.prototype.update = function(planet, earray) { // Update the enemy's positi
 		if (this.count == this.trigger && this.player.name !== "Planet") { //don't shoot if orbiting the planet
 			if (this.isboss) {
 				if (this.type === "fire") {
-					var bullet = new Bullet(this.x, this.y, 6, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, true); // Create bullet/Has bigger bullets/has player flamethrower
+					var bullet = new Bullet(this.x, this.y, 4, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, true); // Create bullet/Has bigger bullets/has player flamethrower
 				} else {
 					var bullet = new Bullet(this.x, this.y, 6, toPlayerX, toPlayerY, 8, this.damage, enemyTraits[this.type].bulletColor, Options.planType, this, false); // Create bullet/Has bigger bullets
 				}
