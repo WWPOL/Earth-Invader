@@ -82,7 +82,7 @@ function initGame() {
 		var powerupamount = Math.round(Math.random() * 3) + 1;
 		for (var i = 0; i < powerupamount; i++) {
 			var int = Math.floor(Math.random() * 5);
-			var powerup = new Powerup(Math.floor(Math.random() * (winwidth) - 20)+10,Math.floor(Math.random() * (winheight) - 20)+10,poweruptypes[int],poweruparray,player);
+			var powerup = new Powerup(Math.floor(Math.random() * (winwidth) - 20)+10,Math.floor(Math.random() * (winheight) - 20)+10,poweruptypes[int],poweruparray);
 			poweruparray.push(powerup);
 		}
 		lastpowerup = Date.now();
