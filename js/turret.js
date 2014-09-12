@@ -10,19 +10,20 @@ Turret = function (x,y, eArrays, eBullets, powerups) { // Takes position, name, 
 	this.shield = 200;
 	this.direction = 0; // In radians
 	this.dmgcount = 0; // Count for timing since last damaged, will be used for regenerating shield
-	this.powerups = powerups;
+	this.powerups = powerups; // Powerup array
+	this.name = "Player";
 
 	this.radius = 40;
-	this.eArrays = eArrays; //array of enemy arrays 
-	this.eBullets = eBullets;
+	this.eArrays = eArrays; // Array of enemies 
+	this.eBullets = eBullets; // Array of enemy bullets
 	this.alive = true;
-	this.regen = false;
+	this.regen = false; // Used to regenerate shield after reaching 0
 
 };
 
-Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) {
+Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) { // Check collision, works for enemies, bullets, and powerups
 	for (var i = 0; i < enemyArray.length; i++) {
-		if (ispowerup && collision(this,enemyArray[i])) {
+		if (ispowerup && collision(this,enemyArray[i])) { // If the colliding object is a powerup, grant the corresponding power and set their timers
 			if (enemyArray[i].type === "air") {
 				if (!powerups.multishot.toggle) {
 					powerups.multishot.toggle = true;
@@ -57,69 +58,66 @@ Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) {
 					powerups.invincibility.timer = 1000;
 				}
 			}
-			enemyArray[i].alive = false;
-		} else {
+			enemyArray[i].alive = false; // Kill the powerup
+		} else { // If not a powerup
 			if (enemyArray[i].alive && collision(this,enemyArray[i])) {
-				if (this.shield > 0 && !powerups.invincibility.toggle) {
+				if (this.shield > 0 && !powerups.invincibility.toggle) { // If shilds and no invincibility, take shield damage
 					if (isbullet) {
-						this.shield -= enemyArray[i].damage;
+						this.shield -= enemyArray[i].damage; // Take the correct damage if the object is a bullet
+						enemyArray[i].alive = false;
 					} else {
-						this.shield -= 20;
+						this.shield -= 20; // If the object is an enemy, take a constant damage
 					}
 					if (!this.regen) {
-						this.dmgcount = 120;
+						this.dmgcount = 120; // If not in regen, set shield delay to 120
 					}
-				} else if (this.shield <= 0 && this.health > 0 && !powerups.invincibility.toggle) {
+				} else if (this.shield <= 0 && this.health > 0 && !powerups.invincibility.toggle) { // If no shilds and no invincibility, take health damage. Same as above, but no shield behavior 
 					if (isbullet) {
 						this.health -= 20;
+						enemyArray[i].alive = false;
 					} else {
 						this.health -= enemyArray[i].damage;
 					}
-				}
-				if (enemyArray[i].name === "bullet") {
-					enemyArray[i].alive = false;
 				}
 			}
 		}
 	}
 }
 
-Turret.prototype.update = function (delta, gc) { //call this to update properties and draw
-	//keyboard handlers
-	if (65 in keysDown) { //left
+Turret.prototype.update = function (delta, gc) { // Update position and vars
+	// Keyboard handlers, for movement
+	if (65 in keysDown) { // Left
 		if (this.x > 0) {
 			this.x -= this.speed * delta;
 		} else {
 			this.x = gc.width;
 		}
 	}
-	if (87 in keysDown) { //up
+	if (87 in keysDown) { // Up
 		if (this.y > 0) {
 			this.y -= this.speed * delta;
 		} else {
 			this.y = gc.height;
 		}
 	}
-	if (68 in keysDown) { //right
+	if (68 in keysDown) { // Right
 		if (this.x < gc.width) {
 			this.x += this.speed * delta;
 		} else {
 			this.x = 0;
 		}
 	}
-	if (83 in keysDown) { //down
+	if (83 in keysDown) { // Down
 		if (this.y < gc.height) {
 			this.y += this.speed * delta;
 		} else {
 			this.y = 0;
 		}
 	}
-	var dDir = this.findDirection(mouseX,mouseY); //delta in direction
+	var dDir = this.findDirection(mouseX,mouseY); // Delta in direction
 
-	//collision
-	for (var i = 0; i < this.eArrays.length; i++) {
-		this.checkCollision(this.eArrays[i], false, false);
-	}
+	// Collision
+	this.checkCollision(this.eArrays, false, false);
 	this.checkCollision(this.eBullets, true, false);
 	this.checkCollision(this.powerups, false, true);
 
