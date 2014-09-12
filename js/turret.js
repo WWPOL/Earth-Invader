@@ -1,13 +1,15 @@
-//Init the player/turret
-Turret = function (x,y,name, eArrays, eBullets, powerups) {
+//////////////////////////////////////////////////////
+///   Turret Class - The player
+//////////////////////////////////////////////////////
+
+Turret = function (x,y, eArrays, eBullets, powerups) { // Takes position, name, enemies, their bullets, and powerups
 	this.x = x; 
 	this.y = y;
 	this.speed = 200;
-	this.health = 500; //balance parameter
+	this.health = 500; // Balance parameter
 	this.shield = 200;
-	this.direction = 0; //radians
-	this.name = name;
-	this.dmgcount = 0; //count for timing since last damaged, will be used for regenerating shield
+	this.direction = 0; // In radians
+	this.dmgcount = 0; // Count for timing since last damaged, will be used for regenerating shield
 	this.powerups = powerups;
 
 	this.radius = 40;

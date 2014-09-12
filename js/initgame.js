@@ -38,7 +38,7 @@ function initGame() {
 	var planethealth = new Healthbar(clientWidth - 310, 10, planet, false);
 
 	//Create a player, an enemy, and assign the player to enemy so that it will follow it
-	var player = new Turret(halfwidth, 45, "Player", [enemies,defenders], eBullets, poweruparray);
+	var player = new Turret(halfwidth, 45, [enemies,defenders], eBullets, poweruparray);
 	var playerhealth = new Healthbar(10, 10, player, false);
 
 	var spawns = [[40, 40], [40, halfheight], [40, clientHeight], [halfwidth, 40], [halfwidth, clientHeight], [clientWidth - 40, 40], [clientWidth - 40, halfheight], [clientWidth - 40, clientHeight - 40]];
