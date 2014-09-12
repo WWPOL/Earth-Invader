@@ -235,7 +235,7 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 				hit.src = sounds[this.type].hit;
 				hit.volume = Options.volume;
 				hit.play();*/
-			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health <= 0 && this.shield <= 0) { //if it collides with a bullet, kill itself and the bullet
+			} else if (this.pBullets[i].alive && collision(this,this.pBullets[i])) { //if it collides with a bullet, kill itself and the bullet
 				this.alive = false;
 				console.log("dead");
 				enemiesKilled += 1;
