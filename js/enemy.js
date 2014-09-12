@@ -161,7 +161,7 @@ Enemy.prototype.update = function(planet, earray) { // Update the enemy's positi
 								enemy.slowcount = 100; // Set the timer to deal with the slowdown
 								if (enemy.shield > 0) {
 									enemy.shield -= wepTraits[Options.wepType].damage * this.damagemult; // Accounts for minibosses caught in splash
-								} else () {
+								} else {
 									enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
 								}
 							}
@@ -197,7 +197,7 @@ Enemy.prototype.update = function(planet, earray) { // Update the enemy's positi
 								enemy.slowcount = 100;
 								if (enemy.shield > 0) {
 									enemy.shield -= wepTraits[Options.wepType].damage * this.damagemult; // Accounts for minibosses caught in splash
-								} else () {
+								} else {
 									enemy.health -= wepTraits[Options.wepType].damage * this.damagemult;
 								}
 							}
