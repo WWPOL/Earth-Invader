@@ -122,66 +122,66 @@ Turret.prototype.update = function (delta, gc) { // Update position and vars
 	this.checkCollision(this.powerups, false, true);
 
 
-	//damage-related stuff
+	// Damage-related stuff
 
 	if (this.dmgcount > 0) {
-		this.dmgcount--;
+		this.dmgcount--; // Reduce shield regen delat
 	}
 
-	if (this.shield < 200 && this.shield >=0 && this.dmgcount == 0) {
-		this.shield += 0.25; //shield will regenerate very slowly
+	if (this.shield < 200 && this.shield >=0 && this.dmgcount == 0) { // When delay is 0, regen
+		this.shield += 0.25; // Shield will regenerate very slowly
 		this.regen = false;
 	}
 	if (this.shield > 0) {
-		this.radius = 40;
+		this.radius = 40; // Increase radius when shields are up
 	}
 
 	if (this.shield <= 0) {
-		this.radius = 10; //collision detection radius set to 40 (shield), reduced when shield is 
+		this.radius = 10; // Collision detection radius set to 40 (shield), reduced when shield is 
 	}
 	if (this.shield < 0) {
 		this.shield = 0;
-		this.dmgcount = 540;
+		this.dmgcount = 540; // Long delay when shields hit 0
 		this.regen = true;
 	}
 
 	if (this.health < 0) {
 		this.health = 0;
-		this.alive = false;
+		this.alive = false; // Dead
 	}
 
-	this.direction += dDir;
+	this.direction += dDir; // Point in the right direction
 };
 
-Turret.prototype.draw = function (ctx) { 
+Turret.prototype.draw = function (ctx) { // Draw the player
 	if (this.alive) {
-		ctx.save(); //save the state to stack before rotating
+		ctx.save(); // Save the state to stack before rotating
 		ctx.translate(this.x,this.y);
 		ctx.rotate(this.direction);
 
-		//draw shield
+		// Draw shield
 		var shieldColor = "#"; 
 		for (var i = 0; i < 3; i++) {
-			shieldColor += (Math.floor(Math.random()*200)+55).toString(16); //keeping individual RGB values between 100 and 200, just b/c
+			shieldColor += (Math.floor(Math.random()*200)+55).toString(16); // Keeping individual RGB values between 100 and 200, just b/c
 		}
 		ctx.beginPath();
 		ctx.arc(0, 0, 40, 0, 2 * Math.PI, false);
 		ctx.lineWidth = 4;
-		ctx.strokeStyle = shieldColor;//rgb(Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()),Math.floor(100 + 70*Math.random()));
-		if (this.shield > 0) { //only draw if greater than 0
+		ctx.strokeStyle = shieldColor;
+		if (this.shield > 0) { // Only draw if greater than 0
 			ctx.stroke(); 
 		}
 		ctx.closePath();	
 
 		ctx.drawImage(sprite_player,-12,-12);
-		ctx.restore(); //restore back to original
+		ctx.restore(); // Restore back to original
 	}
 };
 
-Turret.prototype.findDirection = function (mX,mY) {
+Turret.prototype.findDirection = function (mX,mY) { // Used to make the player point in the right direction
 	var distanceX = this.x - mX;
 	var distanceY = this.y - mY;
-	var newDir = Math.atan2(distanceY,distanceX); //find angle from arctangent
-	var dDir = newDir - this.direction; //delta in direction
+	var newDir = Math.atan2(distanceY,distanceX); // Find angle from arctangent
+	var dDir = newDir - this.direction; // Delta in direction
 	return dDir;
 };

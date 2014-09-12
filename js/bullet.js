@@ -10,7 +10,6 @@ Bullet = function(x, y, r, dx, dy, speed, damage, color, type, owner, playershot
 	this.dy = dy;
 	this.speed = speed; // Constant that determines the velocity the bullet travels at
 	this.damage = damage; // The damage the bullet does
-	this.name = "bullet";
 	this.color = color;
 
 	this.alive = true; // Used for determining damage and whether to draw
