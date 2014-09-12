@@ -146,7 +146,7 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 		//check for collision with bullet
 		for (var i = 0; i < this.pBullets.length; i++) {
 			this.damagemult = mults[Options.wepType][this.type + "dmg"];
-			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0 && this.shield > 0) {
+			if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.shield > 0) {
 				if (!this.pBullets[i].penetrate) {
 					this.pBullets[i].alive = false;
 					this.shield -= wepTraits[Options.wepType].damage * this.damagemult;
@@ -192,7 +192,7 @@ Enemy.prototype.update = function(planet, ctx, earray) {
 				if (!this.regen) {
 					this.dmgcount = 100;
 				}
-			} if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0 && this.shield <= 0) {
+			} if (this.pBullets[i].alive && collision(this,this.pBullets[i]) && this.health > 0) {
 				if (!this.pBullets[i].penetrate) {
 					this.pBullets[i].alive = false;
 					this.health -= wepTraits[Options.wepType].damage * this.damagemult;
