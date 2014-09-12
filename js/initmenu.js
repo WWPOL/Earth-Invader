@@ -70,7 +70,7 @@ function initMainMenu() {
 		ctx.font = "20pt Arial";
 		ctx.fillText("WASD to move", winwidth / 2, winheight - 55);
 		ctx.fillText("Click and hold to shoot", winwidth / 2, winheight - 30);
-		ctx.fillText("M to mute, P to pause", winwidth / 2, winheight - 5);
+		ctx.fillText("P to pause", winwidth / 2, winheight - 5);
 		//render each object in elements as per parameters
 		elements.forEach(function(element) {
 			ctx.fillStyle = element.color;
