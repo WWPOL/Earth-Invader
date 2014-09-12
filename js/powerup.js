@@ -37,10 +37,10 @@ Powerup.prototype.update = function(gc) {
 		this.x += this.vx;
 		this.y += this.vy;
 
-		if (this.vx = 0) {
+		if (this.vx === 0) {
 			this.vx = Math.floor(Math.random() * 4) - 2;
 		}
-		if (this.vy = 0) {
+		if (this.vy === 0) {
 			this.vy = Math.floor(Math.random() * 4) - 2;
 		}
 
