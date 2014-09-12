@@ -27,7 +27,7 @@ Powerup = function(x,y,type,array,player) {
 	this.alive = true;
 	this.powerups = array;
 	this.player = player;
-	this.timer = 750;
+	this.timer = 500;
 	this.vx = Math.floor(Math.random() * 4) - 2;
 	this.vy = Math.floor(Math.random() * 4) - 2;
 };
