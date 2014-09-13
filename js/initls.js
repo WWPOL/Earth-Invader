@@ -37,7 +37,7 @@ function initLevelSelect() {
 			initGame();
 		}
 
-		if(y > 50 && y < 125 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
+		if(y > 50 && y < 125 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){ // Difficulty select
 			if (Options.difficulty === 0) {
 				Options.difficulty = 1;
 				diffcolor = "red";
@@ -48,7 +48,7 @@ function initLevelSelect() {
 				difftext = "Normal";
 			}
 			clicksound();
-		} else if(y > 50 && y < 125 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
+		} else if(y > 50 && y < 125 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){ // Rest highscore
 			highscore = 0;
 			cleartext = "Reset!";
 			clicksound();
