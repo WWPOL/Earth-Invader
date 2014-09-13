@@ -1,5 +1,9 @@
-//Initialize the level select menu. So far, it is basically just a main menu again, nothing new.
+//////////////////////////////////////////////////////
+///   Inits the level select
+//////////////////////////////////////////////////////
+
 function initLevelSelect() {
+	// This block initiliazes the levelselect canvas, sets the context, and sets its width and height to that of the user's screen
 	var canvas = document.getElementById('levelselect');
 	currentcanvas = 'ls';
 	var ctx = canvas.getContext('2d');
@@ -8,10 +12,13 @@ function initLevelSelect() {
 	canvas.width = winwidth;
 	canvas.height = winheight;
 
-	renderops.levelselect = true;
+	var diffcolor = "green";
+	var difftext = "Normal";
+
+	renderops.levelselect = true; // To prevent the level select from appearing on replays
 	var infoBox = "";
 
-	canvas.addEventListener('click', function(event) {
+	canvas.addEventListener('click', function(event) { // Deals with clicking and setting variables
 		var cLeft = canvas.offsetLeft;
 		var cTop = canvas.offsetTop;
 		var x = event.pageX - cLeft;
@@ -25,7 +32,20 @@ function initLevelSelect() {
 			initGame();
 		}
 
-		if(y > 200 && y < 275 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
+		if(y > 50 && y < 125 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
+			console.log("click");
+			if (Options.difficulty === 0) {
+				Options.difficulty = 1;
+				diffcolor = "red";
+				difftext = "Hard";
+				console.log("change");
+			} else if (Options.difficulty === 1) {
+				Options.difficulty = 0;
+				diffcolor = "green";
+				difftext = "Normal";
+			}
+			clicksound();
+		} else if(y > 200 && y < 275 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
 			Options.planType = "fire";
 			clicksound();
 		} else if(y > 200 && y < 275 && x > (canvas.width/2)-250 && x < (canvas.width/2)-250+200){
@@ -34,7 +54,6 @@ function initLevelSelect() {
 		} else if(y > 200 && y < 275 && x > (canvas.width/2)+50 && x < (canvas.width/2)+50 + 200){
 			Options.planType = "water";
 			clicksound();
-
 		} else if(y > 200 && y < 275 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
 			Options.planType = "rock";
 			clicksound();
@@ -52,7 +71,7 @@ function initLevelSelect() {
 			clicksound();
 		}
 	}, false);
-	canvas.addEventListener("mousemove", function (e) {
+	canvas.addEventListener("mousemove", function (e) { // Deal with moving the mouse and setting the infobox
 		var rect = canvas.getBoundingClientRect(); //get bounding rectangle
 		x = e.clientX - rect.left;
 		y = e.clientY - rect.top; //clientX & Y are for whole window, left and top are offsets
@@ -105,6 +124,11 @@ function initLevelSelect() {
 		ctx.fillStyle = "black";
 		ctx.fillText("Play", winwidth / 2, winheight - 100);
 
+		ctx.fillStyle = diffcolor;
+		ctx.fillRect((canvas.width / 4) / 2 + 100, 50, 200, 75);
+		ctx.fillStyle = "black";
+		ctx.fillText(difftext, (canvas.width / 4) / 2 + 200, 100);
+
 	//////////////////////////////////////////////////////////
 
 		ctx.font = "20pt Arial";
@@ -116,37 +140,21 @@ function initLevelSelect() {
 		ctx.fillRect((canvas.width / 4) / 2 + 100, 200, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Fire", (canvas.width / 4) / 2 + 200, 250);
-		if (Options.planType === "fire") {
-			ctx.strokeStyle == planTraits[Options.planType].planstroke;
-			ctx.stroke();
-		}
 
 		ctx.fillStyle = "white";
 		ctx.fillRect((canvas.width / 2) - 250, 200, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Air", (canvas.width / 2) - 150, 250);
-		if (Options.planType === "air") {
-			ctx.strokeStyle == planTraits[Options.planType].planstroke;
-			ctx.stroke();
-		}
 
 		ctx.fillStyle = "blue";
 		ctx.fillRect((canvas.width / 2) + 50, 200, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Water", (canvas.width / 2) + 150, 250);
-		if (Options.planType === "water") {
-			ctx.strokeStyle == planTraits[Options.planType].planstroke;
-			ctx.stroke();
-		}
 
 		ctx.fillStyle = "brown";
 		ctx.fillRect(((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100), 200, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Rock", ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 250);
-		if (Options.planType === "rock") {
-			ctx.strokeStyle == planTraits[Options.planType].planstroke;
-			ctx.stroke();
-		}
 
 	/////////////////////////////////////////////////////////////
 
@@ -159,37 +167,21 @@ function initLevelSelect() {
 		ctx.fillRect((canvas.width / 4) / 2 + 100, 400, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Fire", (canvas.width / 4) / 2 + 200, 450);
-		if (Options.wepType === "fire") {
-			ctx.strokeStyle == planTraits[Options.planType].planstroke;
-			ctx.stroke();
-		}
 
 		ctx.fillStyle = "white";
 		ctx.fillRect((canvas.width / 2) - 250, 400, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Air", (canvas.width / 2) - 150, 450);
-		if (Options.wepType === "air") {
-			ctx.strokeStyle == planTraits[Options.planType].planstroke;
-			ctx.stroke();
-		}
 
 		ctx.fillStyle = "blue";
 		ctx.fillRect((canvas.width / 2) + 50, 400, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Water", (canvas.width / 2) + 150, 450);
-		if (Options.wepType === "water") {
-			ctx.strokeStyle == planTraits[Options.planType].planstroke;
-			ctx.stroke();
-		}
 
 		ctx.fillStyle = "brown";
 		ctx.fillRect(((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100), 400, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText("Rock", ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 450);
-		if (Options.wepType === "rock") {
-			ctx.strokeStyle == planTraits[Options.planType].planstroke;
-			ctx.stroke();
-		}
 
 		ctx.font = "20pt Arial";
 		ctx.fillStyle = "white";
