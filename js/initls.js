@@ -102,7 +102,7 @@ function initLevelSelect() {
 		} else if(y > 400 && y < 475 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
 			infoBox = "Effective against Air, less effective against Water. High damage per shot, penetrates through enemies.";
 		} else {
-			infoBox = "Planet type: " + Options.planType + ". Weapon type: " + Options.wepType + ".";
+			infoBox = "Planet type: " + Options.planType + ". Weapon type: " + Options.wepType + ". Difficulty: " + difftext + ".";
 		}
 	}); 
 
