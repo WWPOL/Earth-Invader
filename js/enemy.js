@@ -96,7 +96,7 @@ Enemy.prototype.update = function(planet, earray) { // Update the enemy's positi
 		//////// MOVEMENT ////////
 		//////////////////////////
 
-		if ((toOrbitLength > this.orbit+5 || this.player.shield <= 0)) { // Move towards the player. If shield is down enemy will kamikaze 
+		if ((toOrbitLength > this.orbit+5 || this.orbitthis.shield <= 0)) { // Move towards the player. If shield is down enemy will kamikaze 
 			this.angle = Math.atan2(toOrbitY,toOrbitX)+Math.PI;
 			this.x += toOrbitX * this.speed;
 			this.y += toOrbitY * this.speed;

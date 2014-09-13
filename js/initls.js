@@ -12,8 +12,13 @@ function initLevelSelect() {
 	canvas.width = winwidth;
 	canvas.height = winheight;
 
+	score = 0;
+	time = 0;
+	enemiesKilled = 1;
+
 	var diffcolor = "green";
 	var difftext = "Normal";
+	var cleartext = "Reset Score";
 
 	renderops.levelselect = true; // To prevent the level select from appearing on replays
 	var infoBox = "";
@@ -33,17 +38,19 @@ function initLevelSelect() {
 		}
 
 		if(y > 50 && y < 125 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
-			console.log("click");
 			if (Options.difficulty === 0) {
 				Options.difficulty = 1;
 				diffcolor = "red";
 				difftext = "Hard";
-				console.log("change");
 			} else if (Options.difficulty === 1) {
 				Options.difficulty = 0;
 				diffcolor = "green";
 				difftext = "Normal";
 			}
+			clicksound();
+		} else if(y > 50 && y < 125 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){
+			highscore = 0;
+			cleartext = "Reset!";
 			clicksound();
 		} else if(y > 200 && y < 275 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
 			Options.planType = "fire";
@@ -124,10 +131,16 @@ function initLevelSelect() {
 		ctx.fillStyle = "black";
 		ctx.fillText("Play", winwidth / 2, winheight - 100);
 
+		ctx.font = "20pt Arial";
 		ctx.fillStyle = diffcolor;
 		ctx.fillRect((canvas.width / 4) / 2 + 100, 50, 200, 75);
 		ctx.fillStyle = "black";
 		ctx.fillText(difftext, (canvas.width / 4) / 2 + 200, 100);
+
+		ctx.fillStyle = "black";
+		ctx.fillRect(((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100), 50, 200, 75);
+		ctx.fillStyle = "white";
+		ctx.fillText(cleartext, ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 100);
 
 	//////////////////////////////////////////////////////////
 
