@@ -16,9 +16,7 @@ function initLevelSelect() {
 	time = 0;
 	enemiesKilled = 1;
 
-	var diffcolor = "green";
-	var difftext = "Normal";
-	var cleartext = "Reset Score";
+	var cleared = false;
 
 	renderops.levelselect = true; // To prevent the level select from appearing on replays
 	var infoBox = "";
@@ -40,17 +38,13 @@ function initLevelSelect() {
 		if(y > 50 && y < 125 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){ // Difficulty select
 			if (Options.difficulty === 0) {
 				Options.difficulty = 1;
-				diffcolor = "red";
-				difftext = "Hard";
 			} else if (Options.difficulty === 1) {
 				Options.difficulty = 0;
-				diffcolor = "green";
-				difftext = "Normal";
 			}
 			clicksound();
 		} else if(y > 50 && y < 125 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){ // Rest highscore
 			highscore = 0;
-			cleartext = "Reset!";
+			cleared = true;
 			clicksound();
 		} else if(y > 200 && y < 275 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){
 			Options.planType = "fire";
@@ -132,15 +126,27 @@ function initLevelSelect() {
 		ctx.fillText("Play", winwidth / 2, winheight - 100);
 
 		ctx.font = "20pt Arial";
-		ctx.fillStyle = diffcolor;
+		if (Options.difficulty === 0) {
+			ctx.fillStyle = "green";
+		} else if (Options.difficulty === 1) {
+			ctx.fillStyle = "red";
+		}
 		ctx.fillRect((canvas.width / 4) / 2 + 100, 50, 200, 75);
 		ctx.fillStyle = "black";
-		ctx.fillText(difftext, (canvas.width / 4) / 2 + 200, 100);
+		if (Options.difficulty === 0) {
+			ctx.fillText("Normal", (canvas.width / 4) / 2 + 200, 100);
+		} else if (Options.difficulty === 1) {
+			ctx.fillText("Hard", (canvas.width / 4) / 2 + 200, 100);
+		}
 
 		ctx.fillStyle = "black";
 		ctx.fillRect(((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100), 50, 200, 75);
 		ctx.fillStyle = "white";
-		ctx.fillText(cleartext, ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 100);
+		if (cleared) {
+			ctx.fillText("Reset!", ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 100);
+		} else {
+			ctx.fillText("Reset Score", ((canvas.width / 2) + 50) + ((canvas.width / 2) - 250) - ((canvas.width / 4) / 2 + 100) + 100, 100);
+		}
 
 	//////////////////////////////////////////////////////////
 
