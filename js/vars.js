@@ -54,7 +54,8 @@ var Options = { // Keeps track of planet and weapon type
 	planType: "fire",
 	wepType: "fire",
 	volume: 0.1,
-	difficulty: 0
+	difficulty: 0,
+	resize: false
 };
 
 var powerups = { // Toggles and timers for powerups

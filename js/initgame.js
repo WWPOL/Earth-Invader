@@ -447,6 +447,7 @@ function initGame() {
 			powerups.splash.timer = 1000;
 			powerups.invincibility.toggle = false;
 			powerups.invincibility.timer = 1000;
+			Options.resize = true;
 			initLevelSelect();
 		}
 	}, false);

@@ -18,6 +18,10 @@ function initLevelSelect() {
 
 	var cleared = false;
 	var difftext = "Normal";
+	if (Options.resize) {
+		Options.resize = false;
+		resize();
+	}
 
 	renderops.levelselect = true; // To prevent the level select from appearing on replays
 	var infoBox = "";
