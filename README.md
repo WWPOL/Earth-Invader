@@ -13,11 +13,6 @@ Years ago, a terrible invasion by unknown entities was staved off by a lone Eart
 
 Wonder why there's no sound? In space, you won't hear your enemies dying.
 
-Mockup
-=====
-
-![mockup](mockup.png)
-
 Screenshots
 =====
 ![1](1.png)
