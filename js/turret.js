@@ -49,8 +49,8 @@ Turret.prototype.checkCollision = function (enemyArray, isbullet, ispowerup) { /
 					powerups.penetrate.timer = 1000;
 				}
 			} else if (enemyArray[i].type === "health") {
-				this.health = 500;
-				this.shield = 200;
+				this.health = 1000;
+				this.shield = 400;
 			} else if (enemyArray[i].type === "invincibility") {
 				if (!powerups.invincibility.toggle) {
 					powerups.invincibility.toggle = true;
