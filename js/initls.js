@@ -17,6 +17,7 @@ function initLevelSelect() {
 	enemiesKilled = 1;
 
 	var cleared = false;
+	var difftext = "Normal";
 
 	renderops.levelselect = true; // To prevent the level select from appearing on replays
 	var infoBox = "";
@@ -37,9 +38,13 @@ function initLevelSelect() {
 
 		if(y > 50 && y < 125 && x > (canvas.width/4)/2+100 && x < (canvas.width/4)/2+100+200){ // Difficulty select
 			if (Options.difficulty === 0) {
+				console.log("switching from normal")
 				Options.difficulty = 1;
+				difftext = "Hard";
 			} else if (Options.difficulty === 1) {
+				console.log("switching from hard")
 				Options.difficulty = 0;
+				difftext = "Normal";
 			}
 			clicksound();
 		} else if(y > 50 && y < 125 && x > ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) && x < ((canvas.width/2) + 50) + ((canvas.width/2)-250)-((canvas.width/4)/2 + 100) + 200){ // Rest highscore
