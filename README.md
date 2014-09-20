@@ -1,3 +1,12 @@
+Todo
+=====
+- [ ] Port game to phaser for 2099 edition
+- [ ] Have expanded playing space, have it be same no matter what size screen (extend beyond bounds of screen)
+- [ ] Multiplayer support (pvp? coop would make most sense)
+- [ ] Upgrades, new enemy types, more varied enemy types, new powerups and weapons, different ships with different stats
+- [ ] new gameplay (in atmosphere raids after taking down shields?)
+- [ ] have a server (heroku?) to show leaderboard stats
+
 How to Play
 =======
 * WASD to move
