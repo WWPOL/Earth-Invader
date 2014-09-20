@@ -6,52 +6,23 @@ function initGame() {
 	var game = new Phaser.Game(clientWidth,clientHeight,Phaser.AUTO, 'ei-game', {preload: preload, create: create, update: update, render: render});
 
 	function preload() {
-		game.load.image('player','assets/images/Shooter.png');
-		game.load.image('airenemy','assets/images/Air-Sprite.png');
-		game.load.image('airenemyboom','assets/images/Air-Boom.png');
-		game.load.image('fireenemy','assets/images/Fire-Sprite.png');
-		game.load.image('firenemyboom','assets/images/Fire-Boom.png');
-		game.load.image('rockenemy','assets/images/Rock-Sprite.png');
-		game.load.image('rockenemyboom','assets/images/Rock-Boom.png');
-		game.load.image('waterenemy','assets/images/Water-Sprite.png');
-		game.load.image('waterenemy','assets/images/Water-Boom.png');
-		game.load.image('stars','assets/images/stars.png');
-		game.load.audio('click','assets/sounds/click.wav');
+		game.load.image('player','devassets/images/Shooter.png');
+		game.load.image('airenemy','devassets/images/Air-Sprite.png');
+		game.load.image('airenemyboom','devassets/images/Air-Boom.png');
+		game.load.image('fireenemy','devassets/images/Fire-Sprite.png');
+		game.load.image('firenemyboom','devassets/images/Fire-Boom.png');
+		game.load.image('rockenemy','devassets/images/Rock-Sprite.png');
+		game.load.image('rockenemyboom','devassets/images/Rock-Boom.png');
+		game.load.image('waterenemy','devassets/images/Water-Sprite.png');
+		game.load.image('waterenemy','devassets/images/Water-Boom.png');
+		game.load.image('stars','devassets/images/stars.png');
+		game.load.audio('click','devassets/sounds/click.wav');
 	}
-
-	/*var muted = false;
-
-	var keys = {
-		up: false,
-		down: false,
-		left: false,
-		right: false,
-		mute: false,
-		pause: false,
-		fullscreen: false
-	}
-
-	var player;
-	var starfield;
-	var mousedown = false;
-	var firing = false;
-	var shootcount = 0;
-	var pBullets = [];
-	var eBullets = [];
-	var enemies = [];
-	var defenders = [];
-	var healthbars = [];
-	var powerups = {
-		names: [],
-		types: [],
-		timer: 0,
-		amount: 0
-	};*/
 
 	function create() {
 		game.world.setBounds(0,0,3284,3284);
 		game.physics.startSystem(Phaser.Physics.P2JS);
-		//game.physics.p2.setImpactEvents(true);
+		game.physics.p2.setImpactEvents(true);
 		game.stage.smoothed = false;
 		game.physics.p2.updateBoundsCollisionGroup();
 		game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
