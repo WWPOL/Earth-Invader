@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Earth Invader</title>
+	<link rel="shortcut icon" href="favicon.ico">
+	<script src="js13kjs/vars.js"></script>
+	<script src="js13kjs/util.js"></script>
+	<script src="js13kjs/enemy.js"></script>
+	<script src="js13kjs/turret.js"></script>
+	<script src="js13kjs/planet.js"></script>
+	<script src="js13kjs/bullet.js"></script>
+	<script src="js13kjs/healthbar.js"></script>
+	<script src="js13kjs/star.js"></script>
+	<script src="js13kjs/powerup.js"></script>
+	<script src="js13kjs/initstars.js"></script>
+	<script src="js13kjs/initmenu.js"></script>
+	<script src="js13kjs/initls.js"></script>
+	<script src="js13kjs/initgame.js"></script>
+	<style>
+		canvas {
+			position: absolute;
+			cursor: none;
+		}
+	</style>
+</head>
+<body onload="initMainMenu()" onresize="resize()" onorientationchange="resize()" style="margin: 0; padding: 0; background-color: black; overflow: hidden;">
+	<canvas id="stars"></canvas>
+	<canvas id="mainmenu"></canvas>
+	<canvas id="levelselect"></canvas>
+</body>
+</html>
