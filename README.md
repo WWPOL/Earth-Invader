@@ -24,6 +24,6 @@ Screenshots
 Credits
 =========
 
-Created by Rudhra Raveendran, Andrew Lee, Phillip Sifferlen, Matthew Chuang, and Zach Day.
+Created by Rudhra Raveendran, Andrew Lee, Phillip Sifferlen, Matthew Chuang, Sam Neil, and Zach Day.
 
 Special thanks to Benjamin Pelon for the sprites!
