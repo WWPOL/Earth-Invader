@@ -6,7 +6,7 @@ Turret = function (x,y, eArrays, eBullets, powerups) { // Takes position, name, 
 	this.x = x; 
 	this.y = y;
 	this.speed = 200;
-	this.health = 1000; // Balance parameter
+	this.health = 800; // Balance parameter
 	this.shield = 400;
 	this.direction = 0; // In radians
 	this.dmgcount = 0; // Count for timing since last damaged, will be used for regenerating shield
@@ -89,30 +89,30 @@ Turret.prototype.update = function (delta, gc) { // Update position and vars
 	if (65 in keysDown) { // Left
 		if (this.x > 0) {
 			this.x -= this.speed * delta;
-		} else {
+		} /*else {
 			this.x = gc.width;
-		}
+		}*/
 	}
 	if (87 in keysDown) { // Up
 		if (this.y > 0) {
 			this.y -= this.speed * delta;
-		} else {
+		} /*else {
 			this.y = gc.height;
-		}
+		}*/
 	}
 	if (68 in keysDown) { // Right
 		if (this.x < gc.width) {
 			this.x += this.speed * delta;
-		} else {
+		} /*else {
 			this.x = 0;
-		}
+		}*/
 	}
 	if (83 in keysDown) { // Down
 		if (this.y < gc.height) {
 			this.y += this.speed * delta;
-		} else {
+		} /*else {
 			this.y = 0;
-		}
+		}*/
 	}
 	var dDir = this.findDirection(mouseX,mouseY); // Delta in direction
 
@@ -130,7 +130,10 @@ Turret.prototype.update = function (delta, gc) { // Update position and vars
 		this.dmgcount--; // Reduce shield regen delat
 	}
 
-	if (this.shield < 400 && this.shield >=0 && this.dmgcount == 0) { // When delay is 0, regen
+	if (this.shield <=0 && this.dmgcount == 0) { // When delay is 0, regen
+		this.shield = 80; // Shield will regenerate very slowly
+		this.regen = false;
+	} else if (this.shield < 400 && this.shield >=0 && this.dmgcount == 0) { // When delay is 0, regen
 		this.shield += 0.25; // Shield will regenerate very slowly
 		this.regen = false;
 	}

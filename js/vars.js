@@ -171,10 +171,10 @@ var enemyTraits = {
 
 var mults = { // Multipliers used for damage and score, kept key value style to save lines
 	fire: {
-		waterdmg: 1.5,
-		waterscore: 0.5,
-		airdmg: 0.5,
-		airscore: 1.5,
+		waterdmg: 1.25,
+		waterscore: 0.75,
+		airdmg: 0.75,
+		airscore: 1.25,
 		firedmg: 1.0,
 		firescore: 1.0,
 		rockdmg: 1.0,
@@ -185,26 +185,26 @@ var mults = { // Multipliers used for damage and score, kept key value style to 
 		waterscore: 1.0,
 		airdmg: 1.0,
 		airscore: 1.0,
-		firedmg: 1.5,
-		firescore: 0.5,
-		rockdmg: 0.5,
-		rockscore: 1.5
+		firedmg: 1.25,
+		firescore: 0.75,
+		rockdmg: 0.75,
+		rockscore: 1.25
 	},
 	water: {
 		waterdmg: 1.0,
 		waterscore: 1.0,
 		airdmg: 1.0,
 		airscore: 1.0,
-		firedmg: 0.5,
-		firescore: 1.5,
-		rockdmg: 1.5,
-		rockscore: 0.5
+		firedmg: 0.75,
+		firescore: 1.25,
+		rockdmg: 1.25,
+		rockscore: 0.75
 	},
 	rock: {
-		waterdmg: 0.5,
-		waterscore: 1.5,
-		airdmg: 1.5,
-		airscore: 0.5,
+		waterdmg: 0.75,
+		waterscore: 1.25,
+		airdmg: 1.25,
+		airscore: 0.75,
 		firedmg: 1.0,
 		firescore: 1.0,
 		rockdmg: 1.0,

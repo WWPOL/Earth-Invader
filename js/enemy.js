@@ -2,13 +2,14 @@
 ///   Enemy Class - Standard enemies and minibosses
 //////////////////////////////////////////////////////
 
-Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss) {
+Enemy = function(x, y, width, height, orbit, type, pBullets, eBullets, isboss, kamikaze) {
 	this.x = x;
 	this.y = y;
 	this.width = width;
 	this.height = height;
 
 	this.isboss = isboss;
+	this.kamikaze = kamikaze;
 	this.type = type;
 	this.speed = enemyTraits[this.type].speed;
 	this.orbit = orbit; // Property determining distance of orbit
@@ -96,7 +97,7 @@ Enemy.prototype.update = function(planet, earray) { // Update the enemy's positi
 		//////// MOVEMENT ////////
 		//////////////////////////
 
-		if ((toOrbitLength > this.orbit+5 || this.orbitthis.shield <= 0)) { // Move towards the player. If shield is down enemy will kamikaze 
+		if ((toOrbitLength > this.orbit+5 || this.orbitthis.shield <= 0) && this.kamikaze) { // Move towards the player. If shield is down enemy will kamikaze 
 			this.angle = Math.atan2(toOrbitY,toOrbitX)+Math.PI;
 			this.x += toOrbitX * this.speed;
 			this.y += toOrbitY * this.speed;
@@ -129,7 +130,10 @@ Enemy.prototype.update = function(planet, earray) { // Update the enemy's positi
 		if (this.splashcount > 0) { // Same idea as burncount, used to draw the splash sprite
 			this.splashcount--;
 		}
-		if (this.shield < this.maxshield && this.shield >=0 && this.dmgcount == 0) {
+		if (this.shield <=0 && this.dmgcount == 0) {
+			this.shield = this.maxshield * .2; // Shield will regenerate very slowly
+			this.regen = false; 
+		} else if (this.shield < this.maxshield && this.shield >=0 && this.dmgcount == 0) {
 			this.shield += 0.25; // Shield will regenerate very slowly
 			this.regen = false; 
 		}

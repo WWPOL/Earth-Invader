@@ -5,8 +5,8 @@
 Planet = function(x, y, name, color, stroke, bullets) {
 	this.x = x;
 	this.y = y;
-	this.health = 10000; // Massive value to ensure game doesn't end too quickly with powerups
-	this.shield = 6000; // Massive value to ensure game doesn't end too quickly with powerups
+	this.health = 3000; // Massive value to ensure game doesn't end too quickly with powerups
+	this.shield = 1500; // Massive value to ensure game doesn't end too quickly with powerups
 	this.name = name; // Name sent to healthbar 
 	this.radius = 100;
 	this.color = color;
@@ -42,7 +42,10 @@ Planet.prototype.update = function() { // Update the health and vars
 	if (this.dmgcount > 0) { // Slowly reduce damagecount
 		this.dmgcount--;
 	}
-	if (this.shield < 6000 && this.shield >= 0 && this.dmgcount == 0) {
+	if (this.shield <= 0 && this.dmgcount == 0) {
+		this.shield = 100; // Shield will regenerate very slowly
+		this.regen = false;
+	} else if (this.shield < 1500 && this.shield >= 0 && this.dmgcount == 0) {
 		this.shield += 0.25; // Shield will regenerate very slowly
 		this.regen = false;
 	}

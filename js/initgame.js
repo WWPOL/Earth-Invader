@@ -54,7 +54,7 @@ function initGame() {
 
 	var makeEnemies = function(x,y, type) { // Makes enemies
 		var randOrbit = Math.round(Math.random()*20) + 60; // 30 to 80
-		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, false);
+		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, false, true);
 		enemy.assigntarget(player); // Assigns the player as the target to shoot at and follow
 		enemy.assignorbit(player);
 		enemies.push(enemy); // Push to enemy array
@@ -67,7 +67,7 @@ function initGame() {
 	};
 	var makeBoss = function(x,y, type) { // Same as above, but for minibosses
 		var randOrbit = Math.round(Math.random()*20) + 60; // 30 to 80
-		var boss = new Enemy(x, y, 30, 30, randOrbit, type, pBullets, eBullets, true);
+		var boss = new Enemy(x, y, 30, 30, randOrbit, type, pBullets, eBullets, true, true);
 		boss.assigntarget(player);
 		boss.assignorbit(player);
 		var bosshealth = new Healthbar(x, y, boss, true); // Create its healthbar, push the healthbar and boss to their arrays
@@ -76,7 +76,7 @@ function initGame() {
 	};
 	var makeDefenders = function(x,y, type) { // Sane as makeEnemy, but for defenders around the planet
 		var randOrbit = Math.round(Math.random()*20) + 80; // 40 to 90
-		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, false);
+		var enemy = new Enemy(x, y, 10, 10, randOrbit, type, pBullets, eBullets, false, false);
 		enemy.assigntarget(player);
 		enemy.assignorbit(planet);
 		defenders.push(enemy);
